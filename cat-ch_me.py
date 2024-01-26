@@ -23,6 +23,7 @@ clock = pygame.time.Clock()
 ### Font
 
 font = pygame.font.SysFont("sherif", 40)
+small_font = pygame.font.SysFont("sherif", 10)
 
 ### Colors
 
@@ -243,10 +244,60 @@ class animation_class:
 
 animation = animation_class()
 
-class main_game_class:
+class grid_class:
+    def __init__(self):
+        self.initialGrid()
+        self.get_cat_position()
+        self.get_owner_position()
 
+    grid = []
+    cat_position = None
+    owner_position = None
+
+    def update(self):
+        self.get_cat_position()
+        self.get_owner_position()
+
+    def initialGrid(self):
+        blockSize = 20 #Set the size of the grid block
+        id = 1
+        for x in range(0, map.get_width(), blockSize):
+            for y in range(0, map.get_height(), blockSize):
+                rect = pygame.Rect(x, y, blockSize, blockSize)
+                # Check if obstacle
+                for room in obstacle.list:
+                    if rect.collidelist(room) == -1:
+                        rect_info = {"id" : id, "rect" : rect, "obstacle" : False}
+                    else:
+                        rect_info = {"id" : id, "rect" : rect, "obstacle" : True}
+                        break
+
+                self.grid.append(rect_info)
+                id += 1
+
+    def get_cat_position(self):
+        for case in self.grid:
+            if case["rect"].collidepoint(player.body.center):
+                self.cat_position = case
+                break
+
+    def get_owner_position(self):
+        for case in self.grid:
+            if case["rect"].collidepoint(owner.body.center):
+                self.owner_position = case
+                break
+
+grid = grid_class()
+
+class main_game_class:
     def draw_window(self):
         camera.bg_blit()
+
+        # for case in grid.grid:
+        #     if case["obstacle"]:
+        #         pygame.draw.rect(map, RED, case["rect"], 1)
+            # else:
+            #     pygame.draw.rect(map, WHITE, case["rect"], 1)
 
         # animation.play_animations()
 
@@ -260,8 +311,12 @@ class main_game_class:
         pygame.draw.rect(map, BLACK, player.body)
         map.blit(player.img, (player.body.x, player.body.y))
 
+        pygame.draw.rect(map, GREEN, grid.cat_position["rect"])
+
         # Owner
         pygame.draw.rect(map, YELLOW, owner.body)
+        
+        pygame.draw.rect(map, RED, grid.owner_position["rect"])
 
         camera.update()
 
@@ -317,6 +372,8 @@ class main_game_class:
 
             player.update_visual()
 
+            grid.update()
+
             click = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -349,6 +406,9 @@ class main_game_class:
             self.draw_window()
 
 main = main_game_class()
+
+
+# print(grid.cat_position["rect"])
 
 main.main_loop()
 
