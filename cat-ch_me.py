@@ -117,20 +117,21 @@ class obstacle_class:
     #Living Room
     table = pygame.Rect(1500, 500, 250, 250)
     #Office
-    officeLeftBottomHalf = pygame.Rect(0, 1300, 500, 15)
-    officeRightBottomHalf = pygame.Rect(650, 1300, 350, 15)
-    officeTopLeftHalf= pygame.Rect(0, 1000, 15, 300)
-    officeTopRightHalf = pygame.Rect(985, 1000, 15, 300)
+    officeLeftBottomHalf = pygame.Rect(map.get_width()-800, map.get_height()-600 , 400, 15)
+    officeRightBottomHalf = pygame.Rect(map.get_width()-250, map.get_height()-600 , 250, 15)
+    officeTopLeftHalf= pygame.Rect(map.get_width()-800, map.get_height()-600 , 15, 200)
+    officeTopRightHalf = pygame.Rect(map.get_width()-800, map.get_height()-300 , 15, 200)
+    #Kitchen
+    kitchenLeftBottomHalf = pygame.Rect(map.get_width()-800, map.get_height()-600 , 400, 15)
+    kitchenLeftRightHalf = pygame.Rect(map.get_width()-250, map.get_height()-600 , 250, 15)
 
-
-    
+    office= [officeLeftBottomHalf, officeRightBottomHalf, officeTopLeftHalf, officeTopRightHalf]
     livingRoom = [table]
-
     halway= [halwayRightTopHalf, halwayRightBottomHalf, shoeCase]
     bathRoom= [toilets, shower, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
     bedRoom = [bed, bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf, bedRoomRightBottomHalf]
     fullMap = [topWall, bottomWall, leftWall, rightWall]
-    list = [fullMap, bedRoom, bathRoom, livingRoom, halway]
+    list = [fullMap, bedRoom, bathRoom, livingRoom, halway, office]
 
 obstacle = obstacle_class()
 
