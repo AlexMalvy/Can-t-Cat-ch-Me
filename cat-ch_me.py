@@ -86,9 +86,49 @@ class camera_class:
 
 camera = camera_class()
 
-class player:
+class player_class:
     body = pygame.Rect(WIDTH//2, HEIGHT//2, 64, 64)
-    movespeed = 10
+    speed = 10
+
+player = player_class()
+
+class owner_class:
+    def __init__(self):
+        self.target = player
+
+    body = pygame.Rect(100, 100, 50, 100)
+    range = 50
+    
+    max_speed = 5
+    speed = 5
+    moving = True
+
+    def move_toward_cat(self):
+        if math.dist([self.target.body.centerx, self.target.body.centery], [self.body.centerx, self.body.centery]) > self.range:
+            self.moving = True
+            # Speed modifier
+            if self.body.centerx != self.target.body.centerx and self.body.centery != self.target.body.centery:
+                self.speed = self.max_speed/3 * 2
+            else:
+                self.speed = self.max_speed
+
+            # Chase Target
+            if self.target.body.centerx > self.body.centerx:
+                    self.body.x += self.speed
+                    self.right = True
+            if self.target.body.centerx < self.body.centerx:
+                    self.body.x -= self.speed
+                    self.right = False
+                    
+            if self.target.body.centery > self.body.centery:
+                    self.body.y += self.speed
+            if self.target.body.centery < self.body.centery:
+                    self.body.y -= self.speed
+
+        else:
+            self.moving = False
+
+owner = owner_class()
 
 class obstacle_class:
 
@@ -128,9 +168,11 @@ class main_game_class:
 
         # animation.play_animations()
 
-        pygame.draw.rect(map, BLACK, player.body)
         for obs in obstacle.list:
             pygame.draw.rect(map, RED, obs)
+
+        pygame.draw.rect(map, BLACK, player.body)
+        pygame.draw.rect(map, YELLOW, owner.body)
 
         camera.update()
 
@@ -147,30 +189,31 @@ class main_game_class:
             clock.tick(60)
 
             if left:
-                player.body.x -= player.movespeed
+                player.body.x -= player.speed
                 # Check if colliding with obstacle
                 for obs in obstacle.list:
                     if player.body.colliderect(obs):
-                        player.body.x += player.movespeed
+                        player.body.x += player.speed
             if right:
-                player.body.x += player.movespeed
+                player.body.x += player.speed
                 # Check if colliding with obstacle
                 for obs in obstacle.list:
                     if player.body.colliderect(obs):
-                        player.body.x -= player.movespeed
+                        player.body.x -= player.speed
             if up:
-                player.body.y -= player.movespeed
+                player.body.y -= player.speed
                 # Check if colliding with obstacle
                 for obs in obstacle.list:
                     if player.body.colliderect(obs):
-                        player.body.y += player.movespeed
+                        player.body.y += player.speed
             if down:
-                player.body.y += player.movespeed
+                player.body.y += player.speed
                 # Check if colliding with obstacle
                 for obs in obstacle.list:
                     if player.body.colliderect(obs):
-                        player.body.y -= player.movespeed
+                        player.body.y -= player.speed
 
+            owner.move_toward_cat()
 
             click = False
             for event in pygame.event.get():
