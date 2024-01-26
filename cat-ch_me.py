@@ -6,6 +6,7 @@ import os
 import sys
 import pickle
 import math
+import img_load
 from pygame.locals import *
 
 pygame.init()
@@ -35,10 +36,16 @@ GRAYISH = (150, 150, 150)
 DARK_GRAY = (100, 100, 100)
 GREEN = (0, 128, 0)
 BROWN = (83, 61, 50)
+ALMOST_BLACK = (1, 1, 1)
 
-### Colors
+### Background
 
 BG_GRAY_WALL = pygame.image.load(os.path.join("assets", "bg_gray_wall.jpg"))
+
+## Cats Sprites
+
+ORANGE_CAT_IDLE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-idle.png"], 1)
+ORANGE_CAT_RUNNING = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-running.png"], 1)
 
 #############
 
@@ -86,9 +93,88 @@ class camera_class:
 
 camera = camera_class()
 
-class player:
+class player_class:
     body = pygame.Rect(WIDTH//2, HEIGHT//2, 64, 64)
-    movespeed = 10
+    speed = 10
+
+    moving = False
+    right = False
+
+    frame = 0
+    frame_timer = pygame.time.get_ticks()
+    frame_cd = 120
+    state = [ORANGE_CAT_IDLE, ORANGE_CAT_RUNNING]
+    current_state = 0
+    img = pygame.Surface((body.width, body.height))
+    
+    def update_visual(self):
+        self.change_state()
+
+        self.update_frame()
+
+    def change_state(self):
+        if self.moving and self.current_state != 1:
+            self.current_state = 1
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+        elif self.moving == False and self.current_state != 0:
+            self.current_state = 0
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+
+
+    def update_frame(self):
+        if pygame.time.get_ticks() - self.frame_timer >= self.frame_cd:
+            self.frame += 1
+            self.frame_timer = pygame.time.get_ticks()
+        if self.frame >= self.state[self.current_state].get_width()/self.state[self.current_state].get_height():
+            self.frame = 0
+
+        self.img.fill(ALMOST_BLACK)
+        self.img.set_colorkey(ALMOST_BLACK)
+        self.img.blit(self.state[self.current_state], (0,0), (self.state[self.current_state].get_height() * self.frame, 0, self.state[self.current_state].get_height(), self.state[self.current_state].get_height()))
+        if self.right == False:
+            self.img = pygame.transform.flip(self.img, 1, 0)
+
+player = player_class()
+
+class owner_class:
+    def __init__(self):
+        self.target = player
+
+    body = pygame.Rect(100, 100, 50, 100)
+    range = 50
+    
+    max_speed = 5
+    speed = 5
+    moving = True
+
+    def move_toward_cat(self):
+        if math.dist([self.target.body.centerx, self.target.body.centery], [self.body.centerx, self.body.centery]) > self.range:
+            self.moving = True
+            # Speed modifier
+            if self.body.centerx != self.target.body.centerx and self.body.centery != self.target.body.centery:
+                self.speed = self.max_speed/3 * 2
+            else:
+                self.speed = self.max_speed
+
+            # Chase Target
+            if self.target.body.centerx > self.body.centerx:
+                    self.body.x += self.speed
+                    self.right = True
+            if self.target.body.centerx < self.body.centerx:
+                    self.body.x -= self.speed
+                    self.right = False
+                    
+            if self.target.body.centery > self.body.centery:
+                    self.body.y += self.speed
+            if self.target.body.centery < self.body.centery:
+                    self.body.y -= self.speed
+
+        else:
+            self.moving = False
+
+owner = owner_class()
 
 class obstacle_class:
 
@@ -164,10 +250,18 @@ class main_game_class:
 
         # animation.play_animations()
 
+        # Obstacles
         pygame.draw.rect(map, BLACK, player.body)
         for room in obstacle.list:
             for obs in room:
                 pygame.draw.rect(map, RED, obs)
+
+        # Player (Cat)
+        pygame.draw.rect(map, BLACK, player.body)
+        map.blit(player.img, (player.body.x, player.body.y))
+
+        # Owner
+        pygame.draw.rect(map, YELLOW, owner.body)
 
         camera.update()
 
@@ -184,34 +278,44 @@ class main_game_class:
             clock.tick(60)
 
             if left:
-                player.body.x -= player.movespeed
+                player.body.x -= player.speed
+                player.right = False
                 # Check if colliding with obstacle
                 for room in obstacle.list:
                     for obs in room:
                         if player.body.colliderect(obs):
-                            player.body.x += player.movespeed
+                            player.body.x += player.speed
             if right:
-                player.body.x += player.movespeed
+                player.body.x += player.speed
+                player.right = True
                 # Check if colliding with obstacle
                 for room in obstacle.list:
                     for obs in room:
                         if player.body.colliderect(obs):
-                            player.body.x -= player.movespeed
+                            player.body.x -= player.speed
             if up:
-                player.body.y -= player.movespeed
+                player.body.y -= player.speed
                 # Check if colliding with obstacle
                 for room in obstacle.list:
                     for obs in room:
                         if player.body.colliderect(obs):
-                            player.body.y += player.movespeed
+                            player.body.y += player.speed
             if down:
-                player.body.y += player.movespeed
+                player.body.y += player.speed
                 # Check if colliding with obstacle
                 for room in obstacle.list:
                     for obs in room:
                         if player.body.colliderect(obs):
-                            player.body.y -= player.movespeed
+                            player.body.y -= player.speed
+                            
+            if left or right or up or down:
+                player.moving = True
+            else:
+                player.moving = False
 
+            owner.move_toward_cat()
+
+            player.update_visual()
 
             click = False
             for event in pygame.event.get():
