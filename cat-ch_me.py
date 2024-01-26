@@ -42,7 +42,7 @@ BG_GRAY_WALL = pygame.image.load(os.path.join("assets", "bg_gray_wall.jpg"))
 
 #############
 
-class general_use:
+class general_use_class:
     background_color = WHITE
 
     def display_background(self):
@@ -60,9 +60,9 @@ class general_use:
         y = HEIGHT//2 - item.get_height()//2
         return y
 
-general_use = general_use()
+general_use = general_use_class()
 
-class camera:
+class camera_class:
     bg = pygame.transform.scale(BG_GRAY_WALL, (map.get_width(), map.get_height()))
     # bg = pygame.Surface((map.get_width(), map.get_height()))
     # bg.fill(GRAY)
@@ -84,23 +84,22 @@ class camera:
             self.camera_rect.bottom = map.get_height()
         screen.blit(map, (0,0), self.camera_rect)
 
-camera = camera()
+camera = camera_class()
 
 class player:
-    body = pygame.Rect(WIDTH//2, HEIGHT//2, 40, 40)
+    body = pygame.Rect(WIDTH//2, HEIGHT//2, 64, 64)
     movespeed = 10
 
-class obstacle:
-    list = []
-    obs_wall1 = pygame.Rect(500, 500, 100, 50)
+class obstacle_class:
 
-    def all_obstacle(self):
-        temp = dir(self)
+    wall1 = pygame.Rect(500, 500, 100, 15)
+    wall2 = pygame.Rect(500, 500, 15, 100)
+    list = [wall1, wall2]
 
 
-obstacle = obstacle()
+obstacle = obstacle_class()
 
-class animation:
+class animation_class:
     list = []
 
     def note_hit_animation(self, note):
@@ -120,9 +119,9 @@ class animation:
         for item in to_be_removed:
             self.list.remove(item)
 
-animation = animation()
+animation = animation_class()
 
-class main_game:
+class main_game_class:
 
     def draw_window(self):
         camera.bg_blit()
@@ -130,7 +129,8 @@ class main_game:
         # animation.play_animations()
 
         pygame.draw.rect(map, BLACK, player.body)
-        pygame.draw.rect(map, RED, obstacle.wall1)
+        for obs in obstacle.list:
+            pygame.draw.rect(map, RED, obs)
 
         camera.update()
 
@@ -149,23 +149,27 @@ class main_game:
             if left:
                 player.body.x -= player.movespeed
                 # Check if colliding with obstacle
-                if player.body.colliderect(obstacle.wall1):
-                    player.body.x += player.movespeed
+                for obs in obstacle.list:
+                    if player.body.colliderect(obs):
+                        player.body.x += player.movespeed
             if right:
                 player.body.x += player.movespeed
                 # Check if colliding with obstacle
-                if player.body.colliderect(obstacle.wall1):
-                    player.body.x -= player.movespeed
+                for obs in obstacle.list:
+                    if player.body.colliderect(obs):
+                        player.body.x -= player.movespeed
             if up:
                 player.body.y -= player.movespeed
                 # Check if colliding with obstacle
-                if player.body.colliderect(obstacle.wall1):
-                    player.body.y += player.movespeed
+                for obs in obstacle.list:
+                    if player.body.colliderect(obs):
+                        player.body.y += player.movespeed
             if down:
                 player.body.y += player.movespeed
                 # Check if colliding with obstacle
-                if player.body.colliderect(obstacle.wall1):
-                    player.body.y -= player.movespeed
+                for obs in obstacle.list:
+                    if player.body.colliderect(obs):
+                        player.body.y -= player.movespeed
 
 
             click = False
@@ -199,7 +203,7 @@ class main_game:
                         down = False
             self.draw_window()
 
-main = main_game()
+main = main_game_class()
 
 main.main_loop()
 
