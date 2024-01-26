@@ -261,31 +261,43 @@ class grid_class:
     def initialGrid(self):
         blockSize = 20 #Set the size of the grid block
         id = 1
+        pos_x = 0
+        pos_y = 0
+        y_list = []
         for x in range(0, map.get_width(), blockSize):
             for y in range(0, map.get_height(), blockSize):
                 rect = pygame.Rect(x, y, blockSize, blockSize)
                 # Check if obstacle
                 for room in obstacle.list:
                     if rect.collidelist(room) == -1:
-                        rect_info = {"id" : id, "rect" : rect, "obstacle" : False}
+                        rect_info = {"id" : id, "pos_x" : pos_x, "pos_y" : pos_y,"rect" : rect, "obstacle" : False}
+                        # rect_info = 0
                     else:
-                        rect_info = {"id" : id, "rect" : rect, "obstacle" : True}
+                        rect_info = {"id" : id, "pos_x" : pos_x, "pos_y" : pos_y,"rect" : rect, "obstacle" : True}
+                        # rect_info = 1
                         break
 
-                self.grid.append(rect_info)
+                y_list.append(rect_info)
                 id += 1
+                pos_y += 1
+            pos_x += 1
+            pos_y = 0
+            self.grid.append(y_list)
+            y_list = []
 
     def get_cat_position(self):
-        for case in self.grid:
-            if case["rect"].collidepoint(player.body.center):
-                self.cat_position = case
-                break
+        for row in self.grid:
+            for case in row:
+                if case["rect"].collidepoint(player.body.center):
+                    self.cat_position = case
+                    return
 
     def get_owner_position(self):
-        for case in self.grid:
-            if case["rect"].collidepoint(owner.body.center):
-                self.owner_position = case
-                break
+        for row in self.grid:
+            for case in row:
+                if case["rect"].collidepoint(owner.body.center):
+                    self.owner_position = case
+                    return
 
 grid = grid_class()
 
@@ -407,8 +419,7 @@ class main_game_class:
 
 main = main_game_class()
 
-
-# print(grid.cat_position["rect"])
+# print(grid.grid)
 
 main.main_loop()
 
