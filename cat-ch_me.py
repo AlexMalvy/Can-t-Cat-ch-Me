@@ -12,7 +12,7 @@ from pygame.locals import *
 pygame.init()
 pygame.display.set_caption("Can't cat-ch me !")
 screen = pygame.display.set_mode((0, 0), FULLSCREEN)
-map = pygame.Surface((2000, 2000))
+map = pygame.Surface((2500, 1500))
 
 WIDTH, HEIGHT = screen.get_width(), screen.get_height()
 
@@ -178,10 +178,46 @@ owner = owner_class()
 
 class obstacle_class:
 
-    wall1 = pygame.Rect(500, 500, 100, 15)
-    wall2 = pygame.Rect(500, 500, 15, 100)
-    list = [wall1, wall2]
+    #Full Map
+    topWall = pygame.Rect(0, 0, map.get_width(), 15)
+    bottomWall = pygame.Rect(0, map.get_height() - 115, map.get_width(), 15)
+    leftWall = pygame.Rect(0, 0, 15, map.get_height()-100)
+    rightWall = pygame.Rect(map.get_width() - 15, 0, 15, map.get_height()-100)
+    #Bedroom
+    bedRoomBottomLeftHalf = pygame.Rect(0, 500, 500, 15)
+    bedRoomBottomRightHalf = pygame.Rect(650, 500, 350, 15)
+    bedRoomRightTopHalf= pygame.Rect(1000, 0, 15, 200)
+    bedRoomRightBottomHalf = pygame.Rect(1000, 315, 15, 200)
+    bed = pygame.Rect(200, 10, 120, 180)
+    #Bathroom
+    bathRoomBottomLeftHalf = pygame.Rect(0, 1000, 400, 15)
+    bathRoomBottomRightHalf = pygame.Rect(550, 1000, 300, 15)
+    bathRoomRightTopHalf= pygame.Rect(850, 500, 15, 200)
+    bathRoomRightBottomHalf = pygame.Rect(850, 815, 15, 200)
+    toilets = pygame.Rect(15, 700, 75, 75)
+    shower = pygame.Rect(750, 515, 100, 100)
+    #Hallway
+    halwayRightTopHalf = pygame.Rect(850, 1015, 15, 200)
+    halwayRightBottomHalf = pygame.Rect(850, 1300, 15, 100)
+    shoeCase = pygame.Rect(15, map.get_height() - 165, 100, 50)
+    #Living Room
+    table = pygame.Rect(1500, 500, 250, 250)
+    #Office
+    officeLeftBottomHalf = pygame.Rect(map.get_width()-800, map.get_height()-600 , 400, 15)
+    officeRightBottomHalf = pygame.Rect(map.get_width()-250, map.get_height()-600 , 250, 15)
+    officeTopLeftHalf= pygame.Rect(map.get_width()-800, map.get_height()-600 , 15, 200)
+    officeTopRightHalf = pygame.Rect(map.get_width()-800, map.get_height()-300 , 15, 200)
+    #Kitchen
+    kitchenLeftBottomHalf = pygame.Rect(map.get_width()-800, map.get_height()-600 , 400, 15)
+    kitchenLeftRightHalf = pygame.Rect(map.get_width()-250, map.get_height()-600 , 250, 15)
 
+    office= [officeLeftBottomHalf, officeRightBottomHalf, officeTopLeftHalf, officeTopRightHalf]
+    livingRoom = [table]
+    halway= [halwayRightTopHalf, halwayRightBottomHalf, shoeCase]
+    bathRoom= [toilets, shower, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
+    bedRoom = [bed, bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf, bedRoomRightBottomHalf]
+    fullMap = [topWall, bottomWall, leftWall, rightWall]
+    list = [fullMap, bedRoom, bathRoom, livingRoom, halway, office]
 
 obstacle = obstacle_class()
 
@@ -215,8 +251,10 @@ class main_game_class:
         # animation.play_animations()
 
         # Obstacles
-        for obs in obstacle.list:
-            pygame.draw.rect(map, RED, obs)
+        pygame.draw.rect(map, BLACK, player.body)
+        for room in obstacle.list:
+            for obs in room:
+                pygame.draw.rect(map, RED, obs)
 
         # Player (Cat)
         pygame.draw.rect(map, BLACK, player.body)
@@ -243,29 +281,33 @@ class main_game_class:
                 player.body.x -= player.speed
                 player.right = False
                 # Check if colliding with obstacle
-                for obs in obstacle.list:
-                    if player.body.colliderect(obs):
-                        player.body.x += player.speed
+                for room in obstacle.list:
+                    for obs in room:
+                        if player.body.colliderect(obs):
+                            player.body.x += player.speed
             if right:
                 player.body.x += player.speed
                 player.right = True
                 # Check if colliding with obstacle
-                for obs in obstacle.list:
-                    if player.body.colliderect(obs):
-                        player.body.x -= player.speed
+                for room in obstacle.list:
+                    for obs in room:
+                        if player.body.colliderect(obs):
+                            player.body.x -= player.speed
             if up:
                 player.body.y -= player.speed
                 # Check if colliding with obstacle
-                for obs in obstacle.list:
-                    if player.body.colliderect(obs):
-                        player.body.y += player.speed
+                for room in obstacle.list:
+                    for obs in room:
+                        if player.body.colliderect(obs):
+                            player.body.y += player.speed
             if down:
                 player.body.y += player.speed
                 # Check if colliding with obstacle
-                for obs in obstacle.list:
-                    if player.body.colliderect(obs):
-                        player.body.y -= player.speed
-
+                for room in obstacle.list:
+                    for obs in room:
+                        if player.body.colliderect(obs):
+                            player.body.y -= player.speed
+                            
             if left or right or up or down:
                 player.moving = True
             else:
