@@ -247,7 +247,7 @@ class obstacle_class:
     officeTopRightHalf = pygame.Rect(map.get_width()-800, map.get_height()-300 , 15, 200)
     desk = pygame.Rect(map.get_width()-600, map.get_height()-250, 350, 150)
     #Kitchen
-    kitchenBottom = pygame.Rect(map.get_width()-800, map.get_height()-1000 , 800, 15)
+    kitchenBottom = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-1000 , 800, 15)
     table = pygame.Rect(map.get_width()-900, map.get_height()-1300, 300, 150)
     oven= pygame.Rect(map.get_width()-165, 15, 150, 150)
     fridge= pygame.Rect(map.get_width()-450, 15, 150, 100)
