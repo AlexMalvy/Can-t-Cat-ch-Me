@@ -11,6 +11,9 @@ import maze_solver
 import threading
 import video
 from copy import deepcopy
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
+from pathfinding.core.diagonal_movement import DiagonalMovement
 from pygame.locals import *
 
 pygame.init()
@@ -142,6 +145,20 @@ class game_variable_class:
     all_owners = ["owner M", "owner F"]
     selected_owner = "owner M"
 
+def redefineMaze(oldMaze):
+    oldMazeLen = len(oldMaze)
+    row = []
+    newMaze = []
+    for x in oldMaze:
+        x.reverse()
+    for i in range(0, (len(oldMaze[0]))):
+        for x in oldMaze:
+            row.append(x[-1])
+            del(x[-1])
+            if(len(row) == oldMazeLen):
+                newMaze.append(row)
+                row = []
+    return newMaze
 class player_class:
     # body = pygame.Rect(WIDTH//2, HEIGHT//2, 64, 64)
     body = pygame.Rect(WIDTH//2, HEIGHT//2, 192, 192)
@@ -256,6 +273,7 @@ class player_class:
             self.img = pygame.transform.flip(self.img, 1, 0)
 
 
+
 class owner_class:
     
     range = 20
@@ -286,31 +304,32 @@ class owner_class:
         self.body.bottom = self.body_hitbox.bottom  
 
     def move_toward_cat(self):
+        # print(self.path)
         if self.target != None:
-            if math.dist([self.target["rect"].centerx, self.target["rect"].centery], [self.body_hitbox.centerx, self.body_hitbox.centery]) > self.range:
+            if math.dist([self.target[0], self.target[1]], [self.body.centerx, self.body.centery]) > self.range:
                 self.moving = True
                 # Speed modifier
-                if self.body_hitbox.centerx != self.target["rect"].centerx and self.body_hitbox.centery != self.target["rect"].centery:
-                    self.speed = (self.max_speed + self.bonus_speed)/3 * 2
+                if self.body.centerx != self.target[0] and self.body.centery != self.target[1]:
+                    self.speed = self.max_speed/3 * 2
                 else:
                     self.speed = self.max_speed + self.bonus_speed
 
                 # Chase Target
-                if self.target["rect"].centerx > self.body_hitbox.centerx:
-                        self.body_hitbox.x += self.speed
+                if self.target[0] > self.body.centerx:
+                        self.body.x += self.speed
                         self.right = True
-                if self.target["rect"].centerx < self.body_hitbox.centerx:
-                        self.body_hitbox.x -= self.speed
+                if self.target[0] < self.body.centerx:
+                        self.body.x -= self.speed
                         self.right = False
                         
-                if self.target["rect"].centery > self.body_hitbox.centery:
-                        self.body_hitbox.y += self.speed
-                if self.target["rect"].centery < self.body_hitbox.centery:
-                        self.body_hitbox.y -= self.speed
+                if self.target[1] > self.body.centery:
+                        self.body.y += self.speed
+                if self.target[1] < self.body.centery:
+                        self.body.y -= self.speed
             else:
                 self.path.pop(0)
                 if len(self.path) > 0:
-                    self.target = grid.grid[self.path[0][0]][self.path[0][1]]
+                    self.target = self.path[0]
                 else:
                     self.target = None
         else:
@@ -502,15 +521,14 @@ class grid_class:
     cat_position = None
     owner_position = None
 
-    solver_timer = 0
-    solver_cd = 1
+    
 
     def update(self):
         self.get_cat_position()
         self.get_owner_position()
 
-        if time.time() - self.solver_timer > self.solver_cd:
-            self.solver()
+        # if time.time() - self.solver_timer > self.solver_cd:
+        #     pathfinder.create_path()
 
     def initialGrid(self):
         blockSize = 60 #Set the size of the grid block
@@ -519,16 +537,16 @@ class grid_class:
         pos_y = 0
         y_list = []
         maze_y_list = []
-        for x in range(0, map.get_width(), blockSize):
-            for y in range(0, map.get_height(), blockSize):
+        for x in range(0, map.get_width() , blockSize):
+            for y in range(0, map.get_height() , blockSize):
                 rect = pygame.Rect(x, y, blockSize, blockSize)
                 # Check if obstacle
                 for room in obstacle.list:
                     if rect.collidelist(room) == -1:
-                        rect_info = {"id" : id, "pos_x" : pos_x, "pos_y" : pos_y,"rect" : rect, "obstacle" : 0}
+                        rect_info = {"id" : id, "pos_x" : pos_x, "pos_y" : pos_y,"rect" : rect, "obstacle" : 1}
                         # rect_info = 0
                     else:
-                        rect_info = {"id" : id, "pos_x" : pos_x, "pos_y" : pos_y,"rect" : rect, "obstacle" : 1}
+                        rect_info = {"id" : id, "pos_x" : pos_x, "pos_y" : pos_y,"rect" : rect, "obstacle" : 0}
                         # rect_info = 1
                         break
 
@@ -557,37 +575,72 @@ class grid_class:
                     self.owner_position = case
                     return
                 
-    def solver(self):
-        start = (self.owner_position["pos_x"], self.owner_position["pos_y"])
-        end = (self.cat_position["pos_x"], self.cat_position["pos_y"])
+    
+                
+    # def solver(self):
+    #     start = (self.owner_position["pos_x"], self.owner_position["pos_y"])
+    #     end = (self.cat_position["pos_x"], self.cat_position["pos_y"])
 
+    #     path = []
+
+    #     # def astar_thread():
+    #     # nonlocal path
+    #     try:
+    #         path = maze_solver.astar(self.maze, start, end)
+    #     except:
+    #         pass
+
+    #     # thread = threading.Thread(target=astar_thread)
+    #     # if thread.is_alive():
+    #     #      self.stop_thread.clear()
+    #     # else:
+    #     #     thread.start()
+    #     #     thread.join(timeout=0.2)  # Attendez jusqu'à 3 secondes maximum
+
+    #     if path:
+    #         owner.path = path
+    #         owner.target = grid.grid[path[0][0]][path[0][1]]
+    #     else:
+    #         owner.path = []
+    #         owner.target = None
+
+    #     self.solver_timer = time.time()
+       
+class Pathfinder: 
+    def __init__(self, matrix):
+        
+        # setup
+        self.matrix =  matrix
+        self.grid = Grid(matrix=matrix)
+        self.cat_pos = 0
+        self.owner_pos = 0
+        self.path = []
+    
+
+    def create_path(self):
+
+        #start
+        start_x, start_y = self.owner_pos['pos_x'], self.owner_pos['pos_y']
+        start = self.grid.node(start_x, start_y)
+        #end
+        end_x, end_y = self.cat_pos['pos_x'], self.cat_pos['pos_y']
+        end = self.grid.node(end_x, end_y)
+        #path
+        finder = AStarFinder(diagonal_movement= DiagonalMovement.always)
+        self.path, i = finder.find_path(start, end, self.grid)
+        self.grid.cleanup()
         path = []
+        for point in self.path:
+            x = point.x * 60 + 30
+            y = point.y * 60 + 30
+            path.append([x, y])
 
-        def astar_thread():
-            nonlocal path
-            try:
-                # Utilisez les coordonnées de la hitbox pour le démarrage et la fin
-                path = maze_solver.astar(self.maze, start, end)
-            except:
-                pass
-
-        thread = threading.Thread(target=astar_thread)
-        if thread.is_alive():
-            self.stop_thread.clear()
-        else:
-            thread.start()
-            thread.join(timeout=0.2)  # Attendez jusqu'à 3 secondes maximum
-
-        if path:
-            owner.path = path
-            owner.target = grid.grid[path[0][0]][path[0][1]]
-        else:
-            owner.path = []
-            owner.target = None
-
-        self.solver_timer = time.time()
-
-
+  
+        owner.path = path
+        owner.target = path[0]
+        
+grid = grid_class()
+grid.maze = redefineMaze(grid.maze)
 
 class main_game_class:
     def draw_window(self):
@@ -595,7 +648,7 @@ class main_game_class:
 
         for row in grid.grid:
             for case in row:
-                if case["obstacle"]:
+                if not case["obstacle"]:
                     pygame.draw.rect(map, RED, case["rect"], 1)
                 else:
                     pygame.draw.rect(map, WHITE, case["rect"], 1)
@@ -672,7 +725,9 @@ class main_game_class:
         interact = False
         miaou = False
         click = False
-        grid.solver()
+        pathfinder = Pathfinder(grid.maze)
+        
+        # grid.solver()
         while run:
             clock.tick(60)
             owner.remove_rage(1)
@@ -743,6 +798,9 @@ class main_game_class:
             player.update_visual()
 
             grid.update()
+            pathfinder.owner_pos, pathfinder.cat_pos = grid.owner_position, grid.cat_position
+            if random.randrange(0, 10) == 1:
+                pathfinder.create_path()
 
             if click:
                 owner.rage += 10
@@ -1087,7 +1145,8 @@ cat_selection = cat_selection_class()
 owner_selection = owner_selection_class()
 menu = menu_class()
 
-# print(grid.grid)
+# for x in grid.maze:
+#     print(x)
 
 # main.main_loop()
 menu.main_loop()
