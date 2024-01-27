@@ -51,6 +51,11 @@ BG_GRAY_WALL = pygame.image.load(os.path.join("assets", "bg_gray_wall.jpg"))
 ORANGE_CAT_IDLE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-idle.png"], 1)
 ORANGE_CAT_RUNNING = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-running.png"], 1)
 
+## Buttons
+
+BACK_BUTTON = pygame.Rect(10, HEIGHT - 60, 100, 50)
+NEXT_BUTTON = pygame.Rect(WIDTH - 110, HEIGHT - 60, 100, 50)
+
 #############
 
 class general_use_class:
@@ -98,6 +103,12 @@ class game_variable_class:
     score = 0
     multiplier = 1
     life = 3
+
+    all_cats = ["cat 1", "cat 2", "cat 3"]
+    selected_cat = "cat 1"
+    
+    all_owners = ["owner M", "owner F"]
+    selected_owner = "owner M"
 
 class player_class:
     body = pygame.Rect(WIDTH//2, HEIGHT//2, 64, 64)
@@ -304,8 +315,6 @@ class interactible_class():
                 if time.time() - item["disabled_timer"] > item["disabled_duration"]:
                     item["disabled_timer"] = None
                     item["is_enabled"] = True
-
-
 
 
 class animation_class:
@@ -582,6 +591,301 @@ class main_game_class:
                         down = False
             self.draw_window()
 
+class owner_selection_class:
+    OWNER_1_CARD = pygame.Rect(WIDTH//2 - 500, HEIGHT//2 - 100, 400, 400)
+    OWNER_2_CARD = pygame.Rect(WIDTH//2 + 100, HEIGHT//2 - 100, 400, 400)
+
+    button_list = [BACK_BUTTON, OWNER_1_CARD, OWNER_2_CARD, NEXT_BUTTON]
+    index = 1
+
+    def draw_window(self):
+        screen.fill(WHITE)
+        
+        title_text = font.render("Title", 1, BLACK)
+        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
+
+        if self.index == 0:
+            pygame.draw.rect(screen, RED, pygame.Rect(BACK_BUTTON.x - 1, BACK_BUTTON.y - 1, BACK_BUTTON.width + 2, BACK_BUTTON.height + 2))
+        pygame.draw.rect(screen, GRAY, BACK_BUTTON)
+        back_button_text = font.render("Back", 1, BLACK)
+        screen.blit(back_button_text, (BACK_BUTTON.centerx - back_button_text.get_width()//2, BACK_BUTTON.centery - back_button_text.get_height()//2))
+
+        if self.index == 1:
+            pygame.draw.rect(screen, RED, pygame.Rect(self.OWNER_1_CARD.x - 1, self.OWNER_1_CARD.y - 1, self.OWNER_1_CARD.width + 2, self.OWNER_1_CARD.height + 2))
+        pygame.draw.rect(screen, GRAY, self.OWNER_1_CARD)
+        owner_1_text = font.render("Owner 1", 1, BLACK)
+        screen.blit(owner_1_text, (self.OWNER_1_CARD.centerx - owner_1_text.get_width()//2, self.OWNER_1_CARD.centery - owner_1_text.get_height()//2))
+
+        if self.index == 2:
+            pygame.draw.rect(screen, RED, pygame.Rect(self.OWNER_2_CARD.x - 1, self.OWNER_2_CARD.y - 1, self.OWNER_2_CARD.width + 2, self.OWNER_2_CARD.height + 2))
+        pygame.draw.rect(screen, GRAY, self.OWNER_2_CARD)
+        owner_2_text = font.render("Owner 2", 1, BLACK)
+        screen.blit(owner_2_text, (self.OWNER_2_CARD.centerx - owner_2_text.get_width()//2, self.OWNER_2_CARD.centery - owner_2_text.get_height()//2))
+
+        if self.index == 3:
+            pygame.draw.rect(screen, RED, pygame.Rect(NEXT_BUTTON.x - 1, NEXT_BUTTON.y - 1, NEXT_BUTTON.width + 2, NEXT_BUTTON.height + 2))
+        pygame.draw.rect(screen, GRAY, NEXT_BUTTON)
+        next_text = font.render("Next", 1, BLACK)
+        screen.blit(next_text, (NEXT_BUTTON.centerx - next_text.get_width()//2, NEXT_BUTTON.centery - next_text.get_height()//2))
+
+        pygame.display.update()
+
+    def main_loop(self):
+        run = True
+        left = False
+        right = False
+        up = False
+        down = False
+        interact = False
+        click = False
+        while run:
+            clock.tick(60)
+
+            if (up or left) and self.index > 0:
+                self.index -= 1
+            if (down or right) and self.index < len(self.button_list) - 1:
+                self.index += 1
+
+            if click or interact:
+                if self.index == 0:
+                    run = False
+                if self.index == 1:
+                    game_variable.selected_cat = game_variable.all_cats[0]
+                if self.index == 2:
+                    game_variable.selected_cat = game_variable.all_cats[1]
+                if self.index == 3:
+                    main.main_loop()
+                    self.index = 1
+
+            left = False
+            right = False
+            up = False
+            down = False
+            interact = False
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    general_use.close_the_game()
+                if event.type == MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        run = False
+                        general_use.close_the_game()
+                    if event.key == K_SPACE:
+                        click = True
+                    if event.key == K_e:
+                        interact = True
+                    if event.key == K_q:
+                        left = True
+                    if event.key == K_d:
+                        right = True
+                    if event.key == K_z:
+                        up = True
+                    if event.key == K_s:
+                        down = True
+            self.draw_window()
+
+class cat_selection_class:
+    CAT_1_CARD = pygame.Rect(WIDTH//2 - 700, HEIGHT//2 - 100, 400, 400)
+    CAT_2_CARD = pygame.Rect(WIDTH//2 - 200, HEIGHT//2 - 100, 400, 400)
+    CAT_3_CARD = pygame.Rect(WIDTH//2 + 300 , HEIGHT//2 - 100, 400, 400)
+
+    button_list = [BACK_BUTTON, CAT_1_CARD, CAT_2_CARD, CAT_3_CARD, NEXT_BUTTON]
+    index = 1
+
+    def draw_window(self):
+        screen.fill(WHITE)
+        
+        title_text = font.render("Title", 1, BLACK)
+        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
+
+        if self.index == 0:
+            pygame.draw.rect(screen, RED, pygame.Rect(BACK_BUTTON.x - 1, BACK_BUTTON.y - 1, BACK_BUTTON.width + 2, BACK_BUTTON.height + 2))
+        pygame.draw.rect(screen, GRAY, BACK_BUTTON)
+        back_button_text = font.render("Back", 1, BLACK)
+        screen.blit(back_button_text, (BACK_BUTTON.centerx - back_button_text.get_width()//2, BACK_BUTTON.centery - back_button_text.get_height()//2))
+
+        if self.index == 1:
+            pygame.draw.rect(screen, RED, pygame.Rect(self.CAT_1_CARD.x - 1, self.CAT_1_CARD.y - 1, self.CAT_1_CARD.width + 2, self.CAT_1_CARD.height + 2))
+        pygame.draw.rect(screen, GRAY, self.CAT_1_CARD)
+        cat_1_text = font.render("Cat 1", 1, BLACK)
+        screen.blit(cat_1_text, (self.CAT_1_CARD.centerx - cat_1_text.get_width()//2, self.CAT_1_CARD.centery - cat_1_text.get_height()//2))
+
+        if self.index == 2:
+            pygame.draw.rect(screen, RED, pygame.Rect(self.CAT_2_CARD.x - 1, self.CAT_2_CARD.y - 1, self.CAT_2_CARD.width + 2, self.CAT_2_CARD.height + 2))
+        pygame.draw.rect(screen, GRAY, self.CAT_2_CARD)
+        cat_2_text = font.render("Cat 2", 1, BLACK)
+        screen.blit(cat_2_text, (self.CAT_2_CARD.centerx - cat_2_text.get_width()//2, self.CAT_2_CARD.centery - cat_2_text.get_height()//2))
+
+        if self.index == 3:
+            pygame.draw.rect(screen, RED, pygame.Rect(self.CAT_3_CARD.x - 1, self.CAT_3_CARD.y - 1, self.CAT_3_CARD.width + 2, self.CAT_3_CARD.height + 2))
+        pygame.draw.rect(screen, GRAY, self.CAT_3_CARD)
+        cat_3_text = font.render("Cat 3", 1, BLACK)
+        screen.blit(cat_3_text, (self.CAT_3_CARD.centerx - cat_3_text.get_width()//2, self.CAT_3_CARD.centery - cat_3_text.get_height()//2))
+
+
+        if self.index == 4:
+            pygame.draw.rect(screen, RED, pygame.Rect(NEXT_BUTTON.x - 1, NEXT_BUTTON.y - 1, NEXT_BUTTON.width + 2, NEXT_BUTTON.height + 2))
+        pygame.draw.rect(screen, GRAY, NEXT_BUTTON)
+        next_text = font.render("Next", 1, BLACK)
+        screen.blit(next_text, (NEXT_BUTTON.centerx - next_text.get_width()//2, NEXT_BUTTON.centery - next_text.get_height()//2))
+
+        pygame.display.update()
+
+    def main_loop(self):
+        run = True
+        left = False
+        right = False
+        up = False
+        down = False
+        interact = False
+        click = False
+        while run:
+            clock.tick(60)
+
+            if (up or left) and self.index > 0:
+                self.index -= 1
+            if (down or right) and self.index < len(self.button_list) - 1:
+                self.index += 1
+
+            if click or interact:
+                if self.index == 0:
+                    run = False
+                if self.index == 1:
+                    game_variable.selected_cat = game_variable.all_cats[0]
+                if self.index == 2:
+                    game_variable.selected_cat = game_variable.all_cats[1]
+                if self.index == 3:
+                    game_variable.selected_cat = game_variable.all_cats[2]
+                if self.index == 4:
+                    owner_selection.main_loop()
+                    self.index = 1
+
+
+            left = False
+            right = False
+            up = False
+            down = False
+            interact = False
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    general_use.close_the_game()
+                if event.type == MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        run = False
+                        general_use.close_the_game()
+                    if event.key == K_SPACE:
+                        click = True
+                    if event.key == K_e:
+                        interact = True
+                    if event.key == K_q:
+                        left = True
+                    if event.key == K_d:
+                        right = True
+                    if event.key == K_z:
+                        up = True
+                    if event.key == K_s:
+                        down = True
+            self.draw_window()
+
+class menu_class:
+    PLAY_BUTTON = pygame.Rect(WIDTH//2 - 100, HEIGHT//2, 200, 50)
+    CREDITS_BUTTON = pygame.Rect(WIDTH//2 - 100, HEIGHT//2 + 80, 200, 50)
+    SETTINGS_BUTTON = pygame.Rect(WIDTH - 60, HEIGHT - 60, 50, 50)
+
+    button_list = [PLAY_BUTTON, CREDITS_BUTTON, SETTINGS_BUTTON]
+    index = 0
+
+    def draw_window(self):
+        screen.fill(WHITE)
+        
+        title_text = font.render("Title", 1, BLACK)
+        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
+
+        if self.index == 0:
+            pygame.draw.rect(screen, RED, pygame.Rect(self.PLAY_BUTTON.x - 1, self.PLAY_BUTTON.y - 1, self.PLAY_BUTTON.width + 2, self.PLAY_BUTTON.height + 2))
+        pygame.draw.rect(screen, GRAY, self.PLAY_BUTTON)
+        play_text = font.render("Play", 1, BLACK)
+        screen.blit(play_text, (self.PLAY_BUTTON.centerx - play_text.get_width()//2, self.PLAY_BUTTON.centery - play_text.get_height()//2))
+
+        if self.index == 1:
+            pygame.draw.rect(screen, RED, pygame.Rect(self.CREDITS_BUTTON.x - 1, self.CREDITS_BUTTON.y - 1, self.CREDITS_BUTTON.width + 2, self.CREDITS_BUTTON.height + 2))
+        pygame.draw.rect(screen, GRAY, self.CREDITS_BUTTON)
+        credits_text = font.render("Credits", 1, BLACK)
+        screen.blit(credits_text, (self.CREDITS_BUTTON.centerx - credits_text.get_width()//2, self.CREDITS_BUTTON.centery - credits_text.get_height()//2))
+
+        if self.index == 2:
+            pygame.draw.rect(screen, RED, pygame.Rect(self.SETTINGS_BUTTON.x - 1, self.SETTINGS_BUTTON.y - 1, self.SETTINGS_BUTTON.width + 2, self.SETTINGS_BUTTON.height + 2))
+        pygame.draw.rect(screen, GRAY, self.SETTINGS_BUTTON)
+        settings_text = font.render("Settings", 1, BLACK)
+        screen.blit(settings_text, (self.SETTINGS_BUTTON.centerx - settings_text.get_width()//2, self.SETTINGS_BUTTON.centery - settings_text.get_height()//2))
+
+        pygame.display.update()
+
+    def main_loop(self):
+        run = True
+        left = False
+        right = False
+        up = False
+        down = False
+        interact = False
+        click = False
+        while run:
+            clock.tick(60)
+
+            if (up or left) and self.index > 0:
+                self.index -= 1
+            if (down or right) and self.index < len(self.button_list) - 1:
+                self.index += 1
+
+            if click or interact:
+                if self.index == 0:
+                    cat_selection.main_loop()
+                if self.index == 1:
+                    print("credits")
+                if self.index == 2:
+                    print("settings")
+
+            left = False
+            right = False
+            up = False
+            down = False
+            interact = False
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    general_use.close_the_game()
+                if event.type == MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        run = False
+                        general_use.close_the_game()
+                    if event.key == K_SPACE:
+                        click = True
+                    if event.key == K_e:
+                        interact = True
+                    if event.key == K_q:
+                        left = True
+                    if event.key == K_d:
+                        right = True
+                    if event.key == K_z:
+                        up = True
+                    if event.key == K_s:
+                        down = True
+            self.draw_window()
+
+
 general_use = general_use_class()
 game_variable = game_variable_class()
 camera = camera_class()
@@ -592,8 +896,12 @@ grid = grid_class()
 interactible = interactible_class()
 animation = animation_class()
 main = main_game_class()
+cat_selection = cat_selection_class()
+owner_selection = owner_selection_class()
+menu = menu_class()
 
 # print(grid.grid)
 
-main.main_loop()
+# main.main_loop()
+menu.main_loop()
 
