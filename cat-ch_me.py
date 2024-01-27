@@ -60,6 +60,7 @@ BG_GRAY_WALL = pygame.image.load(os.path.join("assets", "bg_gray_wall.jpg"))
 ## Orange
 # Normal
 ORANGE_CAT_IDLE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-idle.png"], 3)
+ORANGE_CAT_WALKING = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-walking.png"], 3)
 ORANGE_CAT_RUNNING = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-running.png"], 3)
 ORANGE_CAT_SCRATCHING = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-scratching.png"], 3)
 
@@ -68,6 +69,7 @@ ORANGE_CAT_LOAF_BREAD = img_load.image_loader.load(["assets", "orange-cat", "ora
 
 # Potte
 ORANGE_CAT_IDLE_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-idle-potte.png"], 3)
+ORANGE_CAT_WALKING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-walking-potte.png"], 3)
 ORANGE_CAT_RUNNING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-running-potte.png"], 3)
 ORANGE_CAT_SCRATCHING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-scratching-potte.png"], 3)
 
@@ -76,6 +78,7 @@ ORANGE_CAT_LOAF_BREAD_POTTE = img_load.image_loader.load(["assets", "orange-cat"
 
 # Nyan
 ORANGE_CAT_IDLE_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-idle-nyan.png"], 3)
+ORANGE_CAT_WALKING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-walking-nyan.png"], 3)
 ORANGE_CAT_RUNNING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-running-nyan.png"], 3)
 ORANGE_CAT_SCRATCHING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-scratching-nyan.png"], 3)
 
@@ -163,7 +166,7 @@ def redefineMaze(oldMaze):
 
 class player_class:
     # body = pygame.Rect(SQUARE*7, SQUARE*6, 64, 64)
-    body = pygame.Rect(SQUARE*14, SQUARE*8, 100, 100)
+    body = pygame.Rect(SQUARE*18, SQUARE*18, 192, 192)
 
     speed = 8
     hp = 3
@@ -186,7 +189,7 @@ class player_class:
     frame = 0
     frame_timer = pygame.time.get_ticks()
     frame_cd = 120
-    state = [ORANGE_CAT_IDLE, ORANGE_CAT_RUNNING]
+    state = [ORANGE_CAT_IDLE, ORANGE_CAT_WALKING]
     current_state = 0
 
     idle_bis = False
@@ -195,11 +198,11 @@ class player_class:
     idle_bis_list = [ORANGE_CAT_LICKING]
 
     potte = False
-    state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_RUNNING_POTTE]
+    state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE]
     state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
 
-    nyan = True
-    state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_RUNNING_NYAN]
+    nyan = False
+    state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN]
     state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
 
     img = pygame.Surface((body.width, body.height))
@@ -671,8 +674,8 @@ class main_game_class:
                 pygame.draw.rect(map, YELLOW, item["rect"])
 
         # Player (Cat)
-        pygame.draw.rect(map, BLACK, player.body)
-        pygame.draw.rect(map, GREEN, player.hitbox)
+        # pygame.draw.rect(map, BLACK, player.body)
+        # pygame.draw.rect(map, GREEN, player.hitbox)
         map.blit(player.img, (player.body.x, player.body.y))
 
         # Grid Position
