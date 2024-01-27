@@ -1,39 +1,16 @@
 from moviepy.editor import *
-from moviepy.video.fx.resize import resize
 import pygame
 from pygame.locals import QUIT, KEYDOWN
 
 # opencv-python has to be installed !!!!!
 
-# Class providing a videoclip from video file and audio file, resized to fit a related screen
-class VideoClip:
-    def __init__(self, screen, videoFileName, audioFileName):
-        # Files importation
-        rawClip = VideoFileClip(videoFileName)
-
-        # Get duration
-        self.duration = rawClip.duration
-
-        # Get FPS
-        self.fps = rawClip.fps
-
-        # Get frame func
-        self.get_frame = rawClip.get_frame
-
-        # Get new dimensions values
-        self.resizedWidth = screen.get_width()
-        self.resizedHeight = screen.get_height()
-
-        # Import the clip and resize to the window size
-        self.clip = resize(rawClip, width=self.resizedWidth, height=self.resizedHeight)
-
-""""""""""""""""""""""""""""""
 # Class for playing video in a defined screen
 class PlayedVideo:
     def __init__(self, surface, videoFileName, audioFileName):
 
         # Get clip
-        video = VideoClip(surface, videoFileName, audioFileName)
+        video = VideoFileClip(videoFileName)
+        #video.audio = AudioClip(audioFileName)
 
         # Current time
         clock = pygame.time.Clock()
@@ -52,11 +29,17 @@ class PlayedVideo:
             # Get the current frame
             frame = video.get_frame(pygame.time.get_ticks() / 1000)
 
+            # Calculate the new size to maintain the aspect ratio
+            new_width = screen.get_width()
+            new_height = int(video.h * (screen.get_width() / video.w))
+
             # Resize the frame to fit the screen
-            resized_frame = pygame.transform.scale(pygame.surfarray.make_surface(frame.swapaxes(0, 1)), (video.resizedWidth, video.resizedHeight))
+            resized_frame = pygame.transform.scale(pygame.surfarray.make_surface(frame.swapaxes(0, 1)), (new_width, new_height))
 
             # Blit the resized frame onto the Pygame window
             surface.blit(resized_frame, (0, 0))
+
+
             pygame.display.flip()
 
             # Control the frame rate
