@@ -9,6 +9,7 @@ import math
 import img_load
 import maze_solver
 import threading
+from copy import deepcopy
 from pygame.locals import *
 
 pygame.init()
@@ -209,22 +210,24 @@ class obstacle_class:
     bedRoomBottomRightHalf = pygame.Rect(SQUARE*11, SQUARE*8, SQUARE*6, SQUARE)
     bedRoomRightTopHalf= pygame.Rect(SQUARE*16, 0, SQUARE, SQUARE*2)
     bedRoomRightBottomHalf = pygame.Rect(SQUARE*16, SQUARE*6, SQUARE, SQUARE*2)
-    bed = pygame.Rect(SQUARE*4, SQUARE*2, SQUARE*2, SQUARE*3)
+    bed = pygame.Rect(SQUARE*5, SQUARE*2, SQUARE*4, SQUARE*4)
+    nightStandBedroom = pygame.Rect(SQUARE*10, SQUARE*2, SQUARE, SQUARE)
     #Bathroom
     bathRoomBottomLeftHalf = pygame.Rect(0, SQUARE*16, SQUARE*7, SQUARE)
     bathRoomBottomRightHalf = pygame.Rect(SQUARE*9, SQUARE*16, SQUARE*6, SQUARE)
     bathRoomRightTopHalf= pygame.Rect(SQUARE*14, SQUARE*8, SQUARE, SQUARE*3)
     bathRoomRightBottomHalf = pygame.Rect(SQUARE*14, SQUARE*13, SQUARE, SQUARE*3)
-    toilets = pygame.Rect(SQUARE, SQUARE*11, SQUARE*2, SQUARE*2)
-    shower = pygame.Rect(SQUARE*12, SQUARE*8, SQUARE*2, SQUARE*2)
+    toiletsBathroom = pygame.Rect(SQUARE, SQUARE*11, SQUARE, SQUARE)
+    showerBathroom = pygame.Rect(SQUARE*12, SQUARE*8, SQUARE*2, SQUARE*2)
     #Hallway
     halwayRightTopHalf = pygame.Rect(SQUARE*14, SQUARE*16, SQUARE, SQUARE*3)
     halwayRightBottomHalf = pygame.Rect(SQUARE*14, SQUARE*21, SQUARE, SQUARE*2)
-    shoeCase = pygame.Rect(SQUARE, map.get_height() - SQUARE*3, SQUARE*2, SQUARE)
+    shoeCaseHallway = pygame.Rect(SQUARE, map.get_height() - SQUARE*3, SQUARE*6, SQUARE)
     #Living Room
-    couch = pygame.Rect(SQUARE*20, SQUARE*14, SQUARE*4, SQUARE*2)
-    tv = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*3, SQUARE*2, SQUARE*2)
-    library = pygame.Rect(map.get_width()-SQUARE*2, SQUARE*9, SQUARE*2, SQUARE*5)
+    couchLivingRoom = pygame.Rect(SQUARE*20, SQUARE*14, SQUARE*4, SQUARE*2)
+    tvLivingRoom = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*3, SQUARE*2, SQUARE*2)
+    libraryLivingRoom = pygame.Rect(map.get_width()-SQUARE*2, SQUARE*11, SQUARE*2, SQUARE*3)
+    plantLivingRoom = pygame.Rect(SQUARE*15, map.get_height()-SQUARE*3, SQUARE, SQUARE)
     #Office
     officeTopLeftHalf = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*10 , SQUARE*6, SQUARE)
     officeTopRightHalf = pygame.Rect(map.get_width()-SQUARE*3, map.get_height()-SQUARE*10 , SQUARE*3, SQUARE)
@@ -233,10 +236,13 @@ class obstacle_class:
     desk = pygame.Rect(map.get_width()-SQUARE*10, map.get_height()-SQUARE*4, SQUARE*6, SQUARE*2)
     #Kitchen
     kitchenBottom = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*16 , SQUARE*13, SQUARE)
-    table = pygame.Rect(map.get_width()-SQUARE*15, map.get_height()-SQUARE*22, SQUARE*5, SQUARE*2)
+    table = pygame.Rect(map.get_width()-SQUARE*15, map.get_height()-SQUARE*22, SQUARE*5, SQUARE*3)
+    chairKitchen1 = pygame.Rect(map.get_width()-SQUARE*16, map.get_height()-SQUARE*21, SQUARE, SQUARE)
+    chairKitchen2 = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*19, SQUARE, SQUARE)
+    chairKitchen3 = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*23, SQUARE, SQUARE)
     oven= pygame.Rect(map.get_width()-SQUARE*3, SQUARE, SQUARE*2, SQUARE*2)
     fridge= pygame.Rect(map.get_width()-SQUARE*8, SQUARE, SQUARE*2, SQUARE*2)
-    trashcan= pygame.Rect(map.get_width()-SQUARE*5, SQUARE, SQUARE, SQUARE)
+    trashCanKitchen= pygame.Rect(map.get_width()-SQUARE*5, SQUARE, SQUARE, SQUARE)
     #testMap
     testMapHalfTopHalf = pygame.Rect(20*SQUARE, 0, SQUARE, SQUARE*4)
     testMapHalfBottomHalf = pygame.Rect(20*SQUARE, 6*SQUARE, SQUARE, SQUARE*3)
@@ -250,12 +256,12 @@ class obstacle_class:
     testMapHalfBottomHalf4second = pygame.Rect(10*SQUARE, 21*SQUARE, SQUARE, SQUARE*4)
     # map = pygame.Surface((2520(SQUARE42), 1500(SQUARE25)))
   
-    kitchen= [kitchenBottom,table, oven, fridge, trashcan]
+    kitchen= [kitchenBottom,table, oven, fridge, trashCanKitchen, chairKitchen1, chairKitchen2]
     office= [officeLeftBottomHalf, officeLeftTopHalf, officeTopLeftHalf, officeTopRightHalf, desk]
-    livingRoom = [couch, tv, library]
-    hallWay= [halwayRightTopHalf, halwayRightBottomHalf, shoeCase]
-    bathRoom= [toilets, shower, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
-    bedRoom = [bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf,bed, bedRoomRightBottomHalf]
+    livingRoom = [couchLivingRoom, tvLivingRoom, libraryLivingRoom]
+    hallWay= [halwayRightTopHalf, halwayRightBottomHalf, shoeCaseHallway, plantLivingRoom]
+    bathRoom= [toiletsBathroom, showerBathroom, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
+    bedRoom = [bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf,bed, bedRoomRightBottomHalf, nightStandBedroom]
     fullMap = [topWall, bottomWall, leftWall, rightWall]
     testMap= [testMapHalfTopHalf, testMapHalfBottomHalf2, testMapHalfBottomHalf, testMapHalfBottomHalf3, testMapHalfBottomHalf4, testMapHalfTopHalfsecond, testMapHalfBottomHalf2second, testMapHalfBottomHalfsecond, testMapHalfBottomHalf3second, testMapHalfBottomHalf4second]
     list = [fullMap, bedRoom, bathRoom, hallWay, livingRoom, office, kitchen]
@@ -263,12 +269,46 @@ class obstacle_class:
 
 class interactible_class():
     type_chair = {"score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5}
-    type_couch = {"score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5}
+    type_couch = {"score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10}
+    type_trashCan = {"score" : 400, "multiplier" : 0.4, "duration" : 4, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15}
+    type_library = {"score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20}
+    type_plug = {"score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10}
+    type_plugOffice = {"score" : 1000, "multiplier" : 0.5, "duration" : 7, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 30}
+    type_shoeCase = {"score" : 500, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15}
+    type_toilets = {"score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5}
+    type_shower = {"score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10}
+    type_plant = {"score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20}
+    type_Rug = {"score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3}
 
-    chair = {"rect" : pygame.Rect(1500, 400, 60, 60), "type" : "chair", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5}
-    chair2 = {"rect" : pygame.Rect(1600, 400, 60, 60), "type" : "chair", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5}
 
-    list = [chair, chair2]
+    # chairKitchen1 = pygame.Rect(map.get_width()-SQUARE*16, map.get_height()-SQUARE*21, SQUARE, SQUARE)
+    # chairKitchen2 = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*19, SQUARE, SQUARE)
+    # chairKitchen3 = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*23, SQUARE, SQUARE)
+    #  couch = pygame.Rect(SQUARE*20, SQUARE*14, SQUARE*4, SQUARE*2)
+    # tv = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*3, SQUARE*2, SQUARE*2)
+    # library = pygame.Rect(map.get_width()-SQUARE*2, SQUARE*9, SQUARE*2, SQUARE*5)
+    # trashCanKitchen= pygame.Rect(map.get_width()-SQUARE*5, SQUARE, SQUARE, SQUARE)
+    # toilets = pygame.Rect(SQUARE, SQUARE*11, SQUARE, SQUARE)
+    # shower = pygame.Rect(SQUARE*12, SQUARE*8, SQUARE*2, SQUARE*2)
+    chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*17, map.get_height()-SQUARE*22, SQUARE*2, SQUARE*3), "type" : type_chair.copy()}
+    chair2 = {"rect" : pygame.Rect(map.get_width()-SQUARE*14, map.get_height()-SQUARE*19, SQUARE*3, SQUARE*2), "type" : type_chair.copy()}
+    couch =  {"rect" : pygame.Rect(map.get_width()-SQUARE*23, map.get_height()-SQUARE*12, SQUARE*6, SQUARE*3), "type" : type_couch.copy()}
+    trash =  {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE, SQUARE*3, SQUARE*2), "type" : type_trashCan.copy()}
+    tvPlug =  {"rect" : pygame.Rect(map.get_width()-SQUARE*19, map.get_height()-SQUARE*3, SQUARE*3, SQUARE*1), "type" : type_plug.copy()}
+    library =  {"rect" : pygame.Rect(map.get_width()-SQUARE*3, SQUARE*10, SQUARE*2, SQUARE*5), "type" : type_library.copy()}
+    shoeCase =  {"rect" : pygame.Rect(SQUARE, map.get_height()-SQUARE*4, SQUARE*7, SQUARE*2), "type" : type_shoeCase.copy()}
+    shower = {"rect" : pygame.Rect(SQUARE*11, SQUARE*8, SQUARE*3, SQUARE*3), "type" : type_shower.copy()}
+    toilets= {"rect" : pygame.Rect(SQUARE, SQUARE*10, SQUARE*2, SQUARE*3), "type" : type_toilets.copy()}
+    plant= {"rect" : pygame.Rect(SQUARE*15, map.get_height()-SQUARE*4, SQUARE*2, SQUARE*2), "type" : type_plant.copy()}
+    officePlug = {"rect" : pygame.Rect(map.get_width()-SQUARE*4, map.get_height()-SQUARE*4, SQUARE*3, SQUARE*2), "type" : type_plugOffice.copy()}
+    rug= {"rect" : pygame.Rect(map.get_width()-SQUARE*22, map.get_height()-SQUARE*8, SQUARE*4, SQUARE*4), "type" : type_Rug.copy()}
+    nightStandPlug = {"rect" : pygame.Rect(SQUARE*10, SQUARE, SQUARE*5, SQUARE*2), "type" : type_plug.copy()}
+
+
+    
+
+
+    list = [chair, chair2, couch, tvPlug, library, shoeCase, shower, officePlug, rug, nightStandPlug]
 
     isOn = None
     interact_timer = None
@@ -282,7 +322,7 @@ class interactible_class():
 
     def isOnInteractible(self):
         for item in self.list:
-            if item["rect"].collidepoint(player.body.center) and item["is_enabled"]:
+            if item["rect"].collidepoint(player.body.center) and item["type"]["is_enabled"]:
                 self.isOn = item
                 return
         
@@ -292,12 +332,12 @@ class interactible_class():
         if self.isOn:
             if self.interact_timer == None:
                 self.interact_timer = time.time()
-            elif time.time() - self.interact_timer > self.isOn["duration"]:
-                game_variable.score += int(self.isOn["score"] * game_variable.multiplier)
-                game_variable.multiplier += self.isOn["multiplier"]
+            elif time.time() - self.interact_timer > self.isOn["type"]["duration"]:
+                game_variable.score += int(self.isOn["type"]["score"] * game_variable.multiplier)
+                game_variable.multiplier += self.isOn["type"]["multiplier"]
                 index = self.list.index(self.isOn)
-                self.list[index]["is_enabled"] = False
-                self.list[index]["disabled_timer"] = time.time()
+                self.list[index]["type"]["is_enabled"] = False
+                self.list[index]["type"]["disabled_timer"] = time.time()
                 self.interact_timer = None
 
             self.update_progress_bar()
@@ -307,14 +347,14 @@ class interactible_class():
 
     def update_progress_bar(self):
         if self.interact_timer:
-            self.PROGRESS_BAR_FILL.width = (self.PROGRESS_BAR.width - 2) * (1 - (time.time() - self.interact_timer) / self.isOn["duration"])
+            self.PROGRESS_BAR_FILL.width = (self.PROGRESS_BAR.width - 2) * (1 - (time.time() - self.interact_timer) / self.isOn["type"]["duration"])
 
     def restore_interactibles(self):
         for item in self.list:
-            if not item["is_enabled"]:
-                if time.time() - item["disabled_timer"] > item["disabled_duration"]:
-                    item["disabled_timer"] = None
-                    item["is_enabled"] = True
+            if not item["type"]["is_enabled"]:
+                if time.time() - item["type"]["disabled_timer"] > item["type"]["disabled_duration"]:
+                    item["type"]["disabled_timer"] = None
+                    item["type"]["is_enabled"] = True
 
 
 class animation_class:
@@ -458,7 +498,7 @@ class main_game_class:
 
         # Interactibles
         for item in interactible.list:
-            if item["is_enabled"]:
+            if item["type"]["is_enabled"]:
                 pygame.draw.rect(map, YELLOW, item["rect"])
 
         # Player (Cat)
