@@ -8,12 +8,14 @@ import pickle
 import math
 import img_load
 import maze_solver
+import threading
 from pygame.locals import *
 
 pygame.init()
 pygame.display.set_caption("Can't cat-ch me !")
 screen = pygame.display.set_mode((0, 0), FULLSCREEN)
-map = pygame.Surface((2500, 1500))
+map = pygame.Surface((2520, 1500))
+SQUARE = 60
 
 WIDTH, HEIGHT = screen.get_width(), screen.get_height()
 
@@ -97,7 +99,7 @@ camera = camera_class()
 
 class player_class:
     body = pygame.Rect(WIDTH//2, HEIGHT//2, 64, 64)
-    speed = 10
+    speed = 12
 
     moving = False
     right = False
@@ -213,27 +215,27 @@ owner = owner_class()
 class obstacle_class:
 
     #Full Map
-    topWall = pygame.Rect(0, 0, map.get_width(), 15)
-    bottomWall = pygame.Rect(0, map.get_height() - 115, map.get_width(), 15)
-    leftWall = pygame.Rect(0, 0, 15, map.get_height()-100)
-    rightWall = pygame.Rect(map.get_width() - 15, 0, 15, map.get_height()-100)
+    topWall = pygame.Rect(0, 0, map.get_width(), SQUARE)
+    bottomWall = pygame.Rect(0, map.get_height() - SQUARE*2, map.get_width(), SQUARE)
+    leftWall = pygame.Rect(0, 0, 60, map.get_height()-SQUARE*2)
+    rightWall = pygame.Rect(map.get_width() - SQUARE, 0, SQUARE, map.get_height()-SQUARE*2)
     #Bedroom
-    bedRoomBottomLeftHalf = pygame.Rect(0, 500, 500, 15)
-    bedRoomBottomRightHalf = pygame.Rect(650, 500, 350, 15)
-    bedRoomRightTopHalf= pygame.Rect(1000, 0, 15, 200)
-    bedRoomRightBottomHalf = pygame.Rect(1000, 315, 15, 200)
-    bed = pygame.Rect(200, 10, 120, 180)
+    bedRoomBottomLeftHalf = pygame.Rect(SQUARE, SQUARE*8, SQUARE*6, SQUARE)
+    bedRoomBottomRightHalf = pygame.Rect(SQUARE*11, SQUARE*8, SQUARE*6, SQUARE)
+    bedRoomRightTopHalf= pygame.Rect(SQUARE*16, 0, SQUARE, SQUARE*2)
+    bedRoomRightBottomHalf = pygame.Rect(SQUARE*16, SQUARE*6, SQUARE, SQUARE*2)
+    bed = pygame.Rect(SQUARE*4, SQUARE*2, SQUARE*2, SQUARE*3)
     #Bathroom
-    bathRoomBottomLeftHalf = pygame.Rect(0, 1000, 400, 15)
-    bathRoomBottomRightHalf = pygame.Rect(550, 1000, 300, 15)
-    bathRoomRightTopHalf= pygame.Rect(850, 500, 15, 200)
-    bathRoomRightBottomHalf = pygame.Rect(850, 815, 15, 200)
-    toilets = pygame.Rect(15, 700, 75, 75)
-    shower = pygame.Rect(750, 515, 100, 100)
+    bathRoomBottomLeftHalf = pygame.Rect(0, SQUARE*16, SQUARE*7, SQUARE)
+    bathRoomBottomRightHalf = pygame.Rect(SQUARE*9, SQUARE*16, SQUARE*6, SQUARE)
+    bathRoomRightTopHalf= pygame.Rect(SQUARE*14, SQUARE*8, SQUARE, SQUARE*3)
+    bathRoomRightBottomHalf = pygame.Rect(SQUARE*14, SQUARE*13, SQUARE, SQUARE*3)
+    toilets = pygame.Rect(SQUARE, SQUARE*11, SQUARE*2, SQUARE*2)
+    shower = pygame.Rect(SQUARE*12, SQUARE*8, SQUARE*2, SQUARE*2)
     #Hallway
-    halwayRightTopHalf = pygame.Rect(850, 1015, 15, 200)
-    halwayRightBottomHalf = pygame.Rect(850, 1300, 15, 100)
-    shoeCase = pygame.Rect(15, map.get_height() - 165, 100, 50)
+    halwayRightTopHalf = pygame.Rect(SQUARE*14, SQUARE*16, SQUARE, SQUARE*3)
+    halwayRightBottomHalf = pygame.Rect(SQUARE*14, SQUARE*21, SQUARE, SQUARE*2)
+    shoeCase = pygame.Rect(SQUARE, map.get_height() - SQUARE*3, SQUARE*2, SQUARE)
     #Living Room
     couch = pygame.Rect(1200, 850, 250, 100)
     tv = pygame.Rect(1275, map.get_height()-190, 150, 75)
@@ -250,15 +252,28 @@ class obstacle_class:
     oven= pygame.Rect(map.get_width()-165, 15, 150, 150)
     fridge= pygame.Rect(map.get_width()-450, 15, 150, 100)
     trashcan= pygame.Rect(map.get_width()-250, 15, 50, 50)
+    #testMap
+    testMapHalfTopHalf = pygame.Rect(20*SQUARE, 0, SQUARE, SQUARE*4)
+    testMapHalfBottomHalf = pygame.Rect(20*SQUARE, 6*SQUARE, SQUARE, SQUARE*3)
+    testMapHalfBottomHalf2 = pygame.Rect(20*SQUARE, 10*SQUARE, SQUARE, SQUARE*4)
+    testMapHalfBottomHalf3 = pygame.Rect(20*SQUARE, 15*SQUARE, SQUARE, SQUARE*4)
+    testMapHalfBottomHalf4 = pygame.Rect(20*SQUARE, 21*SQUARE, SQUARE, SQUARE*4)
+    testMapHalfTopHalfsecond = pygame.Rect(20*SQUARE, 0, SQUARE, SQUARE*4)
+    testMapHalfBottomHalfsecond = pygame.Rect(10*SQUARE, 6*SQUARE, SQUARE, SQUARE*3)
+    testMapHalfBottomHalf2second = pygame.Rect(10*SQUARE, 10*SQUARE, SQUARE, SQUARE*4)
+    testMapHalfBottomHalf3second = pygame.Rect(10*SQUARE, 15*SQUARE, SQUARE, SQUARE*4)
+    testMapHalfBottomHalf4second = pygame.Rect(10*SQUARE, 21*SQUARE, SQUARE, SQUARE*4)
+    # map = pygame.Surface((2520(SQUARE42), 1500(SQUARE25)))
   
     kitchen= [kitchenBottom,table, oven, fridge, trashcan]
     office= [officeLeftBottomHalf, officeRightBottomHalf, officeTopLeftHalf, officeTopRightHalf, desk]
     livingRoom = [couch, tv, library]
-    halway= [halwayRightTopHalf, halwayRightBottomHalf, shoeCase]
+    hallWay= [halwayRightTopHalf, halwayRightBottomHalf, shoeCase]
     bathRoom= [toilets, shower, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
-    bedRoom = [bed, bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf, bedRoomRightBottomHalf]
+    bedRoom = [bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf,bed, bedRoomRightBottomHalf]
     fullMap = [topWall, bottomWall, leftWall, rightWall]
-    list = [fullMap, bedRoom, bathRoom, livingRoom, halway, office, kitchen]
+    testMap= [testMapHalfTopHalf, testMapHalfBottomHalf2, testMapHalfBottomHalf, testMapHalfBottomHalf3, testMapHalfBottomHalf4, testMapHalfTopHalfsecond, testMapHalfBottomHalf2second, testMapHalfBottomHalfsecond, testMapHalfBottomHalf3second, testMapHalfBottomHalf4second]
+    list = [fullMap, bedRoom, bathRoom, hallWay]
 
 obstacle = obstacle_class()
 
@@ -310,8 +325,8 @@ class grid_class:
         self.get_cat_position()
         self.get_owner_position()
 
-        # if time.time() - self.solver_timer > self.solver_cd:
-        #     self.solver()
+        if time.time() - self.solver_timer > self.solver_cd:
+            self.solver()
 
     def initialGrid(self):
         blockSize = 60 #Set the size of the grid block
@@ -359,19 +374,35 @@ class grid_class:
                     return
                 
     def solver(self):
-
         start = (self.owner_position["pos_x"], self.owner_position["pos_y"])
         end = (self.cat_position["pos_x"], self.cat_position["pos_y"])
-        # print(start)
-        # print(end)
 
-        path = maze_solver.astar(self.maze, start, end)
-        # print(path)
-        owner.path = path
-        owner.target = grid.grid[path[0][0]][path[0][1]]
+        path = []
+
+        def astar_thread():
+            nonlocal path
+            try:
+                path = maze_solver.astar(self.maze, start, end)
+            except:
+                pass
+
+        thread = threading.Thread(target=astar_thread)
+        if thread.is_alive():
+             self.stop_thread.clear()
+        else:
+            thread.start()
+            thread.join(timeout=0.2)  # Attendez jusqu'à 3 secondes maximum
+
+        if path:
+            owner.path = path
+            owner.target = grid.grid[path[0][0]][path[0][1]]
+        else:
+            owner.path = []
+            owner.target = None
 
         self.solver_timer = time.time()
-        # print(owner.target)
+
+       
 
 
 grid = grid_class()
@@ -380,12 +411,12 @@ class main_game_class:
     def draw_window(self):
         camera.bg_blit()
 
-        # for row in grid.grid:
-        #     for case in row:
-        #         if case["obstacle"]:
-        #             pygame.draw.rect(map, RED, case["rect"], 1)
-        #         else:
-        #             pygame.draw.rect(map, WHITE, case["rect"], 1)
+        for row in grid.grid:
+            for case in row:
+                if case["obstacle"]:
+                    pygame.draw.rect(map, RED, case["rect"], 1)
+                else:
+                    pygame.draw.rect(map, WHITE, case["rect"], 1)
 
         # animation.play_animations()
 
@@ -404,13 +435,13 @@ class main_game_class:
         map.blit(player.img, (player.body.x, player.body.y))
 
         # Grid Position
-        # pygame.draw.rect(map, GREEN, grid.cat_position["rect"])
+        pygame.draw.rect(map, GREEN, grid.cat_position["rect"])
 
         # Owner
         pygame.draw.rect(map, YELLOW, owner.body)
         
         # Grid position
-        # pygame.draw.rect(map, RED, grid.owner_position["rect"])
+        pygame.draw.rect(map, RED, grid.owner_position["rect"])
 
         camera.update()
 
@@ -505,5 +536,4 @@ main = main_game_class()
 # print(grid.grid)
 
 main.main_loop()
-
 
