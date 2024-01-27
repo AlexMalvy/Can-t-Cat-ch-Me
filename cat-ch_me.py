@@ -9,6 +9,7 @@ import math
 import img_load
 import maze_solver
 import threading
+import video
 from copy import deepcopy
 from pygame.locals import *
 
@@ -42,6 +43,10 @@ DARK_GRAY = (100, 100, 100)
 GREEN = (0, 128, 0)
 BROWN = (83, 61, 50)
 ALMOST_BLACK = (1, 1, 1)
+
+### Vod
+
+# VOD = 
 
 ### Background
 
@@ -890,7 +895,8 @@ class menu_class:
                 if self.index == 0:
                     cat_selection.main_loop()
                 if self.index == 1:
-                    print("credits")
+                    # print("credits")
+                    video.PlayedVideo(screen, "assets/videos/test.mp4", "")
                 if self.index == 2:
                     print("settings")
 
