@@ -163,13 +163,23 @@ class player_class:
 class owner_class:
     body = pygame.Rect(1100, 400, 50, 100)
     range = 20
+    rage = 0
+    max_rage = 100
     
     max_speed = 5
     speed = 5
+    max_bonus_speed = 15
+    bonus_speed = 0
     moving = True
 
     target = None
     path = []
+
+    def update(self):
+        self.move_toward_cat()
+
+        self.update_move_speed()
+
 
     def move_toward_cat(self):
         if self.target != None:
@@ -177,9 +187,9 @@ class owner_class:
                 self.moving = True
                 # Speed modifier
                 if self.body.centerx != self.target["rect"].centerx and self.body.centery != self.target["rect"].centery:
-                    self.speed = self.max_speed/3 * 2
+                    self.speed = (self.max_speed + self.bonus_speed)/3 * 2
                 else:
-                    self.speed = self.max_speed
+                    self.speed = self.max_speed + self.bonus_speed
 
                 # Chase Target
                 if self.target["rect"].centerx > self.body.centerx:
@@ -201,6 +211,13 @@ class owner_class:
                     self.target = None
         else:
             self.moving = False
+
+    def add_rage(self, amount):
+        self.rage += amount
+
+    def update_move_speed(self):
+        self.bonus_speed = self.max_bonus_speed * (self.rage / self.max_rage)
+
 
 
 class obstacle_class:
@@ -344,6 +361,7 @@ class interactible_class():
                 self.list[index]["type"]["is_enabled"] = False
                 self.list[index]["type"]["disabled_timer"] = time.time()
                 self.interact_timer = None
+                # owner.add_rage()
 
             self.update_progress_bar()
 
@@ -478,9 +496,6 @@ class grid_class:
 
         self.solver_timer = time.time()
 
-       
-
-
 
 class main_game_class:
     def draw_window(self):
@@ -529,6 +544,18 @@ class main_game_class:
 
         life_text = font.render(f"Lives : {game_variable.life}", 1, WHITE)
         screen.blit(life_text, (10, 90))
+
+        selected_cat_text = font.render(f"Cat : {game_variable.selected_cat}", 1, WHITE)
+        screen.blit(selected_cat_text, (10, 130))
+
+        selected_owner_text = font.render(f"Owner : {game_variable.selected_owner}", 1, WHITE)
+        screen.blit(selected_owner_text, (10, 170))
+
+        owner_rage_text = font.render(f"Rage : {owner.rage}", 1, WHITE)
+        screen.blit(owner_rage_text, (WIDTH - owner_rage_text.get_width() - 10, 10))
+
+        owner_speed_text = font.render(f"Speed : {owner.speed}", 1, WHITE)
+        screen.blit(owner_speed_text, (WIDTH - owner_speed_text.get_width() - 10, 50))
 
         if interactible.isOn:
             press_interact_text = font.render(f"Press E", 1, WHITE)
@@ -595,11 +622,14 @@ class main_game_class:
             elif interactible.interact_timer != None:
                 interactible.cancel_interact()
 
-            owner.move_toward_cat()
+            owner.update()
 
             player.update_visual()
 
             grid.update()
+
+            if click:
+                owner.rage += 10
 
             click = False
             for event in pygame.event.get():
@@ -640,7 +670,7 @@ class owner_selection_class:
     OWNER_1_CARD = pygame.Rect(WIDTH//2 - 500, HEIGHT//2 - 100, 400, 400)
     OWNER_2_CARD = pygame.Rect(WIDTH//2 + 100, HEIGHT//2 - 100, 400, 400)
 
-    button_list = [BACK_BUTTON, OWNER_1_CARD, OWNER_2_CARD, NEXT_BUTTON]
+    button_list = [BACK_BUTTON, OWNER_1_CARD, OWNER_2_CARD]
     index = 1
 
     def draw_window(self):
@@ -667,12 +697,6 @@ class owner_selection_class:
         owner_2_text = font.render("Owner 2", 1, BLACK)
         screen.blit(owner_2_text, (self.OWNER_2_CARD.centerx - owner_2_text.get_width()//2, self.OWNER_2_CARD.centery - owner_2_text.get_height()//2))
 
-        if self.index == 3:
-            pygame.draw.rect(screen, RED, pygame.Rect(NEXT_BUTTON.x - 1, NEXT_BUTTON.y - 1, NEXT_BUTTON.width + 2, NEXT_BUTTON.height + 2))
-        pygame.draw.rect(screen, GRAY, NEXT_BUTTON)
-        next_text = font.render("Next", 1, BLACK)
-        screen.blit(next_text, (NEXT_BUTTON.centerx - next_text.get_width()//2, NEXT_BUTTON.centery - next_text.get_height()//2))
-
         pygame.display.update()
 
     def main_loop(self):
@@ -695,12 +719,11 @@ class owner_selection_class:
                 if self.index == 0:
                     run = False
                 if self.index == 1:
-                    game_variable.selected_cat = game_variable.all_cats[0]
-                if self.index == 2:
-                    game_variable.selected_cat = game_variable.all_cats[1]
-                if self.index == 3:
+                    game_variable.selected_owner = game_variable.all_owners[0]
                     main.main_loop()
-                    self.index = 1
+                if self.index == 2:
+                    game_variable.selected_owner = game_variable.all_owners[1]
+                    main.main_loop()
 
             left = False
             right = False
@@ -738,7 +761,7 @@ class cat_selection_class:
     CAT_2_CARD = pygame.Rect(WIDTH//2 - 200, HEIGHT//2 - 100, 400, 400)
     CAT_3_CARD = pygame.Rect(WIDTH//2 + 300 , HEIGHT//2 - 100, 400, 400)
 
-    button_list = [BACK_BUTTON, CAT_1_CARD, CAT_2_CARD, CAT_3_CARD, NEXT_BUTTON]
+    button_list = [BACK_BUTTON, CAT_1_CARD, CAT_2_CARD, CAT_3_CARD]
     index = 1
 
     def draw_window(self):
@@ -772,12 +795,6 @@ class cat_selection_class:
         screen.blit(cat_3_text, (self.CAT_3_CARD.centerx - cat_3_text.get_width()//2, self.CAT_3_CARD.centery - cat_3_text.get_height()//2))
 
 
-        if self.index == 4:
-            pygame.draw.rect(screen, RED, pygame.Rect(NEXT_BUTTON.x - 1, NEXT_BUTTON.y - 1, NEXT_BUTTON.width + 2, NEXT_BUTTON.height + 2))
-        pygame.draw.rect(screen, GRAY, NEXT_BUTTON)
-        next_text = font.render("Next", 1, BLACK)
-        screen.blit(next_text, (NEXT_BUTTON.centerx - next_text.get_width()//2, NEXT_BUTTON.centery - next_text.get_height()//2))
-
         pygame.display.update()
 
     def main_loop(self):
@@ -801,13 +818,13 @@ class cat_selection_class:
                     run = False
                 if self.index == 1:
                     game_variable.selected_cat = game_variable.all_cats[0]
+                    owner_selection.main_loop()
                 if self.index == 2:
                     game_variable.selected_cat = game_variable.all_cats[1]
+                    owner_selection.main_loop()
                 if self.index == 3:
                     game_variable.selected_cat = game_variable.all_cats[2]
-                if self.index == 4:
                     owner_selection.main_loop()
-                    self.index = 1
 
 
             left = False
