@@ -71,7 +71,7 @@ class PlayedVideo:
                 # Exit cases
                 if event.type == QUIT:
                     playing = False
-                elif event.type == KEYDOWN and event.key == pygame.K_SPACE:
+                elif event.type == KEYDOWN and event.key == pygame.K_SPACE: 
                     playing = False
                 elif event.type == KEYDOWN and event.key == pygame.K_ESCAPE:
                     playing = False
