@@ -1450,7 +1450,6 @@ class settings_class:
         down = False
         interact = False
         click = False
-        # music_class.play_music()
         while run:
             clock.tick(60)
 
