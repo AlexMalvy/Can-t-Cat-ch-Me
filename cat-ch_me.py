@@ -159,6 +159,7 @@ def redefineMaze(oldMaze):
                 newMaze.append(row)
                 row = []
     return newMaze
+
 class player_class:
     # body = pygame.Rect(WIDTH//2, HEIGHT//2, 64, 64)
     body = pygame.Rect(WIDTH//2, HEIGHT//2, 192, 192)
@@ -306,26 +307,23 @@ class owner_class:
     def move_toward_cat(self):
         # print(self.path)
         if self.target != None:
-            if math.dist([self.target[0], self.target[1]], [self.body.centerx, self.body.centery]) > self.range:
+            if math.dist([self.target[0], self.target[1]], [self.body_hitbox.centerx, self.body_hitbox.centery]) > self.range:
                 self.moving = True
                 # Speed modifier
-                if self.body.centerx != self.target[0] and self.body.centery != self.target[1]:
-                    self.speed = self.max_speed/3 * 2
-                else:
-                    self.speed = self.max_speed + self.bonus_speed
+                self.speed = self.max_speed + self.bonus_speed
 
                 # Chase Target
-                if self.target[0] > self.body.centerx:
-                        self.body.x += self.speed
+                if self.target[0] > self.body_hitbox.centerx:
+                        self.body_hitbox.x += self.speed
                         self.right = True
-                if self.target[0] < self.body.centerx:
-                        self.body.x -= self.speed
+                if self.target[0] < self.body_hitbox.centerx:
+                        self.body_hitbox.x -= self.speed
                         self.right = False
                         
-                if self.target[1] > self.body.centery:
-                        self.body.y += self.speed
-                if self.target[1] < self.body.centery:
-                        self.body.y -= self.speed
+                if self.target[1] > self.body_hitbox.centery:
+                        self.body_hitbox.y += self.speed
+                if self.target[1] < self.body_hitbox.centery:
+                        self.body_hitbox.y -= self.speed
             else:
                 self.path.pop(0)
                 if len(self.path) > 0:
@@ -626,7 +624,7 @@ class Pathfinder:
         end_x, end_y = self.cat_pos['pos_x'], self.cat_pos['pos_y']
         end = self.grid.node(end_x, end_y)
         #path
-        finder = AStarFinder(diagonal_movement= DiagonalMovement.always)
+        finder = AStarFinder(diagonal_movement= DiagonalMovement.never)
         self.path, i = finder.find_path(start, end, self.grid)
         self.grid.cleanup()
         path = []
@@ -639,8 +637,6 @@ class Pathfinder:
         owner.path = path
         owner.target = path[0]
         
-grid = grid_class()
-grid.maze = redefineMaze(grid.maze)
 
 class main_game_class:
     def draw_window(self):
@@ -725,7 +721,6 @@ class main_game_class:
         interact = False
         miaou = False
         click = False
-        pathfinder = Pathfinder(grid.maze)
         
         # grid.solver()
         while run:
@@ -1144,6 +1139,8 @@ main = main_game_class()
 cat_selection = cat_selection_class()
 owner_selection = owner_selection_class()
 menu = menu_class()
+grid.maze = redefineMaze(grid.maze)
+pathfinder = Pathfinder(grid.maze)
 
 # for x in grid.maze:
 #     print(x)
