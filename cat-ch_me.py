@@ -895,8 +895,9 @@ class menu_class:
                 if self.index == 0:
                     cat_selection.main_loop()
                 if self.index == 1:
+                    video_path  = os.path.join(r'./assets/videos', 'test.mp4')
                     # print("credits")
-                    video.PlayedVideo(screen, "assets/videos/test.mp4", "")
+                    video.PlayedVideo(clock, screen, video_path)
                 if self.index == 2:
                     print("settings")
 
