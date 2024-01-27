@@ -69,7 +69,6 @@ class general_use_class:
         y = HEIGHT//2 - item.get_height()//2
         return y
 
-general_use = general_use_class()
 
 class camera_class:
     bg = pygame.transform.scale(BG_GRAY_WALL, (map.get_width(), map.get_height()))
@@ -93,7 +92,10 @@ class camera_class:
             self.camera_rect.bottom = map.get_height()
         screen.blit(map, (0,0), self.camera_rect)
 
-camera = camera_class()
+class game_variable_class:
+    score = 0
+    multiplier = 1
+    life = 3
 
 class player_class:
     body = pygame.Rect(WIDTH//2, HEIGHT//2, 64, 64)
@@ -138,7 +140,6 @@ class player_class:
         if self.right == False:
             self.img = pygame.transform.flip(self.img, 1, 0)
 
-player = player_class()
 
 class owner_class:
     body = pygame.Rect(1100, 400, 50, 100)
@@ -182,33 +183,6 @@ class owner_class:
         else:
             self.moving = False
 
-
-    def move_toward_cat_old(self):
-        if math.dist([self.target["rect"].centerx, self.target["rect"].centery], [self.body.centerx, self.body.centery]) > self.range:
-            self.moving = True
-            # Speed modifier
-            if self.body.centerx != self.target["rect"].centerx and self.body.centery != self.target["rect"].centery:
-                self.speed = self.max_speed/3 * 2
-            else:
-                self.speed = self.max_speed
-
-            # Chase Target
-            if self.target["rect"].centerx > self.body.centerx:
-                    self.body.x += self.speed
-                    self.right = True
-            if self.target["rect"].centerx < self.body.centerx:
-                    self.body.x -= self.speed
-                    self.right = False
-                    
-            if self.target["rect"].centery > self.body.centery:
-                    self.body.y += self.speed
-            if self.target["rect"].centery < self.body.centery:
-                    self.body.y -= self.speed
-
-        else:
-            self.moving = False
-
-owner = owner_class()
 
 class obstacle_class:
 
@@ -260,15 +234,64 @@ class obstacle_class:
     fullMap = [topWall, bottomWall, leftWall, rightWall]
     list = [fullMap, bedRoom, bathRoom, livingRoom, halway, office, kitchen]
 
-obstacle = obstacle_class()
 
 class interactible_class():
-    chair = pygame.Rect(1500, 400, 60, 60)
-    chair2 = pygame.Rect(1600, 400, 60, 60)
+    type_chair = {"score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5}
+    type_couch = {"score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5}
+
+    chair = {"rect" : pygame.Rect(1500, 400, 60, 60), "type" : "chair", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5}
+    chair2 = {"rect" : pygame.Rect(1600, 400, 60, 60), "type" : "chair", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5}
 
     list = [chair, chair2]
 
-interactible = interactible_class()
+    isOn = None
+    interact_timer = None
+    
+    PROGRESS_BAR = pygame.Rect(screen.get_width()//2 - 100, screen.get_height()//3 * 2 + 150, 200, 25)
+    PROGRESS_BAR_FILL = pygame.Rect(PROGRESS_BAR.x + 1, PROGRESS_BAR.y + 1, 0, PROGRESS_BAR.height - 2)
+
+    def update(self):
+        self.isOnInteractible()
+        self.restore_interactibles()
+
+    def isOnInteractible(self):
+        for item in self.list:
+            if item["rect"].collidepoint(player.body.center) and item["is_enabled"]:
+                self.isOn = item
+                return
+        
+        self.isOn = None
+
+    def interact(self):
+        if self.isOn:
+            if self.interact_timer == None:
+                self.interact_timer = time.time()
+            elif time.time() - self.interact_timer > self.isOn["duration"]:
+                game_variable.score += int(self.isOn["score"] * game_variable.multiplier)
+                game_variable.multiplier += self.isOn["multiplier"]
+                index = self.list.index(self.isOn)
+                self.list[index]["is_enabled"] = False
+                self.list[index]["disabled_timer"] = time.time()
+                self.interact_timer = None
+
+            self.update_progress_bar()
+
+    def cancel_interact(self):
+        self.interact_timer = None
+
+    def update_progress_bar(self):
+        if self.interact_timer:
+            self.PROGRESS_BAR_FILL.width = (self.PROGRESS_BAR.width - 2) * (1 - (time.time() - self.interact_timer) / self.isOn["duration"])
+
+    def restore_interactibles(self):
+        for item in self.list:
+            if not item["is_enabled"]:
+                if time.time() - item["disabled_timer"] > item["disabled_duration"]:
+                    item["disabled_timer"] = None
+                    item["is_enabled"] = True
+
+
+
 
 class animation_class:
     list = []
@@ -290,7 +313,6 @@ class animation_class:
         for item in to_be_removed:
             self.list.remove(item)
 
-animation = animation_class()
 
 class grid_class:
     def __init__(self):
@@ -359,7 +381,6 @@ class grid_class:
                     return
                 
     def solver(self):
-
         start = (self.owner_position["pos_x"], self.owner_position["pos_y"])
         end = (self.cat_position["pos_x"], self.cat_position["pos_y"])
         # print(start)
@@ -374,7 +395,6 @@ class grid_class:
         # print(owner.target)
 
 
-grid = grid_class()
 
 class main_game_class:
     def draw_window(self):
@@ -397,7 +417,8 @@ class main_game_class:
 
         # Interactibles
         for item in interactible.list:
-            pygame.draw.rect(map, YELLOW, item)
+            if item["is_enabled"]:
+                pygame.draw.rect(map, YELLOW, item["rect"])
 
         # Player (Cat)
         pygame.draw.rect(map, BLACK, player.body)
@@ -414,6 +435,23 @@ class main_game_class:
 
         camera.update()
 
+        score_text = font.render(f"Score : {game_variable.score}", 1, WHITE)
+        screen.blit(score_text, (10, 10))
+
+        multiplier_text = font.render(f"Multiplier : {game_variable.multiplier}", 1, WHITE)
+        screen.blit(multiplier_text, (10, 50))
+
+        life_text = font.render(f"Lives : {game_variable.life}", 1, WHITE)
+        screen.blit(life_text, (10, 90))
+
+        if interactible.isOn:
+            press_interact_text = font.render(f"Press E", 1, WHITE)
+            screen.blit(press_interact_text, (screen.get_width()//2 - press_interact_text.get_width()//2, screen.get_height()//3 * 2))
+
+        if interactible.interact_timer != None:
+            pygame.draw.rect(screen, WHITE, interactible.PROGRESS_BAR)
+            pygame.draw.rect(screen, YELLOW, interactible.PROGRESS_BAR_FILL)
+
         pygame.display.update()
 
     def main_loop(self):
@@ -422,6 +460,7 @@ class main_game_class:
         right = False
         up = False
         down = False
+        interact = False
         click = False
         grid.solver()
         while run:
@@ -463,6 +502,13 @@ class main_game_class:
             else:
                 player.moving = False
 
+            interactible.update()
+
+            if interact:
+                interactible.interact()
+            elif interactible.interact_timer != None:
+                interactible.cancel_interact()
+
             owner.move_toward_cat()
 
             player.update_visual()
@@ -481,6 +527,8 @@ class main_game_class:
                     if event.key == K_ESCAPE:
                         run = False
                         general_use.close_the_game()
+                    if event.key == K_e:
+                        interact = True
                     if event.key == K_q:
                         left = True
                     if event.key == K_d:
@@ -490,6 +538,8 @@ class main_game_class:
                     if event.key == K_s:
                         down = True
                 if event.type == KEYUP:
+                    if event.key == K_e:
+                        interact = False
                     if event.key == K_q:
                         left = False
                     if event.key == K_d:
@@ -500,6 +550,15 @@ class main_game_class:
                         down = False
             self.draw_window()
 
+general_use = general_use_class()
+game_variable = game_variable_class()
+camera = camera_class()
+player = player_class()
+owner = owner_class()
+obstacle = obstacle_class()
+grid = grid_class()
+interactible = interactible_class()
+animation = animation_class()
 main = main_game_class()
 
 # print(grid.grid)
