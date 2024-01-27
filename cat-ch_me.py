@@ -83,6 +83,12 @@ class general_use_class:
         return y
 
 
+class music_class:
+    def play_music():
+        pygame.mixer.music.load(os.path.join('Assets', os.path.join("music", "main_theme.mp3")))
+        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.play()
+
 class camera_class:
     bg = pygame.transform.scale(BG_GRAY_WALL, (map.get_width(), map.get_height()))
     # bg = pygame.Surface((map.get_width(), map.get_height()))
@@ -913,6 +919,7 @@ class menu_class:
         down = False
         interact = False
         click = False
+        # music_class.play_music()
         while run:
             clock.tick(60)
             
