@@ -35,10 +35,13 @@ class PlayedVideo:
 
             # Resize the frame to fit the screen
             resized_frame = pygame.transform.scale(pygame.surfarray.make_surface(frame.swapaxes(0, 1)), (new_width, new_height))
+            
+            # Calculate the position to center the video in the window
+            x_offset = (surface.get_width() - new_width) // 2
+            y_offset = (surface.get_height() - new_height) // 2
 
             # Blit the resized frame onto the Pygame window
-            surface.blit(resized_frame, (0, 0))
-
+            surface.blit(resized_frame, (x_offset, y_offset))
 
             pygame.display.flip()
 
