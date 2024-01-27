@@ -175,6 +175,8 @@ class owner_class:
     target = None
     path = []
 
+    last_rage_deduction_time = time.time()
+
     def update(self):
         self.move_toward_cat()
 
@@ -214,6 +216,15 @@ class owner_class:
 
     def add_rage(self, amount):
         self.rage += amount
+
+    def remove_rage(self, amount):
+        current_time = time.time()
+        time_elapsed = current_time - self.last_rage_deduction_time
+
+        # Deduct 1 from rage every 5 seconds
+        if time_elapsed >= 5:
+            self.rage -= amount
+            self.last_rage_deduction_time = current_time
 
     def update_move_speed(self):
         self.bonus_speed = self.max_bonus_speed * (self.rage / self.max_rage)
@@ -290,28 +301,19 @@ class obstacle_class:
 
 
 class interactible_class():
-    type_chair = {"score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5}
-    type_couch = {"score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10}
-    type_trashCan = {"score" : 400, "multiplier" : 0.4, "duration" : 4, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15}
-    type_library = {"score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20}
-    type_plug = {"score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10}
-    type_plugOffice = {"score" : 1000, "multiplier" : 0.5, "duration" : 7, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 30}
-    type_shoeCase = {"score" : 500, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15}
-    type_toilets = {"score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5}
-    type_shower = {"score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10}
-    type_plant = {"score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20}
-    type_Rug = {"score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3}
+    type_chair = {"score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 1}
+    type_couch = {"score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 2}
+    type_trashCan = {"score" : 400, "multiplier" : 0.4, "duration" : 4, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 3}
+    type_library = {"score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 4}
+    type_plug = {"score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 5}
+    type_plugOffice = {"score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 30, "rage_amount" : 10}
+    type_shoeCase = {"score" : 500, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 5}
+    type_toilets = {"score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 1}
+    type_shower = {"score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 2}
+    type_plant = {"score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 4}
+    type_Rug = {"score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 1}
 
 
-    # chairKitchen1 = pygame.Rect(map.get_width()-SQUARE*16, map.get_height()-SQUARE*21, SQUARE, SQUARE)
-    # chairKitchen2 = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*19, SQUARE, SQUARE)
-    # chairKitchen3 = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*23, SQUARE, SQUARE)
-    #  couch = pygame.Rect(SQUARE*20, SQUARE*14, SQUARE*4, SQUARE*2)
-    # tv = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*3, SQUARE*2, SQUARE*2)
-    # library = pygame.Rect(map.get_width()-SQUARE*2, SQUARE*9, SQUARE*2, SQUARE*5)
-    # trashCanKitchen= pygame.Rect(map.get_width()-SQUARE*5, SQUARE, SQUARE, SQUARE)
-    # toilets = pygame.Rect(SQUARE, SQUARE*11, SQUARE, SQUARE)
-    # shower = pygame.Rect(SQUARE*12, SQUARE*8, SQUARE*2, SQUARE*2)
     chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*17, map.get_height()-SQUARE*22, SQUARE*2, SQUARE*3), "type" : type_chair.copy()}
     chair2 = {"rect" : pygame.Rect(map.get_width()-SQUARE*14, map.get_height()-SQUARE*19, SQUARE*3, SQUARE*2), "type" : type_chair.copy()}
     couch =  {"rect" : pygame.Rect(map.get_width()-SQUARE*23, map.get_height()-SQUARE*12, SQUARE*6, SQUARE*3), "type" : type_couch.copy()}
@@ -361,7 +363,7 @@ class interactible_class():
                 self.list[index]["type"]["is_enabled"] = False
                 self.list[index]["type"]["disabled_timer"] = time.time()
                 self.interact_timer = None
-                # owner.add_rage()
+                owner.add_rage(self.list[index]["type"]["rage_amount"])
 
             self.update_progress_bar()
 
@@ -578,6 +580,7 @@ class main_game_class:
         grid.solver()
         while run:
             clock.tick(60)
+            owner.remove_rage(1)
 
             if left:
                 player.body.x -= player.speed
@@ -653,6 +656,15 @@ class main_game_class:
                         up = True
                     if event.key == K_s:
                         down = True
+                    if interact == True:
+                        if event.key == K_q:
+                            left = False
+                        if event.key == K_d:
+                            right = False
+                        if event.key == K_z:
+                            up = False
+                        if event.key == K_s:
+                            down = False
                 if event.type == KEYUP:
                     if event.key == K_e:
                         interact = False
@@ -902,6 +914,8 @@ class menu_class:
         click = False
         while run:
             clock.tick(60)
+            
+            
 
             if (up or left) and self.index > 0:
                 self.index -= 1
