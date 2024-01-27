@@ -52,10 +52,30 @@ ALMOST_BLACK = (1, 1, 1)
 
 BG_GRAY_WALL = pygame.image.load(os.path.join("assets", "bg_gray_wall.jpg"))
 
-## Cats Sprites
-
+### Cats Sprites
+## Orange
+# Normal
 ORANGE_CAT_IDLE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-idle.png"], 1)
 ORANGE_CAT_RUNNING = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-running.png"], 1)
+ORANGE_CAT_SCRATCHING = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-scratching.png"], 1)
+
+ORANGE_CAT_LICKING = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-licking.png"], 1)
+ORANGE_CAT_LOAF_BREAD = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-loaf-bread.png"], 1)
+
+# Potte
+ORANGE_CAT_IDLE_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-idle-potte.png"], 1)
+ORANGE_CAT_RUNNING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-running-potte.png"], 1)
+ORANGE_CAT_SCRATCHING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-scratching-potte.png"], 1)
+
+ORANGE_CAT_LICKING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-licking-potte.png"], 1)
+ORANGE_CAT_LOAF_BREAD_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-loaf-bread-potte.png"], 1)
+
+# Nyan
+ORANGE_CAT_IDLE_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-idle-nyan.png"], 1)
+ORANGE_CAT_RUNNING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-running-nyan.png"], 1)
+ORANGE_CAT_SCRATCHING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-scratching-nyan.png"], 1)
+
+ORANGE_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-licking-nyan.png"], 1)
 
 ## Buttons
 
@@ -81,6 +101,13 @@ class general_use_class:
     def middle_coordinate_y(self, item):
         y = HEIGHT//2 - item.get_height()//2
         return y
+
+
+class music_class:
+    def play_music():
+        pygame.mixer.music.load(os.path.join('Assets', os.path.join("music", "main_theme.mp3")))
+        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.play()
 
 
 class camera_class:
@@ -117,11 +144,14 @@ class game_variable_class:
 
 class player_class:
     body = pygame.Rect(WIDTH//2, HEIGHT//2, 64, 64)
-    speed = 12
+
+    speed = 8
     hp = 3
+
 
     moving = False
     right = False
+
 
     caught = False
 
@@ -129,11 +159,29 @@ class player_class:
     i_frame_timer = 0
     i_frame_duration = 1.5
 
+    miaou_cd = 5
+    miaou_timer = 0
+
+
     frame = 0
     frame_timer = pygame.time.get_ticks()
     frame_cd = 120
     state = [ORANGE_CAT_IDLE, ORANGE_CAT_RUNNING]
     current_state = 0
+
+    idle_bis = False
+    idle_bis_counter = 0
+    idle_bis_state = 0
+    idle_bis_list = [ORANGE_CAT_LICKING]
+
+    potte = False
+    state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_RUNNING_POTTE]
+    state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
+
+    nyan = True
+    state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_RUNNING_NYAN]
+    state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
+
     img = pygame.Surface((body.width, body.height))
     
     def update_visual(self):
@@ -142,26 +190,68 @@ class player_class:
         self.update_frame()
 
     def change_state(self):
+        if self.moving and interactible.interact_timer and self.current_state != 2:
+            self.current_state = 2
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+            self.idle_bis = False
+            self.idle_bis_counter = 0
         if self.moving and self.current_state != 1:
             self.current_state = 1
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
+            self.idle_bis = False
+            self.idle_bis_counter = 0
         elif self.moving == False and self.current_state != 0:
             self.current_state = 0
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
+        elif self.moving == False and self.current_state == 0 and self.idle_bis_counter == 3:
+            self.idle_bis_counter = 0
+            self.idle_bis = True
+            # self.idle_bis_state = random.randint(0, 1)
+            self.idle_bis_state = 0
 
 
     def update_frame(self):
+        # Get the correct img slate
+        if self.potte:
+            if self.idle_bis:
+                state = self.state_potte_idle_bis
+                current_state = self.idle_bis_state
+            else:
+                state = self.state_potte
+                current_state = self.current_state
+        elif self.nyan:
+            if self.idle_bis:
+                state = self.state_nyan_idle_bis
+                current_state = self.idle_bis_state
+            else:
+                state = self.state_nyan
+                current_state = self.current_state
+        else:
+            if self.idle_bis:
+                state = self.idle_bis_list
+                current_state = self.idle_bis_state
+            else:
+                state = self.state
+                current_state = self.current_state
+
         if pygame.time.get_ticks() - self.frame_timer >= self.frame_cd:
             self.frame += 1
             self.frame_timer = pygame.time.get_ticks()
-        if self.frame >= self.state[self.current_state].get_width()/self.state[self.current_state].get_height():
+        if self.frame >= state[current_state].get_width()/state[current_state].get_height():
             self.frame = 0
+
+            if self.current_state == 0:
+                if self.idle_bis:
+                    self.idle_bis = False
+                else:
+                    self.idle_bis_counter += 1
 
         self.img.fill(ALMOST_BLACK)
         self.img.set_colorkey(ALMOST_BLACK)
-        self.img.blit(self.state[self.current_state], (0,0), (self.state[self.current_state].get_height() * self.frame, 0, self.state[self.current_state].get_height(), self.state[self.current_state].get_height()))
+        self.img.blit(state[current_state], (0,0), (state[current_state].get_height() * self.frame, 0, state[current_state].get_height(), state[current_state].get_height()))
         if self.right == False:
             self.img = pygame.transform.flip(self.img, 1, 0)
 
@@ -187,7 +277,7 @@ class owner_class:
     
 
     def update(self):
-        self.move_toward_cat()
+        # self.move_toward_cat()
 
         self.update_move_speed()
 
@@ -240,7 +330,6 @@ class owner_class:
 
     def update_move_speed(self):
         self.bonus_speed = self.max_bonus_speed * (self.rage / self.max_rage)
-
 
 
 class obstacle_class:
@@ -514,7 +603,7 @@ class main_game_class:
         # animation.play_animations()
 
         # Obstacles
-        pygame.draw.rect(map, BLACK, player.body)
+        # pygame.draw.rect(map, BLACK, player.body)
         for room in obstacle.list:
             for obs in room:
                 pygame.draw.rect(map, RED, obs)
@@ -525,11 +614,11 @@ class main_game_class:
                 pygame.draw.rect(map, YELLOW, item["rect"])
 
         # Player (Cat)
-        pygame.draw.rect(map, BLACK, player.body)
+        # pygame.draw.rect(map, BLACK, player.body)
         map.blit(player.img, (player.body.x, player.body.y))
 
         # Grid Position
-        pygame.draw.rect(map, GREEN, grid.cat_position["rect"])
+        # pygame.draw.rect(map, GREEN, grid.cat_position["rect"])
 
         # Owner
         pygame.draw.rect(map, YELLOW, owner.body)
@@ -539,6 +628,7 @@ class main_game_class:
         
         # Grid position
         pygame.draw.rect(map, GREEN, grid.owner_position["rect"])
+
 
         camera.update()
 
@@ -580,6 +670,7 @@ class main_game_class:
         up = False
         down = False
         interact = False
+        miaou = False
         click = False
         grid.solver()
         while run:
@@ -644,6 +735,9 @@ class main_game_class:
             elif interactible.interact_timer != None:
                 interactible.cancel_interact()
 
+            if miaou and time.time() - player.miaou_timer > player.miaou_cd:
+                print("miaou")
+
             owner.update()
 
             player.update_visual()
@@ -653,6 +747,7 @@ class main_game_class:
             if click:
                 owner.rage += 10
 
+            miaou = False
             click = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -667,6 +762,8 @@ class main_game_class:
                         general_use.close_the_game()
                     if event.key == K_e:
                         interact = True
+                    if event.key == K_SPACE:
+                        miaou = True
                     if event.key == K_q:
                         left = True
                     if event.key == K_d:
@@ -922,6 +1019,7 @@ class menu_class:
         down = False
         interact = False
         click = False
+        # music_class.play_music()
         while run:
             clock.tick(60)
 
@@ -937,8 +1035,9 @@ class menu_class:
                 if self.index == 0:
                     cat_selection.main_loop()
                 if self.index == 1:
+                    video_path  = os.path.join(r'./assets/videos', 'test.mp4')
                     # print("credits")
-                    video.PlayedVideo(screen, "assets/videos/test.mp4", "")
+                    video.PlayedVideo(clock, screen, video_path)
                 if self.index == 2:
                     print("settings")
 
