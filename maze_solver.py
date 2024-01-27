@@ -1,16 +1,3 @@
-import pygame
-import sys
-import time
-import random
-import os
-import sys
-import pickle
-import math
-import img_load
-import numpy as np
-import matplotlib.pyplot as plt
-from pygame.locals import *
-
 
 class Node():
     """A node class for A* Pathfinding"""

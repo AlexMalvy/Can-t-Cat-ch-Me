@@ -255,6 +255,14 @@ class obstacle_class:
 
 obstacle = obstacle_class()
 
+class interactible_class():
+    chair = pygame.Rect(1500, 400, 60, 60)
+    chair2 = pygame.Rect(1600, 400, 60, 60)
+
+    list = [chair, chair2]
+
+interactible = interactible_class()
+
 class animation_class:
     list = []
 
@@ -295,8 +303,8 @@ class grid_class:
         self.get_cat_position()
         self.get_owner_position()
 
-        if time.time() - self.solver_timer > self.solver_cd:
-            self.solver()
+        # if time.time() - self.solver_timer > self.solver_cd:
+        #     self.solver()
 
     def initialGrid(self):
         blockSize = 60 #Set the size of the grid block
@@ -365,11 +373,12 @@ class main_game_class:
     def draw_window(self):
         camera.bg_blit()
 
-        # for case in grid.grid:
-        #     if case["obstacle"]:
-        #         pygame.draw.rect(map, RED, case["rect"], 1)
-            # else:
-            #     pygame.draw.rect(map, WHITE, case["rect"], 1)
+        # for row in grid.grid:
+        #     for case in row:
+        #         if case["obstacle"]:
+        #             pygame.draw.rect(map, RED, case["rect"], 1)
+        #         else:
+        #             pygame.draw.rect(map, WHITE, case["rect"], 1)
 
         # animation.play_animations()
 
@@ -379,16 +388,22 @@ class main_game_class:
             for obs in room:
                 pygame.draw.rect(map, RED, obs)
 
+        # Interactibles
+        for item in interactible.list:
+            pygame.draw.rect(map, YELLOW, item)
+
         # Player (Cat)
         pygame.draw.rect(map, BLACK, player.body)
         map.blit(player.img, (player.body.x, player.body.y))
 
-        pygame.draw.rect(map, GREEN, grid.cat_position["rect"])
+        # Grid Position
+        # pygame.draw.rect(map, GREEN, grid.cat_position["rect"])
 
         # Owner
         pygame.draw.rect(map, YELLOW, owner.body)
         
-        pygame.draw.rect(map, RED, grid.owner_position["rect"])
+        # Grid position
+        # pygame.draw.rect(map, RED, grid.owner_position["rect"])
 
         camera.update()
 
