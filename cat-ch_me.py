@@ -1049,20 +1049,32 @@ class cat_selection_class:
         if self.index == 1:
             pygame.draw.rect(screen, RED, pygame.Rect(self.CAT_1_CARD.x - 1, self.CAT_1_CARD.y - 1, self.CAT_1_CARD.width + 2, self.CAT_1_CARD.height + 2))
         pygame.draw.rect(screen, GRAY, self.CAT_1_CARD)
-        cat_1_text = font.render("Cat 1", 1, BLACK)
-        screen.blit(cat_1_text, (self.CAT_1_CARD.centerx - cat_1_text.get_width()//2, self.CAT_1_CARD.centery - cat_1_text.get_height()//2))
+        cat_1_text = font.render("Nougat", 1, BLACK)
+        screen.blit(cat_1_text, (self.CAT_1_CARD.centerx - cat_1_text.get_width()//2, self.CAT_1_CARD.y + 10))
+        player.img.fill(ALMOST_BLACK)
+        player.img.set_colorkey(ALMOST_BLACK)
+        player.img.blit(ORANGE_CAT_IDLE, (0,0), (ORANGE_CAT_IDLE.get_height() * 1, 0, ORANGE_CAT_IDLE.get_height(), ORANGE_CAT_IDLE.get_height()))
+        screen.blit(player.img, ((self.CAT_1_CARD.centerx - player.img.get_width()//2, self.CAT_1_CARD.centery - player.img.get_height()//2)))
 
         if self.index == 2:
             pygame.draw.rect(screen, RED, pygame.Rect(self.CAT_2_CARD.x - 1, self.CAT_2_CARD.y - 1, self.CAT_2_CARD.width + 2, self.CAT_2_CARD.height + 2))
         pygame.draw.rect(screen, GRAY, self.CAT_2_CARD)
-        cat_2_text = font.render("Cat 2", 1, BLACK)
-        screen.blit(cat_2_text, (self.CAT_2_CARD.centerx - cat_2_text.get_width()//2, self.CAT_2_CARD.centery - cat_2_text.get_height()//2))
+        cat_2_text = font.render("Hypnolos", 1, BLACK)
+        screen.blit(cat_2_text, (self.CAT_2_CARD.centerx - cat_2_text.get_width()//2, self.CAT_2_CARD.y + 10))
+        player.img.fill(ALMOST_BLACK)
+        player.img.set_colorkey(ALMOST_BLACK)
+        player.img.blit(BLACK_CAT_IDLE, (0,0), (BLACK_CAT_IDLE.get_height() * 1, 0, BLACK_CAT_IDLE.get_height(), BLACK_CAT_IDLE.get_height()))
+        screen.blit(player.img, ((self.CAT_2_CARD.centerx - player.img.get_width()//2, self.CAT_2_CARD.centery - player.img.get_height()//2)))
 
         if self.index == 3:
             pygame.draw.rect(screen, RED, pygame.Rect(self.CAT_3_CARD.x - 1, self.CAT_3_CARD.y - 1, self.CAT_3_CARD.width + 2, self.CAT_3_CARD.height + 2))
         pygame.draw.rect(screen, GRAY, self.CAT_3_CARD)
-        cat_3_text = font.render("Cat 3", 1, BLACK)
-        screen.blit(cat_3_text, (self.CAT_3_CARD.centerx - cat_3_text.get_width()//2, self.CAT_3_CARD.centery - cat_3_text.get_height()//2))
+        cat_3_text = font.render("Her Majesty", 1, BLACK)
+        screen.blit(cat_3_text, (self.CAT_3_CARD.centerx - cat_3_text.get_width()//2, self.CAT_3_CARD.y + 10))
+        player.img.fill(ALMOST_BLACK)
+        player.img.set_colorkey(ALMOST_BLACK)
+        player.img.blit(SIAMESE_CAT_IDLE, (0,0), (SIAMESE_CAT_IDLE.get_height() * 1, 0, SIAMESE_CAT_IDLE.get_height(), SIAMESE_CAT_IDLE.get_height()))
+        screen.blit(player.img, ((self.CAT_3_CARD.centerx - player.img.get_width()//2, self.CAT_3_CARD.centery - player.img.get_height()//2)))
 
 
         pygame.display.update()
