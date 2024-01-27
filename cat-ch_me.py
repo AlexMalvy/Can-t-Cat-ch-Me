@@ -235,23 +235,30 @@ class obstacle_class:
     halwayRightBottomHalf = pygame.Rect(850, 1300, 15, 100)
     shoeCase = pygame.Rect(15, map.get_height() - 165, 100, 50)
     #Living Room
-    table = pygame.Rect(1500, 500, 250, 250)
+    couch = pygame.Rect(1200, 850, 250, 100)
+    tv = pygame.Rect(1275, map.get_height()-190, 150, 75)
+    library = pygame.Rect(map.get_width()-115, 550, 100, 300)
     #Office
     officeLeftBottomHalf = pygame.Rect(map.get_width()-800, map.get_height()-600 , 400, 15)
     officeRightBottomHalf = pygame.Rect(map.get_width()-250, map.get_height()-600 , 250, 15)
     officeTopLeftHalf= pygame.Rect(map.get_width()-800, map.get_height()-600 , 15, 200)
     officeTopRightHalf = pygame.Rect(map.get_width()-800, map.get_height()-300 , 15, 200)
+    desk = pygame.Rect(map.get_width()-600, map.get_height()-250, 350, 150)
     #Kitchen
-    kitchenLeftBottomHalf = pygame.Rect(map.get_width()-800, map.get_height()-600 , 400, 15)
-    kitchenLeftRightHalf = pygame.Rect(map.get_width()-250, map.get_height()-600 , 250, 15)
-
-    office= [officeLeftBottomHalf, officeRightBottomHalf, officeTopLeftHalf, officeTopRightHalf]
-    livingRoom = [table]
+    kitchenBottom = pygame.Rect(map.get_width()-800, map.get_height()-1000 , 800, 15)
+    table = pygame.Rect(map.get_width()-900, map.get_height()-1300, 300, 150)
+    oven= pygame.Rect(map.get_width()-165, 15, 150, 150)
+    fridge= pygame.Rect(map.get_width()-450, 15, 150, 100)
+    trashcan= pygame.Rect(map.get_width()-250, 15, 50, 50)
+  
+    kitchen= [kitchenBottom,table, oven, fridge, trashcan]
+    office= [officeLeftBottomHalf, officeRightBottomHalf, officeTopLeftHalf, officeTopRightHalf, desk]
+    livingRoom = [couch, tv, library]
     halway= [halwayRightTopHalf, halwayRightBottomHalf, shoeCase]
     bathRoom= [toilets, shower, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
     bedRoom = [bed, bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf, bedRoomRightBottomHalf]
     fullMap = [topWall, bottomWall, leftWall, rightWall]
-    list = [fullMap, bedRoom, bathRoom, livingRoom, halway, office]
+    list = [fullMap, bedRoom, bathRoom, livingRoom, halway, office, kitchen]
 
 obstacle = obstacle_class()
 
