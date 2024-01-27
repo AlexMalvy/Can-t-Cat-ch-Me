@@ -164,7 +164,7 @@ class player_class:
     body = pygame.Rect(WIDTH//2, HEIGHT//2, 192, 192)
     speed = 8
     hp = 3
-    hitbox = pygame.Rect(body.x, body.bottom, 64, 64)
+    hitbox = pygame.Rect(body.x, body.bottom, 60, 60)
 
     moving = False
     right = False
