@@ -84,6 +84,60 @@ ORANGE_CAT_SCRATCHING_NYAN = img_load.image_loader.load(["assets", "orange-cat",
 
 ORANGE_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-licking-nyan.png"], 3)
 
+## Black
+# Normal
+BLACK_CAT_IDLE = img_load.image_loader.load(["assets", "black-cat", "black-cat-idle.png"], 3)
+BLACK_CAT_WALKING = img_load.image_loader.load(["assets", "black-cat", "black-cat-walking.png"], 3)
+BLACK_CAT_RUNNING = img_load.image_loader.load(["assets", "black-cat", "black-cat-running.png"], 3)
+BLACK_CAT_SCRATCHING = img_load.image_loader.load(["assets", "black-cat", "black-cat-scratching.png"], 3)
+
+BLACK_CAT_LICKING = img_load.image_loader.load(["assets", "black-cat", "black-cat-licking.png"], 3)
+BLACK_CAT_LOAF_BREAD = img_load.image_loader.load(["assets", "black-cat", "black-cat-loaf-bread.png"], 3)
+
+# Potte
+BLACK_CAT_IDLE_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-idle-potte.png"], 3)
+BLACK_CAT_WALKING_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-walking-potte.png"], 3)
+BLACK_CAT_RUNNING_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-running-potte.png"], 3)
+BLACK_CAT_SCRATCHING_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-scratching-potte.png"], 3)
+
+BLACK_CAT_LICKING_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-licking-potte.png"], 3)
+BLACK_CAT_LOAF_BREAD_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-loaf-bread-potte.png"], 3)
+
+# Nyan
+BLACK_CAT_IDLE_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-idle-nyan.png"], 3)
+BLACK_CAT_WALKING_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-walking-nyan.png"], 3)
+BLACK_CAT_RUNNING_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-running-nyan.png"], 3)
+BLACK_CAT_SCRATCHING_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-scratching-nyan.png"], 3)
+
+BLACK_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-licking-nyan.png"], 3)
+
+## Orange
+# Normal
+SIAMESE_CAT_IDLE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-idle.png"], 3)
+SIAMESE_CAT_WALKING = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-walking.png"], 3)
+SIAMESE_CAT_RUNNING = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-running.png"], 3)
+SIAMESE_CAT_SCRATCHING = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-scratching.png"], 3)
+
+SIAMESE_CAT_LICKING = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-licking.png"], 3)
+SIAMESE_CAT_LOAF_BREAD = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-loaf-bread.png"], 3)
+
+# Potte
+SIAMESE_CAT_IDLE_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-idle-potte.png"], 3)
+SIAMESE_CAT_WALKING_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-walking-potte.png"], 3)
+SIAMESE_CAT_RUNNING_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-running-potte.png"], 3)
+SIAMESE_CAT_SCRATCHING_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-scratching-potte.png"], 3)
+
+SIAMESE_CAT_LICKING_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-licking-potte.png"], 3)
+SIAMESE_CAT_LOAF_BREAD_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-loaf-bread-potte.png"], 3)
+
+# Nyan
+SIAMESE_CAT_IDLE_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-idle-nyan.png"], 3)
+SIAMESE_CAT_WALKING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-walking-nyan.png"], 3)
+SIAMESE_CAT_RUNNING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-running-nyan.png"], 3)
+SIAMESE_CAT_SCRATCHING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-scratching-nyan.png"], 3)
+
+SIAMESE_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-licking-nyan.png"], 3)
+
 ## Buttons
 
 BACK_BUTTON = pygame.Rect(10, HEIGHT - 60, 100, 50)
@@ -143,8 +197,8 @@ class game_variable_class:
     score = 0
     multiplier = 1
 
-    all_cats = ["cat 1", "cat 2", "cat 3"]
-    selected_cat = "cat 1"
+    all_cats = ["orange", "black", "siamese"]
+    selected_cat = "orange"
     
     all_owners = ["owner M", "owner F"]
     selected_owner = "owner M"
@@ -165,7 +219,6 @@ def redefineMaze(oldMaze):
     return newMaze
 
 class player_class:
-    # body = pygame.Rect(SQUARE*7, SQUARE*6, 64, 64)
     body = pygame.Rect(SQUARE*18, SQUARE*18, 192, 192)
 
     speed = 8
@@ -283,6 +336,40 @@ class player_class:
     def align_body(self):
         self.body.centerx = self.hitbox.centerx
         self.body.centery = self.hitbox.centery
+
+    def change_cat_skin(self):
+        if game_variable.selected_cat == "orange":
+            self.state = [ORANGE_CAT_IDLE, ORANGE_CAT_WALKING]
+            self.idle_bis_list = [ORANGE_CAT_LICKING]
+            self.state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE]
+            self.state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
+            self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN]
+            self.state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
+        elif game_variable.selected_cat == "black":
+            self.state = [BLACK_CAT_IDLE, BLACK_CAT_WALKING]
+            self.idle_bis_list = [BLACK_CAT_LICKING]
+            self.state_potte = [BLACK_CAT_IDLE_POTTE, BLACK_CAT_WALKING_POTTE]
+            self.state_potte_idle_bis = [BLACK_CAT_LICKING_POTTE]
+            self.state_nyan = [BLACK_CAT_IDLE_NYAN, BLACK_CAT_WALKING_NYAN]
+            self.state_nyan_idle_bis = [BLACK_CAT_LICKING_NYAN]
+        elif game_variable.selected_cat == "siamese":
+            self.state = [SIAMESE_CAT_IDLE, SIAMESE_CAT_WALKING]
+            self.idle_bis_list = [SIAMESE_CAT_LICKING]
+            self.state_potte = [SIAMESE_CAT_IDLE_POTTE, SIAMESE_CAT_WALKING_POTTE]
+            self.state_potte_idle_bis = [SIAMESE_CAT_LICKING_POTTE]
+            self.state_nyan = [SIAMESE_CAT_IDLE_NYAN, SIAMESE_CAT_WALKING_NYAN]
+            self.state_nyan_idle_bis = [SIAMESE_CAT_LICKING_NYAN]
+        # Default Skin
+        else:
+            self.state = [ORANGE_CAT_IDLE, ORANGE_CAT_WALKING]
+            self.idle_bis_list = [ORANGE_CAT_LICKING]
+            self.state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE]
+            self.state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
+            self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN]
+            self.state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
+
+        
+        
 
 
 class owner_class:
@@ -824,7 +911,7 @@ class main_game_class:
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         run = False
-                        general_use.close_the_game()
+                        # general_use.close_the_game()
                     if event.key == K_e:
                         interact = True
                     if event.key == K_SPACE:
@@ -962,20 +1049,32 @@ class cat_selection_class:
         if self.index == 1:
             pygame.draw.rect(screen, RED, pygame.Rect(self.CAT_1_CARD.x - 1, self.CAT_1_CARD.y - 1, self.CAT_1_CARD.width + 2, self.CAT_1_CARD.height + 2))
         pygame.draw.rect(screen, GRAY, self.CAT_1_CARD)
-        cat_1_text = font.render("Cat 1", 1, BLACK)
-        screen.blit(cat_1_text, (self.CAT_1_CARD.centerx - cat_1_text.get_width()//2, self.CAT_1_CARD.centery - cat_1_text.get_height()//2))
+        cat_1_text = font.render("Nougat", 1, BLACK)
+        screen.blit(cat_1_text, (self.CAT_1_CARD.centerx - cat_1_text.get_width()//2, self.CAT_1_CARD.y + 10))
+        player.img.fill(ALMOST_BLACK)
+        player.img.set_colorkey(ALMOST_BLACK)
+        player.img.blit(ORANGE_CAT_IDLE, (0,0), (ORANGE_CAT_IDLE.get_height() * 1, 0, ORANGE_CAT_IDLE.get_height(), ORANGE_CAT_IDLE.get_height()))
+        screen.blit(player.img, ((self.CAT_1_CARD.centerx - player.img.get_width()//2, self.CAT_1_CARD.centery - player.img.get_height()//2)))
 
         if self.index == 2:
             pygame.draw.rect(screen, RED, pygame.Rect(self.CAT_2_CARD.x - 1, self.CAT_2_CARD.y - 1, self.CAT_2_CARD.width + 2, self.CAT_2_CARD.height + 2))
         pygame.draw.rect(screen, GRAY, self.CAT_2_CARD)
-        cat_2_text = font.render("Cat 2", 1, BLACK)
-        screen.blit(cat_2_text, (self.CAT_2_CARD.centerx - cat_2_text.get_width()//2, self.CAT_2_CARD.centery - cat_2_text.get_height()//2))
+        cat_2_text = font.render("Hypnolos", 1, BLACK)
+        screen.blit(cat_2_text, (self.CAT_2_CARD.centerx - cat_2_text.get_width()//2, self.CAT_2_CARD.y + 10))
+        player.img.fill(ALMOST_BLACK)
+        player.img.set_colorkey(ALMOST_BLACK)
+        player.img.blit(BLACK_CAT_IDLE, (0,0), (BLACK_CAT_IDLE.get_height() * 1, 0, BLACK_CAT_IDLE.get_height(), BLACK_CAT_IDLE.get_height()))
+        screen.blit(player.img, ((self.CAT_2_CARD.centerx - player.img.get_width()//2, self.CAT_2_CARD.centery - player.img.get_height()//2)))
 
         if self.index == 3:
             pygame.draw.rect(screen, RED, pygame.Rect(self.CAT_3_CARD.x - 1, self.CAT_3_CARD.y - 1, self.CAT_3_CARD.width + 2, self.CAT_3_CARD.height + 2))
         pygame.draw.rect(screen, GRAY, self.CAT_3_CARD)
-        cat_3_text = font.render("Cat 3", 1, BLACK)
-        screen.blit(cat_3_text, (self.CAT_3_CARD.centerx - cat_3_text.get_width()//2, self.CAT_3_CARD.centery - cat_3_text.get_height()//2))
+        cat_3_text = font.render("Her Majesty", 1, BLACK)
+        screen.blit(cat_3_text, (self.CAT_3_CARD.centerx - cat_3_text.get_width()//2, self.CAT_3_CARD.y + 10))
+        player.img.fill(ALMOST_BLACK)
+        player.img.set_colorkey(ALMOST_BLACK)
+        player.img.blit(SIAMESE_CAT_IDLE, (0,0), (SIAMESE_CAT_IDLE.get_height() * 1, 0, SIAMESE_CAT_IDLE.get_height(), SIAMESE_CAT_IDLE.get_height()))
+        screen.blit(player.img, ((self.CAT_3_CARD.centerx - player.img.get_width()//2, self.CAT_3_CARD.centery - player.img.get_height()//2)))
 
 
         pygame.display.update()
@@ -1001,12 +1100,15 @@ class cat_selection_class:
                     run = False
                 if self.index == 1:
                     game_variable.selected_cat = game_variable.all_cats[0]
+                    player.change_cat_skin()
                     owner_selection.main_loop()
                 if self.index == 2:
                     game_variable.selected_cat = game_variable.all_cats[1]
+                    player.change_cat_skin()
                     owner_selection.main_loop()
                 if self.index == 3:
                     game_variable.selected_cat = game_variable.all_cats[2]
+                    player.change_cat_skin()
                     owner_selection.main_loop()
 
 
