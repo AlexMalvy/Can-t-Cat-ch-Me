@@ -6,63 +6,63 @@ from pygame.locals import QUIT, KEYDOWN
 
 # Class for playing video in a defined screen
 class PlayedVideo:
-    def __init__(self, screen, videoFileName, audioFileName):
+    
+    def __init__(self, clock, screen, videoFileName):
 
-        # Get clip
-        video = VideoFileClip(videoFileName)
-        #video.audio = AudioClip(audioFileName)
+        # Get video clip
+        with VideoFileClip(videoFileName) as video:
 
-        # Current time
-        clock = pygame.time.Clock()
+            # Video starting time
+            start_time = pygame.time.get_ticks()
 
-        # Video starting time
-        start_time = pygame.time.get_ticks()
+            # Playing flag
+            videoPlaying = True
 
-        # Playing flag
-        playing = True
+            # Video loop
+            while videoPlaying:
+                
+                # Get the current time in milliseconds
+                current_time = (pygame.time.get_ticks() - start_time) / 1000
 
-        # Video loop
-        while playing:
-            # Get the current time in milliseconds
-            current_time = (pygame.time.get_ticks() - start_time) / 1000
+                # Get the current frame
+                frame = video.get_frame(current_time)
 
-            # Get the current frame
-            frame = video.get_frame(pygame.time.get_ticks() / 1000)
+                # Calculate the new size to maintain the aspect ratio
+                new_width = screen.get_width()
+                new_height = int(video.h * (screen.get_width() / video.w))
 
-            # Calculate the new size to maintain the aspect ratio
-            new_width = screen.get_width()
-            new_height = int(video.h * (screen.get_width() / video.w))
+                # Resize the frame to fit the screen
+                resized_frame = pygame.transform.scale(pygame.surfarray.make_surface(frame.swapaxes(0, 1)), (new_width, new_height))
+                
+                # Calculate the position to center the video in the window
+                x_offset = (screen.get_width() - new_width) // 2
+                y_offset = (screen.get_height() - new_height) // 2
 
-            # Resize the frame to fit the screen
-            resized_frame = pygame.transform.scale(pygame.surfarray.make_surface(frame.swapaxes(0, 1)), (new_width, new_height))
-            
-            # Calculate the position to center the video in the window
-            x_offset = (screen.get_width() - new_width) // 2
-            y_offset = (screen.get_height() - new_height) // 2
+                # Blit the resized frame onto the Pygame window
+                screen.blit(resized_frame, (x_offset, y_offset))
 
-            # Blit the resized frame onto the Pygame window
-            screen.blit(resized_frame, (x_offset, y_offset))
+                pygame.display.flip()
 
-            pygame.display.flip()
+                # Control the frame rate
+                clock.tick(video.fps)
 
-            # Control the frame rate
-            clock.tick(video.fps)
+                # Video ending
+                if current_time > video.duration:
+                    videoPlaying = False
 
-            # Video ending
-            if current_time > video.duration:
-                playing = False
+                # Other exit cases events handler
+                for event in pygame.event.get():
 
-            # Other exit cases events handler
-            for event in pygame.event.get():
-                # Exit cases
-                if event.type == QUIT:
-                    playing = False
-                elif event.type == KEYDOWN and event.key == pygame.K_SPACE: 
-                    playing = False
-                elif event.type == KEYDOWN and event.key == pygame.K_ESCAPE:
-                    playing = False
-                else:
-                    playing = True
+                    # Exit cases
+                    if event.type == KEYDOWN:
+                        if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
+                            videoPlaying = False
+                            break
+                        else:
+                            continue
+                    else:
+                        videoPlaying = True
+                        break
 
 """""""""""""""""""""""""""""" 
 # Tests part here
