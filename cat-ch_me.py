@@ -227,6 +227,8 @@ def redefineMaze(oldMaze):
 class player_class:
     body = pygame.Rect(SQUARE*18, SQUARE*18, 192, 192)
 
+    base_speed = 8
+    bonus_speed = 0
     speed = 8
     hp = 3
     hitbox = pygame.Rect(body.x, body.bottom, 60, 60)
@@ -247,7 +249,7 @@ class player_class:
     frame = 0
     frame_timer = pygame.time.get_ticks()
     frame_cd = 120
-    state = [ORANGE_CAT_IDLE, ORANGE_CAT_WALKING]
+    state = [ORANGE_CAT_IDLE, ORANGE_CAT_WALKING, ORANGE_CAT_RUNNING]
     current_state = 0
 
     idle_bis = False
@@ -256,11 +258,11 @@ class player_class:
     idle_bis_list = [ORANGE_CAT_LICKING]
 
     potte = False
-    state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE]
+    state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE]
     state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
 
     nyan = False
-    state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN]
+    state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN]
     state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
 
     img = pygame.Surface((body.width, body.height))
@@ -272,14 +274,31 @@ class player_class:
 
         self.update_frame()
 
+        self.apply_bonuses()
+
+
+    def apply_bonuses(self):
+        self.bonus_speed = 0
+        if self.i_frame:
+            self.bonus_speed += 5
+
+        self.speed = self.base_speed + self.bonus_speed
+
+
     def change_state(self):
-        if self.moving and interactible.interact_timer and self.current_state != 2:
+        if self.moving and interactible.interact_timer and self.current_state != 3:
             self.current_state = 2
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
             self.idle_bis = False
             self.idle_bis_counter = 0
-        if self.moving and self.current_state != 1:
+        if self.moving and self.i_frame and self.current_state != 2:
+            self.current_state = 2
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+            self.idle_bis = False
+            self.idle_bis_counter = 0
+        if self.moving and not self.i_frame and self.current_state != 1:
             self.current_state = 1
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
@@ -294,7 +313,6 @@ class player_class:
             self.idle_bis = True
             # self.idle_bis_state = random.randint(0, 1)
             self.idle_bis_state = 0
-
 
     def update_frame(self):
         # Get the correct img slate
@@ -344,25 +362,25 @@ class player_class:
 
     def change_cat_skin(self):
         if game_variable.selected_cat == "orange":
-            self.state = [ORANGE_CAT_IDLE, ORANGE_CAT_WALKING]
+            self.state = [ORANGE_CAT_IDLE, ORANGE_CAT_WALKING, ORANGE_CAT_RUNNING]
             self.idle_bis_list = [ORANGE_CAT_LICKING]
-            self.state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE]
+            self.state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE]
             self.state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
-            self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN]
+            self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN]
             self.state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
         elif game_variable.selected_cat == "black":
-            self.state = [BLACK_CAT_IDLE, BLACK_CAT_WALKING]
+            self.state = [BLACK_CAT_IDLE, BLACK_CAT_WALKING, BLACK_CAT_RUNNING]
             self.idle_bis_list = [BLACK_CAT_LICKING]
-            self.state_potte = [BLACK_CAT_IDLE_POTTE, BLACK_CAT_WALKING_POTTE]
+            self.state_potte = [BLACK_CAT_IDLE_POTTE, BLACK_CAT_WALKING_POTTE, BLACK_CAT_RUNNING_POTTE]
             self.state_potte_idle_bis = [BLACK_CAT_LICKING_POTTE]
-            self.state_nyan = [BLACK_CAT_IDLE_NYAN, BLACK_CAT_WALKING_NYAN]
+            self.state_nyan = [BLACK_CAT_IDLE_NYAN, BLACK_CAT_WALKING_NYAN, BLACK_CAT_RUNNING_NYAN]
             self.state_nyan_idle_bis = [BLACK_CAT_LICKING_NYAN]
         elif game_variable.selected_cat == "siamese":
-            self.state = [SIAMESE_CAT_IDLE, SIAMESE_CAT_WALKING]
+            self.state = [SIAMESE_CAT_IDLE, SIAMESE_CAT_WALKING, SIAMESE_CAT_RUNNING]
             self.idle_bis_list = [SIAMESE_CAT_LICKING]
-            self.state_potte = [SIAMESE_CAT_IDLE_POTTE, SIAMESE_CAT_WALKING_POTTE]
+            self.state_potte = [SIAMESE_CAT_IDLE_POTTE, SIAMESE_CAT_WALKING_POTTE, SIAMESE_CAT_RUNNING_POTTE]
             self.state_potte_idle_bis = [SIAMESE_CAT_LICKING_POTTE]
-            self.state_nyan = [SIAMESE_CAT_IDLE_NYAN, SIAMESE_CAT_WALKING_NYAN]
+            self.state_nyan = [SIAMESE_CAT_IDLE_NYAN, SIAMESE_CAT_WALKING_NYAN, SIAMESE_CAT_RUNNING_NYAN]
             self.state_nyan_idle_bis = [SIAMESE_CAT_LICKING_NYAN]
         # Default Skin
         else:
@@ -761,6 +779,86 @@ class game_over_class:
             self.draw_window()
 
 
+class button_smash_class:
+    LEFT_BUTTON = pygame.Rect(WIDTH//2 - 150, HEIGHT//2, 50, 50)
+    RIGHT_BUTTON = pygame.Rect(WIDTH//2 + 100, HEIGHT//2, 50, 50)
+
+    TIMER_BAR = pygame.Rect(WIDTH//2 - 101, HEIGHT//4 - 1, 202, 52)
+    TIMER_BAR_PROGRESS = pygame.Rect(WIDTH//2 - 100, HEIGHT//4, 200, 50)
+
+    break_free = 10
+    timer = 0
+    max_timer = 2
+    smash_right = True
+    
+    def update_progress_bar(self):
+        if self.timer:
+            self.TIMER_BAR_PROGRESS.width = (self.TIMER_BAR.width - 2) * (1 - (time.time() - self.timer) / self.max_timer)
+
+    def draw_window(self):
+        screen.fill(GRAY)
+        
+        break_free_text = font.render(f"{self.break_free}", 1, BLACK)
+        screen.blit(break_free_text, (WIDTH//2 - break_free_text.get_width()//2 - 50, HEIGHT//2 - 300))
+        
+        if not self.smash_right:
+            pygame.draw.rect(screen, RED, (self.LEFT_BUTTON.x - 1, self.LEFT_BUTTON.y - 1, self.LEFT_BUTTON.width + 2, self.LEFT_BUTTON.height + 2))
+        pygame.draw.rect(screen, DARK_GRAY, self.LEFT_BUTTON)
+        q_button_text = font.render("Q", 1, WHITE)
+        screen.blit(q_button_text, (self.LEFT_BUTTON.centerx - q_button_text.get_width()//2, self.LEFT_BUTTON.centery - q_button_text.get_height()//2))
+
+        if self.smash_right:
+            pygame.draw.rect(screen, RED, (self.RIGHT_BUTTON.x - 1, self.RIGHT_BUTTON.y - 1, self.RIGHT_BUTTON.width + 2, self.RIGHT_BUTTON.height + 2))
+        pygame.draw.rect(screen, DARK_GRAY, self.RIGHT_BUTTON)
+        d_button_text = font.render("D", 1, WHITE)
+        screen.blit(d_button_text, (self.RIGHT_BUTTON.centerx - d_button_text.get_width()//2, self.RIGHT_BUTTON.centery - d_button_text.get_height()//2))
+
+        pygame.draw.rect(screen, BLACK, self.TIMER_BAR)
+        self.update_progress_bar()
+        pygame.draw.rect(screen, YELLOW, self.TIMER_BAR_PROGRESS)
+
+        pygame.display.update()
+
+    def main_loop(self):
+        run = True
+        left = False
+        right = False
+        self.smash_right = True
+        self.break_free = 10
+        self.timer = time.time()
+        
+        while run:
+            clock.tick(60)
+
+            if time.time() - self.timer > self.max_timer:
+                return False
+            
+            if self.smash_right and right:
+                self.smash_right = False
+                self.break_free -= 1
+            if not self.smash_right and left:
+                self.smash_right = True
+                self.break_free -= 1
+
+            if self.break_free <= 0:
+                return True
+
+            left = False
+            right = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    general_use.close_the_game()
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        return False
+                    if event.key == K_q:
+                        left = True
+                    if event.key == K_d:
+                        right = True
+            self.draw_window()
+
+
 class main_game_class:
     def draw_window(self):
         camera.bg_blit()
@@ -788,6 +886,8 @@ class main_game_class:
         # Player (Cat)
         # pygame.draw.rect(map, BLACK, player.body)
         # pygame.draw.rect(map, GREEN, player.hitbox)
+        # if player.i_frame:
+        #     pygame.draw.rect(map, GREEN, player.hitbox)
         map.blit(player.img, (player.body.x, player.body.y))
 
         # Grid Position
@@ -855,12 +955,22 @@ class main_game_class:
             if grid.owner_position["rect"].colliderect(grid.cat_position["rect"]) and not player.i_frame:
                 player.i_frame = True
 
+                # Start button smash to try to escape
+                result = button_smash.main_loop()
+                left = False
+                right = False
+                up = False
+                down = False
+                interact = False
+                miaou = False
+                click = False
 
-                player.hp -= 3
                 player.i_frame_timer = time.time()
-                if player.hp <= 0:
-                    game_over.main_loop()
-                    run = False
+                if not result:
+                    player.hp -= 1
+                    if player.hp <= 0:
+                        game_over.main_loop()
+                        run = False
 
             # i-frame logic
             if player.i_frame:
@@ -1278,6 +1388,7 @@ grid = grid_class()
 interactible = interactible_class()
 animation = animation_class()
 game_over = game_over_class()
+button_smash = button_smash_class()
 main = main_game_class()
 cat_selection = cat_selection_class()
 owner_selection = owner_selection_class()
