@@ -582,7 +582,7 @@ class main_game_class:
             clock.tick(60)
             owner.remove_rage(1)
 
-            if left:
+            if left and not interact:
                 player.body.x -= player.speed
                 player.right = False
                 # Check if colliding with obstacle
@@ -590,7 +590,7 @@ class main_game_class:
                     for obs in room:
                         if player.body.colliderect(obs):
                             player.body.x += player.speed
-            if right:
+            if right and not interact:
                 player.body.x += player.speed
                 player.right = True
                 # Check if colliding with obstacle
@@ -598,14 +598,14 @@ class main_game_class:
                     for obs in room:
                         if player.body.colliderect(obs):
                             player.body.x -= player.speed
-            if up:
+            if up and not interact:
                 player.body.y -= player.speed
                 # Check if colliding with obstacle
                 for room in obstacle.list:
                     for obs in room:
                         if player.body.colliderect(obs):
                             player.body.y += player.speed
-            if down:
+            if down and not interact:
                 player.body.y += player.speed
                 # Check if colliding with obstacle
                 for room in obstacle.list:
@@ -656,15 +656,6 @@ class main_game_class:
                         up = True
                     if event.key == K_s:
                         down = True
-                    if interact == True:
-                        if event.key == K_q:
-                            left = False
-                        if event.key == K_d:
-                            right = False
-                        if event.key == K_z:
-                            up = False
-                        if event.key == K_s:
-                            down = False
                 if event.type == KEYUP:
                     if event.key == K_e:
                         interact = False
