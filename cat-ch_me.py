@@ -135,7 +135,6 @@ class camera_class:
 class game_variable_class:
     score = 0
     multiplier = 1
-    life = 3
 
     all_cats = ["cat 1", "cat 2", "cat 3"]
     selected_cat = "cat 1"
@@ -147,12 +146,22 @@ class player_class:
     # body = pygame.Rect(WIDTH//2, HEIGHT//2, 64, 64)
     body = pygame.Rect(WIDTH//2, HEIGHT//2, 192, 192)
     speed = 8
+    hp = 3
+
 
     moving = False
     right = False
 
+
+    caught = False
+
+    i_frame = False
+    i_frame_timer = 0
+    i_frame_duration = 1.5
+
     miaou_cd = 5
     miaou_timer = 0
+
 
     frame = 0
     frame_timer = pygame.time.get_ticks()
@@ -248,10 +257,12 @@ class player_class:
 
 
 class owner_class:
-    body = pygame.Rect(1100, 400, 50, 100)
+    
     range = 20
     rage = 0
     max_rage = 100
+    body = pygame.Rect(1200, 600, SQUARE, SQUARE*2)
+    body_hitbox = pygame.Rect(body.x, body.y, SQUARE, SQUARE)
     
     max_speed = 5
     speed = 5
@@ -263,35 +274,39 @@ class owner_class:
     path = []
 
     last_rage_deduction_time = time.time()
+    
 
     def update(self):
-        # self.move_toward_cat()
+        self.move_toward_cat()
 
         self.update_move_speed()
 
+        # Mettez à jour la position de la hitbox
+        self.body.x= self.body_hitbox.x
+        self.body.bottom = self.body_hitbox.bottom  
 
     def move_toward_cat(self):
         if self.target != None:
-            if math.dist([self.target["rect"].centerx, self.target["rect"].centery], [self.body.centerx, self.body.centery]) > self.range:
+            if math.dist([self.target["rect"].centerx, self.target["rect"].centery], [self.body_hitbox.centerx, self.body_hitbox.centery]) > self.range:
                 self.moving = True
                 # Speed modifier
-                if self.body.centerx != self.target["rect"].centerx and self.body.centery != self.target["rect"].centery:
+                if self.body_hitbox.centerx != self.target["rect"].centerx and self.body_hitbox.centery != self.target["rect"].centery:
                     self.speed = (self.max_speed + self.bonus_speed)/3 * 2
                 else:
                     self.speed = self.max_speed + self.bonus_speed
 
                 # Chase Target
-                if self.target["rect"].centerx > self.body.centerx:
-                        self.body.x += self.speed
+                if self.target["rect"].centerx > self.body_hitbox.centerx:
+                        self.body_hitbox.x += self.speed
                         self.right = True
-                if self.target["rect"].centerx < self.body.centerx:
-                        self.body.x -= self.speed
+                if self.target["rect"].centerx < self.body_hitbox.centerx:
+                        self.body_hitbox.x -= self.speed
                         self.right = False
                         
-                if self.target["rect"].centery > self.body.centery:
-                        self.body.y += self.speed
-                if self.target["rect"].centery < self.body.centery:
-                        self.body.y -= self.speed
+                if self.target["rect"].centery > self.body_hitbox.centery:
+                        self.body_hitbox.y += self.speed
+                if self.target["rect"].centery < self.body_hitbox.centery:
+                        self.body_hitbox.y -= self.speed
             else:
                 self.path.pop(0)
                 if len(self.path) > 0:
@@ -309,7 +324,7 @@ class owner_class:
         time_elapsed = current_time - self.last_rage_deduction_time
 
         # Deduct 1 from rage every 5 seconds
-        if time_elapsed >= 5:
+        if time_elapsed >= 5 and self.rage > 0:
             self.rage -= amount
             self.last_rage_deduction_time = current_time
 
@@ -362,18 +377,6 @@ class obstacle_class:
     oven= pygame.Rect(map.get_width()-SQUARE*3, SQUARE, SQUARE*2, SQUARE*2)
     fridge= pygame.Rect(map.get_width()-SQUARE*8, SQUARE, SQUARE*2, SQUARE*2)
     trashCanKitchen= pygame.Rect(map.get_width()-SQUARE*5, SQUARE, SQUARE, SQUARE)
-    #testMap
-    testMapHalfTopHalf = pygame.Rect(20*SQUARE, 0, SQUARE, SQUARE*4)
-    testMapHalfBottomHalf = pygame.Rect(20*SQUARE, 6*SQUARE, SQUARE, SQUARE*3)
-    testMapHalfBottomHalf2 = pygame.Rect(20*SQUARE, 10*SQUARE, SQUARE, SQUARE*4)
-    testMapHalfBottomHalf3 = pygame.Rect(20*SQUARE, 15*SQUARE, SQUARE, SQUARE*4)
-    testMapHalfBottomHalf4 = pygame.Rect(20*SQUARE, 21*SQUARE, SQUARE, SQUARE*4)
-    testMapHalfTopHalfsecond = pygame.Rect(20*SQUARE, 0, SQUARE, SQUARE*4)
-    testMapHalfBottomHalfsecond = pygame.Rect(10*SQUARE, 6*SQUARE, SQUARE, SQUARE*3)
-    testMapHalfBottomHalf2second = pygame.Rect(10*SQUARE, 10*SQUARE, SQUARE, SQUARE*4)
-    testMapHalfBottomHalf3second = pygame.Rect(10*SQUARE, 15*SQUARE, SQUARE, SQUARE*4)
-    testMapHalfBottomHalf4second = pygame.Rect(10*SQUARE, 21*SQUARE, SQUARE, SQUARE*4)
-    # map = pygame.Surface((2520(SQUARE42), 1500(SQUARE25)))
   
     kitchen= [kitchenBottom,table, oven, fridge, trashCanKitchen, chairKitchen1, chairKitchen2]
     office= [officeLeftBottomHalf, officeLeftTopHalf, officeTopLeftHalf, officeTopRightHalf, desk]
@@ -382,22 +385,21 @@ class obstacle_class:
     bathRoom= [toiletsBathroom, showerBathroom, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
     bedRoom = [bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf,bed, bedRoomRightBottomHalf, nightStandBedroom]
     fullMap = [topWall, bottomWall, leftWall, rightWall]
-    testMap= [testMapHalfTopHalf, testMapHalfBottomHalf2, testMapHalfBottomHalf, testMapHalfBottomHalf3, testMapHalfBottomHalf4, testMapHalfTopHalfsecond, testMapHalfBottomHalf2second, testMapHalfBottomHalfsecond, testMapHalfBottomHalf3second, testMapHalfBottomHalf4second]
     list = [fullMap, bedRoom, bathRoom, hallWay, livingRoom, office, kitchen]
 
 
 class interactible_class():
-    type_chair = {"score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 1}
-    type_couch = {"score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 2}
-    type_trashCan = {"score" : 400, "multiplier" : 0.4, "duration" : 4, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 3}
-    type_library = {"score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 4}
+    type_chair = {"score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5}
+    type_couch = {"score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10}
+    type_trashCan = {"score" : 400, "multiplier" : 0.4, "duration" : 4, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 15}
+    type_library = {"score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 20}
     type_plug = {"score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 5}
-    type_plugOffice = {"score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 30, "rage_amount" : 10}
-    type_shoeCase = {"score" : 500, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 5}
-    type_toilets = {"score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 1}
-    type_shower = {"score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 2}
-    type_plant = {"score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 4}
-    type_Rug = {"score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 1}
+    type_plugOffice = {"score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 30, "rage_amount" : 50}
+    type_shoeCase = {"score" : 500, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 25}
+    type_toilets = {"score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5}
+    type_shower = {"score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10}
+    type_plant = {"score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 20}
+    type_Rug = {"score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5}
 
 
     chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*17, map.get_height()-SQUARE*22, SQUARE*2, SQUARE*3), "type" : type_chair.copy()}
@@ -551,7 +553,7 @@ class grid_class:
     def get_owner_position(self):
         for row in self.grid:
             for case in row:
-                if case["rect"].collidepoint(owner.body.center):
+                if case["rect"].collidepoint(owner.body_hitbox.center):
                     self.owner_position = case
                     return
                 
@@ -564,13 +566,14 @@ class grid_class:
         def astar_thread():
             nonlocal path
             try:
+                # Utilisez les coordonnées de la hitbox pour le démarrage et la fin
                 path = maze_solver.astar(self.maze, start, end)
             except:
                 pass
 
         thread = threading.Thread(target=astar_thread)
         if thread.is_alive():
-             self.stop_thread.clear()
+            self.stop_thread.clear()
         else:
             thread.start()
             thread.join(timeout=0.2)  # Attendez jusqu'à 3 secondes maximum
@@ -583,6 +586,7 @@ class grid_class:
             owner.target = None
 
         self.solver_timer = time.time()
+
 
 
 class main_game_class:
@@ -618,9 +622,13 @@ class main_game_class:
 
         # Owner
         pygame.draw.rect(map, YELLOW, owner.body)
+
+        # Owner Body Hitbox
+        pygame.draw.rect(map, BLACK, owner.body_hitbox)
         
         # Grid position
-        # pygame.draw.rect(map, RED, grid.owner_position["rect"])
+        pygame.draw.rect(map, GREEN, grid.owner_position["rect"])
+
 
         camera.update()
 
@@ -630,7 +638,7 @@ class main_game_class:
         multiplier_text = font.render(f"Multiplier : {game_variable.multiplier}", 1, WHITE)
         screen.blit(multiplier_text, (10, 50))
 
-        life_text = font.render(f"Lives : {game_variable.life}", 1, WHITE)
+        life_text = font.render(f"Lives : {player.hp}", 1, WHITE)
         screen.blit(life_text, (10, 90))
 
         selected_cat_text = font.render(f"Cat : {game_variable.selected_cat}", 1, WHITE)
@@ -668,6 +676,21 @@ class main_game_class:
         while run:
             clock.tick(60)
             owner.remove_rage(1)
+
+             # Collision with cat
+            if grid.owner_position["rect"].colliderect(grid.cat_position["rect"]) and not player.i_frame:
+                player.hp -= 1
+                player.i_frame = True
+                player.i_frame_timer = time.time()
+                if player.hp <= 0:
+                    run = False
+                    general_use.close_the_game()
+
+             # i-frame logic
+            if player.i_frame:
+                if time.time() - player.i_frame_timer >= player.i_frame_duration:
+                    player.i_frame = False
+            
 
             if left and not interact:
                 player.body.x -= player.speed
@@ -999,7 +1022,8 @@ class menu_class:
         # music_class.play_music()
         while run:
             clock.tick(60)
-            
+
+           
             
 
             if (up or left) and self.index > 0:
