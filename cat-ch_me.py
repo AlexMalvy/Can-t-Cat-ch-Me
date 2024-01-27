@@ -10,6 +10,7 @@ import img_load
 import maze_solver
 import threading
 import video
+import keyboard
 from copy import deepcopy
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
@@ -230,6 +231,11 @@ class player_class:
 
 
     caught = False
+    qte_active = False
+    qte_sequence = ["k", "l", "m"]
+    current_qte_index = 0
+    qte_start_time = 0
+    qte_timeout = 3  # Temps limite pour chaque touche en secondes
 
     i_frame = False
     i_frame_timer = 0
@@ -828,8 +834,54 @@ class main_game_class:
 
              # Collision with cat
             if grid.owner_position["rect"].colliderect(grid.cat_position["rect"]) and not player.i_frame:
-                player.hp -= 1
+               
+                caught = True
+                if caught:
+                    if not player.qte_active:
+                        # Initialiser le QTE
+                        print("Quick Time Event Started!")
+                        player.qte_active = True
+                        player.current_qte_index = 0
+                        player.qte_start_time = time.time()
+
+                        # Vérifier la touche actuellement attendue dans la séquence
+                        current_key = player.qte_sequence[player.current_qte_index]
+
+                        # Vérifier si le joueur a appuyé sur la touche attendue
+                        if keyboard.is_pressed(current_key):
+                            print(f"Pressed: {current_key}")
+
+                        # Passer à la touche suivante dans la séquence
+                        player.current_qte_index += 1
+
+                        # Réinitialiser le décompte du temps pour la prochaine touche
+                        player.qte_start_time = time.time()
+
+                        # Si toutes les touches de la séquence ont été appuyées
+                        if player.current_qte_index == len(player.qte_sequence):
+                            print("Quick Time Event Successful!")
+                            # Ajoutez ici le code que vous souhaitez exécuter en cas de succès du QTE
+                            # Réinitialisez l'état du QTE
+                            player.qte_active = False
+
+                        # Vérifier si le temps limite pour la touche actuelle est dépassé
+                        elif time.time() - player.qte_start_time > player.qte_timeout:
+                            print("Quick Time Event Failed!")
+                        # Ajoutez ici le code que vous souhaitez exécuter en cas d'échec du QTE
+                        # Réinitialisez l'état du QTE
+                        qte_active = False
+
+                        # Afficher la lettre à presser à l'écran
+                        font = pygame.font.Font(None, 36)
+                        text = font.render(current_key.upper(), True, (255, 255, 255))
+                        screen.blit(text, (screen.get_width() // 2 - text.get_width() // 2, screen.get_height() // 2 - text.get_height() // 2))
+
+                        # À la fin de la boucle de jeu ou de la logique de mise à jour, assurez-vous de réinitialiser l'état du QTE si nécessaire
+                        if not grid.owner_position["rect"].colliderect(grid.cat_position["rect"]):
+                            player.qte_active = False
+
                 player.i_frame = True
+                player.hp -= 1
                 player.i_frame_timer = time.time()
                 if player.hp <= 0:
                     run = False
