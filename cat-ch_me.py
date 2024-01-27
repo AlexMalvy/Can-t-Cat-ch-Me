@@ -237,21 +237,21 @@ class obstacle_class:
     halwayRightBottomHalf = pygame.Rect(SQUARE*14, SQUARE*21, SQUARE, SQUARE*2)
     shoeCase = pygame.Rect(SQUARE, map.get_height() - SQUARE*3, SQUARE*2, SQUARE)
     #Living Room
-    couch = pygame.Rect(1200, 850, 250, 100)
-    tv = pygame.Rect(1275, map.get_height()-190, 150, 75)
-    library = pygame.Rect(map.get_width()-115, 550, 100, 300)
+    couch = pygame.Rect(SQUARE*20, SQUARE*14, SQUARE*4, SQUARE*2)
+    tv = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*3, SQUARE*2, SQUARE*2)
+    library = pygame.Rect(map.get_width()-SQUARE*2, SQUARE*9, SQUARE*2, SQUARE*5)
     #Office
-    officeLeftBottomHalf = pygame.Rect(map.get_width()-800, map.get_height()-600 , 400, 15)
-    officeRightBottomHalf = pygame.Rect(map.get_width()-250, map.get_height()-600 , 250, 15)
-    officeTopLeftHalf= pygame.Rect(map.get_width()-800, map.get_height()-600 , 15, 200)
-    officeTopRightHalf = pygame.Rect(map.get_width()-800, map.get_height()-300 , 15, 200)
-    desk = pygame.Rect(map.get_width()-600, map.get_height()-250, 350, 150)
+    officeTopLeftHalf = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*10 , SQUARE*6, SQUARE)
+    officeTopRightHalf = pygame.Rect(map.get_width()-SQUARE*3, map.get_height()-SQUARE*10 , SQUARE*3, SQUARE)
+    officeLeftTopHalf= pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*10 , SQUARE, SQUARE*2)
+    officeLeftBottomHalf = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*4 , SQUARE, SQUARE*2)
+    desk = pygame.Rect(map.get_width()-SQUARE*10, map.get_height()-SQUARE*4, SQUARE*6, SQUARE*2)
     #Kitchen
-    kitchenBottom = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-1000 , 800, 15)
-    table = pygame.Rect(map.get_width()-900, map.get_height()-1300, 300, 150)
-    oven= pygame.Rect(map.get_width()-165, 15, 150, 150)
-    fridge= pygame.Rect(map.get_width()-450, 15, 150, 100)
-    trashcan= pygame.Rect(map.get_width()-250, 15, 50, 50)
+    kitchenBottom = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*16 , SQUARE*13, SQUARE)
+    table = pygame.Rect(map.get_width()-SQUARE*15, map.get_height()-SQUARE*22, SQUARE*5, SQUARE*2)
+    oven= pygame.Rect(map.get_width()-SQUARE*3, SQUARE, SQUARE*2, SQUARE*2)
+    fridge= pygame.Rect(map.get_width()-SQUARE*8, SQUARE, SQUARE*2, SQUARE*2)
+    trashcan= pygame.Rect(map.get_width()-SQUARE*5, SQUARE, SQUARE, SQUARE)
     #testMap
     testMapHalfTopHalf = pygame.Rect(20*SQUARE, 0, SQUARE, SQUARE*4)
     testMapHalfBottomHalf = pygame.Rect(20*SQUARE, 6*SQUARE, SQUARE, SQUARE*3)
@@ -266,14 +266,14 @@ class obstacle_class:
     # map = pygame.Surface((2520(SQUARE42), 1500(SQUARE25)))
   
     kitchen= [kitchenBottom,table, oven, fridge, trashcan]
-    office= [officeLeftBottomHalf, officeRightBottomHalf, officeTopLeftHalf, officeTopRightHalf, desk]
+    office= [officeLeftBottomHalf, officeLeftTopHalf, officeTopLeftHalf, officeTopRightHalf, desk]
     livingRoom = [couch, tv, library]
     hallWay= [halwayRightTopHalf, halwayRightBottomHalf, shoeCase]
     bathRoom= [toilets, shower, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
     bedRoom = [bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf,bed, bedRoomRightBottomHalf]
     fullMap = [topWall, bottomWall, leftWall, rightWall]
     testMap= [testMapHalfTopHalf, testMapHalfBottomHalf2, testMapHalfBottomHalf, testMapHalfBottomHalf3, testMapHalfBottomHalf4, testMapHalfTopHalfsecond, testMapHalfBottomHalf2second, testMapHalfBottomHalfsecond, testMapHalfBottomHalf3second, testMapHalfBottomHalf4second]
-    list = [fullMap, bedRoom, bathRoom, hallWay]
+    list = [fullMap, bedRoom, bathRoom, hallWay, livingRoom, office, kitchen]
 
 obstacle = obstacle_class()
 
