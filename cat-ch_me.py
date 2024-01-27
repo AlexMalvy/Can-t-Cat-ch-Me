@@ -7,6 +7,7 @@ import sys
 import pickle
 import math
 import img_load
+import maze_solver
 from pygame.locals import *
 
 pygame.init()
@@ -140,36 +141,68 @@ class player_class:
 player = player_class()
 
 class owner_class:
-    def __init__(self):
-        self.target = player
-
-    body = pygame.Rect(100, 100, 50, 100)
-    range = 50
+    body = pygame.Rect(1100, 400, 50, 100)
+    range = 20
     
     max_speed = 5
     speed = 5
     moving = True
 
+    target = None
+    path = []
+
     def move_toward_cat(self):
-        if math.dist([self.target.body.centerx, self.target.body.centery], [self.body.centerx, self.body.centery]) > self.range:
+        if self.target != None:
+            if math.dist([self.target["rect"].centerx, self.target["rect"].centery], [self.body.centerx, self.body.centery]) > self.range:
+                self.moving = True
+                # Speed modifier
+                if self.body.centerx != self.target["rect"].centerx and self.body.centery != self.target["rect"].centery:
+                    self.speed = self.max_speed/3 * 2
+                else:
+                    self.speed = self.max_speed
+
+                # Chase Target
+                if self.target["rect"].centerx > self.body.centerx:
+                        self.body.x += self.speed
+                        self.right = True
+                if self.target["rect"].centerx < self.body.centerx:
+                        self.body.x -= self.speed
+                        self.right = False
+                        
+                if self.target["rect"].centery > self.body.centery:
+                        self.body.y += self.speed
+                if self.target["rect"].centery < self.body.centery:
+                        self.body.y -= self.speed
+            else:
+                self.path.pop(0)
+                if len(self.path) > 0:
+                    self.target = grid.grid[self.path[0][0]][self.path[0][1]]
+                else:
+                    self.target = None
+        else:
+            self.moving = False
+
+
+    def move_toward_cat_old(self):
+        if math.dist([self.target["rect"].centerx, self.target["rect"].centery], [self.body.centerx, self.body.centery]) > self.range:
             self.moving = True
             # Speed modifier
-            if self.body.centerx != self.target.body.centerx and self.body.centery != self.target.body.centery:
+            if self.body.centerx != self.target["rect"].centerx and self.body.centery != self.target["rect"].centery:
                 self.speed = self.max_speed/3 * 2
             else:
                 self.speed = self.max_speed
 
             # Chase Target
-            if self.target.body.centerx > self.body.centerx:
+            if self.target["rect"].centerx > self.body.centerx:
                     self.body.x += self.speed
                     self.right = True
-            if self.target.body.centerx < self.body.centerx:
+            if self.target["rect"].centerx < self.body.centerx:
                     self.body.x -= self.speed
                     self.right = False
                     
-            if self.target.body.centery > self.body.centery:
+            if self.target["rect"].centery > self.body.centery:
                     self.body.y += self.speed
-            if self.target.body.centery < self.body.centery:
+            if self.target["rect"].centery < self.body.centery:
                     self.body.y -= self.speed
 
         else:
@@ -251,39 +284,50 @@ class grid_class:
         self.get_owner_position()
 
     grid = []
+    maze = []
     cat_position = None
     owner_position = None
+
+    solver_timer = 0
+    solver_cd = 1
 
     def update(self):
         self.get_cat_position()
         self.get_owner_position()
 
+        if time.time() - self.solver_timer > self.solver_cd:
+            self.solver()
+
     def initialGrid(self):
-        blockSize = 20 #Set the size of the grid block
+        blockSize = 60 #Set the size of the grid block
         id = 1
         pos_x = 0
         pos_y = 0
         y_list = []
+        maze_y_list = []
         for x in range(0, map.get_width(), blockSize):
             for y in range(0, map.get_height(), blockSize):
                 rect = pygame.Rect(x, y, blockSize, blockSize)
                 # Check if obstacle
                 for room in obstacle.list:
                     if rect.collidelist(room) == -1:
-                        rect_info = {"id" : id, "pos_x" : pos_x, "pos_y" : pos_y,"rect" : rect, "obstacle" : False}
+                        rect_info = {"id" : id, "pos_x" : pos_x, "pos_y" : pos_y,"rect" : rect, "obstacle" : 0}
                         # rect_info = 0
                     else:
-                        rect_info = {"id" : id, "pos_x" : pos_x, "pos_y" : pos_y,"rect" : rect, "obstacle" : True}
+                        rect_info = {"id" : id, "pos_x" : pos_x, "pos_y" : pos_y,"rect" : rect, "obstacle" : 1}
                         # rect_info = 1
                         break
 
                 y_list.append(rect_info)
+                maze_y_list.append(rect_info["obstacle"])
                 id += 1
                 pos_y += 1
             pos_x += 1
             pos_y = 0
             self.grid.append(y_list)
             y_list = []
+            self.maze.append(maze_y_list)
+            maze_y_list = []
 
     def get_cat_position(self):
         for row in self.grid:
@@ -298,6 +342,22 @@ class grid_class:
                 if case["rect"].collidepoint(owner.body.center):
                     self.owner_position = case
                     return
+                
+    def solver(self):
+
+        start = (self.owner_position["pos_x"], self.owner_position["pos_y"])
+        end = (self.cat_position["pos_x"], self.cat_position["pos_y"])
+        # print(start)
+        # print(end)
+
+        path = maze_solver.astar(self.maze, start, end)
+        # print(path)
+        owner.path = path
+        owner.target = grid.grid[path[0][0]][path[0][1]]
+
+        self.solver_timer = time.time()
+        # print(owner.target)
+
 
 grid = grid_class()
 
@@ -341,6 +401,7 @@ class main_game_class:
         up = False
         down = False
         click = False
+        grid.solver()
         while run:
             clock.tick(60)
 
