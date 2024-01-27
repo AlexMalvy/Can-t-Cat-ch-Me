@@ -123,6 +123,9 @@ class player_class:
     moving = False
     right = False
 
+    miaou_cd = 5
+    miaou_timer = 0
+
     frame = 0
     frame_timer = pygame.time.get_ticks()
     frame_cd = 120
@@ -574,6 +577,7 @@ class main_game_class:
         up = False
         down = False
         interact = False
+        miaou = False
         click = False
         grid.solver()
         while run:
@@ -622,6 +626,9 @@ class main_game_class:
             elif interactible.interact_timer != None:
                 interactible.cancel_interact()
 
+            if miaou and time.time() - player.miaou_timer > player.miaou_cd:
+                print("miaou")
+
             owner.update()
 
             player.update_visual()
@@ -631,6 +638,7 @@ class main_game_class:
             if click:
                 owner.rage += 10
 
+            miaou = False
             click = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -645,6 +653,8 @@ class main_game_class:
                         general_use.close_the_game()
                     if event.key == K_e:
                         interact = True
+                    if event.key == K_SPACE:
+                        miaou = True
                     if event.key == K_q:
                         left = True
                     if event.key == K_d:
