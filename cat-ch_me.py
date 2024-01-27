@@ -10,7 +10,6 @@ import img_load
 import maze_solver
 import threading
 import video
-import keyboard
 from copy import deepcopy
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
@@ -49,9 +48,6 @@ GREEN = (0, 128, 0)
 BROWN = (83, 61, 50)
 ALMOST_BLACK = (1, 1, 1)
 
-### Vod
-
-# VOD = 
 
 ### Background
 
@@ -204,6 +200,15 @@ class game_variable_class:
     all_owners = ["owner M", "owner F"]
     selected_owner = "owner M"
 
+    def reset_all_variable(self):
+        self.score = 0
+        self.multiplier = 1
+        player.hp = 3
+        player.hitbox.x = SQUARE*18
+        player.hitbox.y = SQUARE*18
+        owner.body_hitbox.x = 1200
+        owner.body_hitbox.y = 600
+
 def redefineMaze(oldMaze):
     oldMazeLen = len(oldMaze)
     row = []
@@ -229,17 +234,11 @@ class player_class:
     moving = False
     right = False
 
-
     caught = False
-    qte_active = False
-    qte_sequence = ["k", "l", "m"]
-    current_qte_index = 0
-    qte_start_time = 0
-    qte_timeout = 3  # Temps limite pour chaque touche en secondes
 
     i_frame = False
     i_frame_timer = 0
-    i_frame_duration = 1.5
+    i_frame_duration = 2
 
     miaou_cd = 5
     miaou_timer = 0
@@ -373,9 +372,6 @@ class player_class:
             self.state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
             self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN]
             self.state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
-
-        
-        
 
 
 class owner_class:
@@ -633,7 +629,7 @@ class grid_class:
         #     pathfinder.create_path()
 
     def initialGrid(self):
-        blockSize = 60 #Set the size of the grid block
+        blockSize = SQUARE #Set the size of the grid block
         id = 1
         pos_x = 0
         pos_y = 0
@@ -677,36 +673,6 @@ class grid_class:
                     self.owner_position = case
                     return
                 
-    
-                
-    # def solver(self):
-    #     start = (self.owner_position["pos_x"], self.owner_position["pos_y"])
-    #     end = (self.cat_position["pos_x"], self.cat_position["pos_y"])
-
-    #     path = []
-
-    #     # def astar_thread():
-    #     # nonlocal path
-    #     try:
-    #         path = maze_solver.astar(self.maze, start, end)
-    #     except:
-    #         pass
-
-    #     # thread = threading.Thread(target=astar_thread)
-    #     # if thread.is_alive():
-    #     #      self.stop_thread.clear()
-    #     # else:
-    #     #     thread.start()
-    #     #     thread.join(timeout=0.2)  # Attendez jusqu'à 3 secondes maximum
-
-    #     if path:
-    #         owner.path = path
-    #         owner.target = grid.grid[path[0][0]][path[0][1]]
-    #     else:
-    #         owner.path = []
-    #         owner.target = None
-
-    #     self.solver_timer = time.time()
        
 class Pathfinder: 
     def __init__(self, matrix):
@@ -741,6 +707,59 @@ class Pathfinder:
         owner.path = path
         owner.target = path[0]
         
+
+class game_over_class:
+    def draw_window(self):
+        screen.fill(GRAY)
+        
+        title_text = font.render("Game Over !", 1, WHITE)
+        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
+
+        screen.blit(player.img, (WIDTH//2 - player.body.width//2, HEIGHT//2 - player.body.height//2))
+
+        score_text = font.render(f"Score : {game_variable.score}", 1, WHITE)
+        screen.blit(score_text, (WIDTH//2 - score_text.get_width()//2, HEIGHT//2 + 50))
+
+        pygame.display.update()
+
+    def main_loop(self):
+        run = True
+        left = False
+        right = False
+        up = False
+        down = False
+        interact = False
+        miaou = False
+        click = False
+        
+        # grid.solver()
+        while run:
+            clock.tick(60)
+
+            player.update()
+
+            if click or interact:
+                run = False
+
+            miaou = False
+            interact = False
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    general_use.close_the_game()
+                if event.type == MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        run = False
+                    if event.key == K_e:
+                        interact = True
+                    if event.key == K_SPACE:
+                        miaou = True
+            self.draw_window()
+
 
 class main_game_class:
     def draw_window(self):
@@ -818,6 +837,7 @@ class main_game_class:
         pygame.display.update()
 
     def main_loop(self):
+        game_variable.reset_all_variable()
         run = True
         left = False
         right = False
@@ -827,72 +847,27 @@ class main_game_class:
         miaou = False
         click = False
         
-        # grid.solver()
         while run:
             clock.tick(60)
             owner.remove_rage(1)
 
-             # Collision with cat
+            # Collision with cat
             if grid.owner_position["rect"].colliderect(grid.cat_position["rect"]) and not player.i_frame:
-               
-                caught = True
-                if caught:
-                    if not player.qte_active:
-                        # Initialiser le QTE
-                        print("Quick Time Event Started!")
-                        player.qte_active = True
-                        player.current_qte_index = 0
-                        player.qte_start_time = time.time()
-
-                        # Vérifier la touche actuellement attendue dans la séquence
-                        current_key = player.qte_sequence[player.current_qte_index]
-
-                        # Vérifier si le joueur a appuyé sur la touche attendue
-                        if keyboard.is_pressed(current_key):
-                            print(f"Pressed: {current_key}")
-
-                        # Passer à la touche suivante dans la séquence
-                        player.current_qte_index += 1
-
-                        # Réinitialiser le décompte du temps pour la prochaine touche
-                        player.qte_start_time = time.time()
-
-                        # Si toutes les touches de la séquence ont été appuyées
-                        if player.current_qte_index == len(player.qte_sequence):
-                            print("Quick Time Event Successful!")
-                            # Ajoutez ici le code que vous souhaitez exécuter en cas de succès du QTE
-                            # Réinitialisez l'état du QTE
-                            player.qte_active = False
-
-                        # Vérifier si le temps limite pour la touche actuelle est dépassé
-                        elif time.time() - player.qte_start_time > player.qte_timeout:
-                            print("Quick Time Event Failed!")
-                        # Ajoutez ici le code que vous souhaitez exécuter en cas d'échec du QTE
-                        # Réinitialisez l'état du QTE
-                        qte_active = False
-
-                        # Afficher la lettre à presser à l'écran
-                        font = pygame.font.Font(None, 36)
-                        text = font.render(current_key.upper(), True, (255, 255, 255))
-                        screen.blit(text, (screen.get_width() // 2 - text.get_width() // 2, screen.get_height() // 2 - text.get_height() // 2))
-
-                        # À la fin de la boucle de jeu ou de la logique de mise à jour, assurez-vous de réinitialiser l'état du QTE si nécessaire
-                        if not grid.owner_position["rect"].colliderect(grid.cat_position["rect"]):
-                            player.qte_active = False
-
                 player.i_frame = True
-                player.hp -= 1
+
+
+                player.hp -= 3
                 player.i_frame_timer = time.time()
                 if player.hp <= 0:
+                    game_over.main_loop()
                     run = False
-                    general_use.close_the_game()
 
-             # i-frame logic
+            # i-frame logic
             if player.i_frame:
                 if time.time() - player.i_frame_timer >= player.i_frame_duration:
                     player.i_frame = False
             
-
+            # Player Go Left
             if left and not interact:
                 player.hitbox.x -= player.speed
                 player.right = False
@@ -901,6 +876,7 @@ class main_game_class:
                     for obs in room:
                         if player.hitbox.colliderect(obs):
                             player.hitbox.x += player.speed
+            # Player Go Right
             if right and not interact:
                 player.hitbox.x += player.speed
                 player.right = True
@@ -909,6 +885,7 @@ class main_game_class:
                     for obs in room:
                         if player.hitbox.colliderect(obs):
                             player.hitbox.x -= player.speed
+            # Player Go Up
             if up and not interact:
                 player.hitbox.y -= player.speed
                 # Check if colliding with obstacle
@@ -916,6 +893,7 @@ class main_game_class:
                     for obs in room:
                         if player.hitbox.colliderect(obs):
                             player.hitbox.y += player.speed
+            # Player Go Down
             if down and not interact:
                 player.hitbox.y += player.speed
                 # Check if colliding with obstacle
@@ -1299,6 +1277,7 @@ obstacle = obstacle_class()
 grid = grid_class()
 interactible = interactible_class()
 animation = animation_class()
+game_over = game_over_class()
 main = main_game_class()
 cat_selection = cat_selection_class()
 owner_selection = owner_selection_class()
