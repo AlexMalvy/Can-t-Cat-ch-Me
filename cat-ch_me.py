@@ -124,12 +124,12 @@ class camera_class:
     camera_rect = pygame.Rect(0, 0, WIDTH, HEIGHT)
 
     def update(self):
-        self.camera_rect.x = player.body.centerx - WIDTH/2
+        self.camera_rect.x = player.hitbox.centerx - WIDTH/2
         if self.camera_rect.x < 0:
             self.camera_rect.x = 0
         if self.camera_rect.right > map.get_width():
             self.camera_rect.right = map.get_width()
-        self.camera_rect.y = player.body.centery - HEIGHT/2
+        self.camera_rect.y = player.hitbox.centery - HEIGHT/2
         if self.camera_rect.y < 0:
             self.camera_rect.y = 0
         if self.camera_rect.bottom > map.get_height():
@@ -164,9 +164,10 @@ def redefineMaze(oldMaze):
 class player_class:
     # body = pygame.Rect(SQUARE*7, SQUARE*6, 64, 64)
     body = pygame.Rect(SQUARE*14, SQUARE*8, 100, 100)
+
     speed = 8
     hp = 3
-
+    hitbox = pygame.Rect(body.x, body.bottom, 60, 60)
 
     moving = False
     right = False
@@ -203,7 +204,9 @@ class player_class:
 
     img = pygame.Surface((body.width, body.height))
     
-    def update_visual(self):
+    def update(self):
+        self.align_body()
+
         self.change_state()
 
         self.update_frame()
@@ -274,6 +277,9 @@ class player_class:
         if self.right == False:
             self.img = pygame.transform.flip(self.img, 1, 0)
 
+    def align_body(self):
+        self.body.centerx = self.hitbox.centerx
+        self.body.centery = self.hitbox.centery
 
 
 class owner_class:
@@ -453,7 +459,7 @@ class interactible_class():
 
     def isOnInteractible(self):
         for item in self.list:
-            if item["rect"].collidepoint(player.body.center) and item["type"]["is_enabled"]:
+            if item["rect"].collidepoint(player.hitbox.center) and item["type"]["is_enabled"]:
                 self.isOn = item
                 return
         
@@ -564,7 +570,7 @@ class grid_class:
     def get_cat_position(self):
         for row in self.grid:
             for case in row:
-                if case["rect"].collidepoint(player.body.center):
+                if case["rect"].collidepoint(player.hitbox.center):
                     self.cat_position = case
                     return
 
@@ -665,7 +671,8 @@ class main_game_class:
                 pygame.draw.rect(map, YELLOW, item["rect"])
 
         # Player (Cat)
-        # pygame.draw.rect(map, BLACK, player.body)
+        pygame.draw.rect(map, BLACK, player.body)
+        pygame.draw.rect(map, GREEN, player.hitbox)
         map.blit(player.img, (player.body.x, player.body.y))
 
         # Grid Position
@@ -745,35 +752,35 @@ class main_game_class:
             
 
             if left and not interact:
-                player.body.x -= player.speed
+                player.hitbox.x -= player.speed
                 player.right = False
                 # Check if colliding with obstacle
                 for room in obstacle.list:
                     for obs in room:
-                        if player.body.colliderect(obs):
-                            player.body.x += player.speed
+                        if player.hitbox.colliderect(obs):
+                            player.hitbox.x += player.speed
             if right and not interact:
-                player.body.x += player.speed
+                player.hitbox.x += player.speed
                 player.right = True
                 # Check if colliding with obstacle
                 for room in obstacle.list:
                     for obs in room:
-                        if player.body.colliderect(obs):
-                            player.body.x -= player.speed
+                        if player.hitbox.colliderect(obs):
+                            player.hitbox.x -= player.speed
             if up and not interact:
-                player.body.y -= player.speed
+                player.hitbox.y -= player.speed
                 # Check if colliding with obstacle
                 for room in obstacle.list:
                     for obs in room:
-                        if player.body.colliderect(obs):
-                            player.body.y += player.speed
+                        if player.hitbox.colliderect(obs):
+                            player.hitbox.y += player.speed
             if down and not interact:
-                player.body.y += player.speed
+                player.hitbox.y += player.speed
                 # Check if colliding with obstacle
                 for room in obstacle.list:
                     for obs in room:
-                        if player.body.colliderect(obs):
-                            player.body.y -= player.speed
+                        if player.hitbox.colliderect(obs):
+                            player.hitbox.y -= player.speed
                             
             if left or right or up or down:
                 player.moving = True
@@ -792,7 +799,7 @@ class main_game_class:
 
             owner.update()
 
-            player.update_visual()
+            player.update()
 
             grid.update()
             pathfinder.owner_pos, pathfinder.cat_pos = grid.owner_position, grid.cat_position
@@ -915,7 +922,6 @@ class owner_selection_class:
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         run = False
-                        general_use.close_the_game()
                     if event.key == K_SPACE:
                         click = True
                     if event.key == K_e:
@@ -1017,7 +1023,6 @@ class cat_selection_class:
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         run = False
-                        general_use.close_the_game()
                     if event.key == K_SPACE:
                         click = True
                     if event.key == K_e:
