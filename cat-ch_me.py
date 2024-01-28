@@ -378,6 +378,7 @@ class game_variable_class:
 
     timer = 0
     max_timer = 60
+    enraged = False
 
     started = False
 
@@ -579,7 +580,7 @@ class player_class:
         # Transforming
         elif self.transforming:
             state = self.state_chaiyan_transformation
-            current_state = self.current_state
+            current_state = 0
         # Chaiyan
         elif self.chaiyan:
             if self.idle_bis:
@@ -658,7 +659,7 @@ class player_class:
     def apply_wall_filter(self):
         if self.is_behind_wall:
             self.img.set_alpha(50)
-        else:
+        elif not self.i_frame:
             # Si le joueur n'est pas derrière un mur, réinitialiser l'image sans filtre
             self.img.set_alpha(255)
 
@@ -821,6 +822,8 @@ class owner_class:
 
     def update_move_speed(self):
         self.bonus_speed = self.max_bonus_speed * (self.rage / self.max_rage)
+        if game_variable.enraged:
+            self.bonus_speed += 7
 
 
 class obstacle_class:
@@ -1176,6 +1179,10 @@ class game_ui_class:
 
     LOWER_LEFT_PANNEL_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "fond-gauche-jauges.png")))
     LOWER_LEFT_PANNEL_RECT = pygame.Rect(25, HEIGHT - 25 - LOWER_LEFT_PANNEL_IMG.get_height(), LOWER_LEFT_PANNEL_IMG.get_width(), LOWER_LEFT_PANNEL_IMG.get_height())
+
+    LOWER_MIDDLE_PANNEL_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "timer-background.png")))
+    LOWER_MIDDLE_PANNEL_RECT = pygame.Rect(WIDTH//2 - LOWER_MIDDLE_PANNEL_IMG.get_width()//2, HEIGHT - 25 - LOWER_MIDDLE_PANNEL_IMG.get_height(), LOWER_MIDDLE_PANNEL_IMG.get_width(), LOWER_MIDDLE_PANNEL_IMG.get_height())
+
     LOWER_RIGHT_PANNEL_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "white-background-area.png")))
     LOWER_RIGHT_PANNEL_RECT = pygame.Rect(WIDTH - 25 - LOWER_RIGHT_PANNEL_IMG.get_width(), HEIGHT - 25 - LOWER_RIGHT_PANNEL_IMG.get_height(), LOWER_RIGHT_PANNEL_IMG.get_width(), LOWER_RIGHT_PANNEL_IMG.get_height())
 
@@ -1236,23 +1243,23 @@ class game_ui_class:
         else:
             screen.blit(self.RAGE_BAR_0_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.HEART_3_IMG.get_width() + self.spacer * 3, self.LOWER_LEFT_PANNEL_RECT.centery - self.RAGE_BAR_0_IMG.get_height()//2))
 
-
-        # Right Pannel
-        screen.blit(self.LOWER_RIGHT_PANNEL_IMG, (self.LOWER_RIGHT_PANNEL_RECT.x, self.LOWER_RIGHT_PANNEL_RECT.y))
-
-        screen.blit(self.HOURGLASS_IMG, ((self.LOWER_RIGHT_PANNEL_RECT.x + 20, self.LOWER_RIGHT_PANNEL_RECT.centery - self.HOURGLASS_IMG.get_height()//2)))
-
+        # Middle Pannel
+        screen.blit(self.LOWER_MIDDLE_PANNEL_IMG, (self.LOWER_MIDDLE_PANNEL_RECT.x, self.LOWER_MIDDLE_PANNEL_RECT.y))
         if game_variable.started:
             time_text = font.render(f"{game_variable.max_timer - (time.time() - game_variable.timer):.2f} s", 1, BLACK)
         else:
             time_text = font.render(f"{game_variable.max_timer} s", 1, BLACK)
-        screen.blit(time_text, (self.LOWER_RIGHT_PANNEL_RECT.x + self.HOURGLASS_IMG.get_width() + self.spacer * 1, self.LOWER_RIGHT_PANNEL_RECT.centery - time_text.get_height()//2))
+        screen.blit(time_text, (self.LOWER_MIDDLE_PANNEL_RECT.right - time_text.get_width() - self.spacer * 1, self.LOWER_MIDDLE_PANNEL_RECT.centery - time_text.get_height()//2))
+
+
+        # Right Pannel
+        screen.blit(self.LOWER_RIGHT_PANNEL_IMG, (self.LOWER_RIGHT_PANNEL_RECT.x, self.LOWER_RIGHT_PANNEL_RECT.y))
 
         score_text = font.render(f"SCORE : {game_variable.score}", 1, BLACK)
-        screen.blit(score_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 20 + time_text.get_width() + self.spacer * 2, self.LOWER_RIGHT_PANNEL_RECT.centery - score_text.get_height()//2))
+        screen.blit(score_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 20 , self.LOWER_RIGHT_PANNEL_RECT.centery - score_text.get_height()//2))
 
         multiplier_text = font.render(f"MULTIPLIER : {game_variable.multiplier:.1f}", 1, BLACK)
-        screen.blit(multiplier_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 20 + score_text.get_width() + time_text.get_width() + self.spacer * 3, self.LOWER_RIGHT_PANNEL_RECT.centery - multiplier_text.get_height()//2))
+        screen.blit(multiplier_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 20 + score_text.get_width() + self.spacer * 1, self.LOWER_RIGHT_PANNEL_RECT.centery - multiplier_text.get_height()//2))
 
 class button_smash_class:
     IMG_1 = pygame.image.load(os.path.join("assets", os.path.join("minigame", "ORA1.png")))
@@ -1269,7 +1276,7 @@ class button_smash_class:
     max_break_free = 40
     break_free = 40
     timer = 0
-    max_timer = 50
+    max_timer = 5
     smash_right = True
     
     def update_progress_bar(self):
@@ -1350,12 +1357,12 @@ class main_game_class:
         
         camera.bg_blit()
 
-        for row in grid.grid:
-            for case in row:
-                if not case["obstacle"]:
-                    pygame.draw.rect(map, RED, case["rect"], 1)
-                else:
-                    pygame.draw.rect(map, WHITE, case["rect"], 1)
+        # for row in grid.grid:
+        #     for case in row:
+        #         if not case["obstacle"]:
+        #             pygame.draw.rect(map, RED, case["rect"], 1)
+        #         else:
+        #             pygame.draw.rect(map, WHITE, case["rect"], 1)
 
         # animation.play_animations()
 
@@ -1395,8 +1402,8 @@ class main_game_class:
                     map.blit(item["type"]["sprite"], sprite_dict.get(item_type, sprite_position))
                 else:
                     map.blit(item["type"]["sprite_broken"], sprite_dict_broken.get(item_type, sprite_position))
-            else:
-                pygame.draw.rect(map, YELLOW, item["rect"])
+            # else:
+            #     pygame.draw.rect(map, YELLOW, item["rect"])
 
 
 
@@ -1429,11 +1436,11 @@ class main_game_class:
 
         camera.update()
 
-        owner_rage_text = font.render(f"Rage : {owner.rage}", 1, WHITE)
-        screen.blit(owner_rage_text, (WIDTH - owner_rage_text.get_width() - 10, 10))
+        # owner_rage_text = font.render(f"Rage : {owner.rage}", 1, WHITE)
+        # screen.blit(owner_rage_text, (WIDTH - owner_rage_text.get_width() - 10, 10))
 
-        owner_speed_text = font.render(f"Speed : {owner.speed}", 1, WHITE)
-        screen.blit(owner_speed_text, (WIDTH - owner_speed_text.get_width() - 10, 50))
+        # owner_speed_text = font.render(f"Speed : {owner.speed}", 1, WHITE)
+        # screen.blit(owner_speed_text, (WIDTH - owner_speed_text.get_width() - 10, 50))
 
         if interactible.isOn:
             screen.blit(settings.E_KEY_IMG, (screen.get_width()//2 - settings.E_KEY_IMG.get_width()//2, screen.get_height()//3 * 2))
@@ -1466,13 +1473,18 @@ class main_game_class:
 
             if game_variable.started:
 
+                if time.time() - game_variable.timer > game_variable.max_timer:
+                    game_variable.enraged = True
+
                 # Collision with cat
                 if grid.owner_position["rect"].colliderect(grid.cat_position["rect"]) and not player.i_frame:
                     player.i_frame = True
 
                     # Start button smash to try to escape
-                    result = button_smash.main_loop()
-                    # result = True
+                    if game_variable.enraged:
+                        result = False
+                    else:
+                        result = button_smash.main_loop()
                     game_variable.multiplier = 1
                     left = False
                     right = False
@@ -1485,7 +1497,10 @@ class main_game_class:
 
                     player.i_frame_timer = time.time()
                     if not result:
-                        player.hp -= 1
+                        if game_variable.enraged:
+                            player.hp = 0
+                        else:
+                            player.hp -= 1
                         if player.hp <= 0:
                             game_over.main_loop()
                             run = False
@@ -1600,6 +1615,7 @@ class main_game_class:
                 game_variable.timer = time.time()
             else:
                 player.update()
+                owner.update()
                 
 
             miaou = False
@@ -1939,7 +1955,7 @@ class menu_class:
         interact = False
         click = False
         self.animation_timer = time.time()
-        # music_class.play_music()
+        music_class.play_music()
         while run:
             clock.tick(60)
 
