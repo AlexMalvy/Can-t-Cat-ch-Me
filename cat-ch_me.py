@@ -1047,18 +1047,6 @@ class main_game_class:
 
         camera.update()
 
-        score_text = font.render(f"Score : {game_variable.score}", 1, WHITE)
-        screen.blit(score_text, (10, 10))
-
-        multiplier_text = font.render(f"Multiplier : {game_variable.multiplier}", 1, WHITE)
-        screen.blit(multiplier_text, (10, 50))
-
-        life_text = font.render(f"Lives : {player.hp}", 1, WHITE)
-        screen.blit(life_text, (10, 90))
-
-        selected_cat_text = font.render(f"Cat : {game_variable.selected_cat}", 1, WHITE)
-        screen.blit(selected_cat_text, (10, 130))
-
         selected_owner_text = font.render(f"Owner : {game_variable.selected_owner}", 1, WHITE)
         screen.blit(selected_owner_text, (10, 170))
 
