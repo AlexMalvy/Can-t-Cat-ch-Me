@@ -52,7 +52,6 @@ GREEN = (0, 128, 0)
 BROWN = (83, 61, 50)
 ALMOST_BLACK = (1, 1, 1)
 
-
 ### Background
 
 BG_GRAY_WALL = pygame.image.load(os.path.join("assets", "bg_gray_wall.jpg"))
@@ -169,7 +168,6 @@ SIAMESE_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", 
 
 ## Buttons
 
-
 BACK_BUTTON_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-back.png")))
 BACK_BUTTON_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-back-focus-hover.png")))
 
@@ -177,100 +175,132 @@ BACK_BUTTON = pygame.Rect(10, HEIGHT - 10 - BACK_BUTTON_IMG.get_height(), BACK_B
 
 #############
 
-class baseSettings:
-    # Create json controls config
-    def __init__(self):
-        # Set base config function
-        def setBaseConfig():
-            # Set a base configuration
-            self.up = 'w'
-            self.left = 'q'
-            self.down = 's'
-            self.right = 'd'
-            self.action = 'e'
-            self.select = 'space'
-            self.back = 'escape'
-        # Valid keys for config fle
-        valids = ['up', 'left', 'down', 'right', 'action', 'select', 'back']
-        # Config file name
-        config = 'config.json'
-        # Check file existence :
-        exists = os.path.isfile(config)
-        # Check json config file exists
-        if not exists:
-            # Set a base configuration
-            setBaseConfig()
-            # Create controls dictionary
-            controls = {
-                "up": self.up,
-                "left": self.left,
-                "down": self.down,
-                "right": self.right,
-                "action": self.action,
-                "select": self.select,
-                "back": self.back,
-            }
-            # Create a json config file
-            with open(config, "w") as outfile: 
-                json.dump(controls, outfile)
-        else :
-            # Flag to check json file validity
-            isConfigValid = True
-            # Read JSON file
-            with open(config, "r") as configFile:
-                # Check if json is loadable
-                try:
-                    # Create configuration dictionary
-                    configuration = json.load(configFile)
-                except:
-                    # Mark as invalid json file
-                    isConfigValid = False
-                finally:
-                    # Check numbner of expected keys
-                    if len(configuration) == len(valids):
-                        # Check keys validity
-                        for key in configuration.keys():
-                            if not(key in valids):
-                                isConfigValid = False
-                        # If keys are valid, check values
-                        if isConfigValid :
-                            # Check values validity
-                            configValues = list(configuration.values())
-                            for value in configValues:
-                                # A value is valid if unique
-                                count = 0
-                                # Loop on each values
-                                for i in range(0, len(configValues)):
-                                    if configValues[i] == value:
-                                        count += 1
-                                # If value occured more than 1 time : mark as invalid then break loop
-                                if count > 1:
-                                    isConfigValid = False
-                                    break
-                    else:
-                        isConfigValid = False
-            # if file is not valid
-            if not isConfigValid :
-                # delete
-                os.remove(config)
-                # set base config
-                setBaseConfig()
-                # Create controls dictionary
-                controls = {
-                    "up": self.up,
-                    "left": self.left,
-                    "down": self.down,
-                    "right": self.right,
-                    "action": self.action,
-                    "select": self.select,
-                    "back": self.back,
-                }
-                # Create a valid json config file
-                with open(config, "w") as outfile: 
-                    json.dump(controls, outfile)
-            # Else, if the file is valid => check mapping
-            else:
-                print('valid file')
+# class baseSettings:
+#     # Create json controls config
+#     def __init__(self):
+#         # Set base config function
+#         def setBaseConfig():
+#             # Set a base configuration
+#             self.up = 'w'
+#             self.left = 'q'
+#             self.down = 's'
+#             self.right = 'd'
+#             self.action = 'e'
+#             self.select = 'space'
+#             self.back = 'escape'
+#         # Valid keys for config fle
+#         valids = ['up', 'left', 'down', 'right', 'action', 'select', 'back']
+#         # Config file name
+#         config = 'config.json'
+#         # Check file existence :
+#         exists = os.path.isfile(config)
+#         # Check json config file exists
+#         if not exists:
+#             # Set a base configuration
+#             setBaseConfig()
+#             # Create controls dictionary
+#             controls = {
+#                 "up": self.up,
+#                 "left": self.left,
+#                 "down": self.down,
+#                 "right": self.right,
+#                 "action": self.action,
+#                 "select": self.select,
+#                 "back": self.back,
+#             }
+#             # Create a json config file
+#             with open(config, "w") as outfile: 
+#                 json.dump(controls, outfile)
+#         else :
+#             # Flag to check json file validity
+#             isConfigValid = True
+#             # Read JSON file
+#             with open(config, "r") as configFile:
+#                 # Check if json is loadable
+#                 try:
+#                     # Create configuration dictionary
+#                     configuration = json.load(configFile)
+#                 except:
+#                     # Mark as invalid json file
+#                     isConfigValid = False
+#                 finally:
+#                     # Check numbner of expected keys
+#                     if len(configuration) == len(valids):
+#                         # Check keys validity
+#                         for key in configuration.keys():
+#                             if not(key in valids):
+#                                 isConfigValid = False
+#                         # If keys are valid, check values
+#                         if isConfigValid :
+#                             # Check values validity
+#                             configValues = list(configuration.values())
+#                             for value in configValues:
+#                                 # A value is valid if unique
+#                                 count = 0
+#                                 # Loop on each values
+#                                 for i in range(0, len(configValues)):
+#                                     if configValues[i] == value:
+#                                         count += 1
+#                                 # If value occured more than 1 time : mark as invalid then break loop
+#                                 if count > 1:
+#                                     isConfigValid = False
+#                                     break
+#                     else:
+#                         isConfigValid = False
+#             # if file is not valid
+#             if not isConfigValid :
+#                 # delete
+#                 os.remove(config)
+#                 # set base config
+#                 setBaseConfig()
+#                 # Create controls dictionary
+#                 controls = {
+#                     "up": self.up,
+#                     "left": self.left,
+#                     "down": self.down,
+#                     "right": self.right,
+#                     "action": self.action,
+#                     "select": self.select,
+#                     "back": self.back,
+#                 }
+#                 # Create a valid json config file
+#                 with open(config, "w") as outfile: 
+#                     json.dump(controls, outfile)
+#             # Else, if the file is valid => check mapping validity
+#             else:
+#                 print('valid file')
+
+#     def eventListener(run = True, left = False, right = False, up = False, down = False, interact = False, click = False):
+#         # Listen for each event in the game
+#         for event in pygame.event.get():
+#             # If quit is requested
+#             if event.type == pygame.QUIT:
+#                 run = False
+#                 general_use.close_the_game()
+#             # if mouse button is clicked
+#             if event.type == MOUSEBUTTONDOWN:
+#                 if event.button == 1:
+#                     click = True
+#             # For each keydown
+#             if event.type == KEYDOWN:
+
+#                 if event.key == K_ESCAPE:
+#                     run = False
+#                     general_use.close_the_game()
+#                 if event.key == K_SPACE:
+#                     click = True
+#                 if event.key == K_e:
+#                     interact = True
+#                 if event.key == K_q:
+#                     left = True
+#                 if event.key == K_d:
+#                     right = True
+#                 if event.key == K_z:
+#                     up = True
+#                 if event.key == K_s:
+#                     down = True
+
+
 class general_use_class:
     background_color = WHITE
 
@@ -1936,7 +1966,7 @@ class credits_class:
 # Property designed to quit the game
 exitedGameProperty = False
 
-baseSettings() # Create the controls configuration file
+# baseSettings() # Create the controls configuration file
 general_use = general_use_class()
 game_variable = game_variable_class()
 camera = camera_class()
