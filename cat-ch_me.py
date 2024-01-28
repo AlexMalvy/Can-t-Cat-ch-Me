@@ -1380,11 +1380,13 @@ class main_game_class:
         screen.blit(owner_speed_text, (WIDTH - owner_speed_text.get_width() - 10, 50))
 
         if interactible.isOn:
-            screen.blit(settings.ACTION_KEY_IMG, (screen.get_width()//2 - settings.ACTION_KEY_IMG.get_width()//2, screen.get_height()//3 * 2))
-
-        if interactible.interact_timer != None:
-            pygame.draw.rect(screen, WHITE, interactible.PROGRESS_BAR)
-            pygame.draw.rect(screen, YELLOW, interactible.PROGRESS_BAR_FILL)
+            screen.blit(settings.E_KEY_IMG, (screen.get_width()//2 - settings.E_KEY_IMG.get_width()//2, screen.get_height()//3 * 2))
+            if interactible.interact_timer != None:
+                screen.blit(settings.E_KEY_PRESSED_IMG, (screen.get_width()//2 - settings.E_KEY_PRESSED_IMG.get_width()//2, screen.get_height()//3 * 2))
+                pygame.draw.rect(screen, WHITE, interactible.PROGRESS_BAR)
+                pygame.draw.rect(screen, YELLOW, interactible.PROGRESS_BAR_FILL)
+            else:
+                screen.blit(settings.E_KEY_IMG, (screen.get_width()//2 - settings.E_KEY_IMG.get_width()//2, screen.get_height()//3 * 2))
 
         game_ui.draw_ui()
 
