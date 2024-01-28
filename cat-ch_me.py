@@ -563,7 +563,8 @@ class obstacle_class:
     libraryLivingRoom = pygame.Rect(SQUARE*17, SQUARE*4, SQUARE*5, SQUARE)
     plantLivingRoom = pygame.Rect(SQUARE*15, map.get_height()-SQUARE*3, SQUARE, SQUARE)
     #Office
-    desk = pygame.Rect(map.get_width()-SQUARE*10, SQUARE*23, SQUARE*5, SQUARE*2)
+    desk = pygame.Rect(map.get_width()-SQUARE*10, SQUARE*23, SQUARE*6, SQUARE*2)
+    deskChair= pygame.Rect(map.get_width()-SQUARE*9, SQUARE*25, SQUARE, SQUARE)
     libraryOffice = pygame.Rect(map.get_width()-SQUARE*4, SQUARE*23, SQUARE*3, SQUARE)
     #Kitchen
     kitchenBottom = pygame.Rect(map.get_width()-SQUARE*11,SQUARE*22 , SQUARE*10, SQUARE)
@@ -571,7 +572,7 @@ class obstacle_class:
     ovenAndStuff = pygame.Rect(map.get_width()-SQUARE*13, SQUARE*4, SQUARE*12, SQUARE)
   
     kitchen= [kitchenBottom, table, ovenAndStuff]
-    office= [desk, libraryOffice]
+    office= [desk, libraryOffice, deskChair]
     livingRoom = [couchLivingRoom, tvLivingRoomAndPlant, libraryLivingRoom, chairLivingRoom]
     hallWay= [halwayRightTopHalf, halwayRightBottomHalf, shoeCaseHallway, plantHallway]
     bathRoom= [toiletsBathroom, bathtubBathroom, sinkBathroom, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
@@ -607,27 +608,34 @@ class interactible_class():
     type_shoeCase = {"type" : "shoe_case", "score" : 500, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 25, "animation_type" : "jumping", "sprite" : SHOES_IMG, "sprite_broken" : SHOES_BROKEN_IMG}
     type_toilets = {"type" : "toilets", "score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "pee", "sprite" : None, "sprite_broken" : None}
     type_shower = {"type" : "shower", "score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "pee", "sprite" : None, "sprite_broken" : None}
-    type_plant = {"type" : "plant", "score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 20, "animation_type" : "jumping", "sprite" : PLANT_IMG, "sprite_broken" : PLANT_BROKEN_IMG}
+    type_plant = {"type" : "plant", "score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 20, "animation_type" : "jumping", "sprite" : PLANT_IMG, "sprite_broken" : PLANT_BROKEN_IMG}
     type_Rug = {"type" : "rug", "score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "pee", "sprite" : RUG_IMG, "sprite_broken" : RUG_PUKE_IMG}
 
+    # table = pygame.Rect(map.get_width()-SQUARE*14, SQUARE*9, SQUARE*6, SQUARE*5)
+    # shoeCaseHallway = pygame.Rect(SQUARE*2, map.get_height() - SQUARE*10, SQUARE*5, SQUARE)
+    # couchLivingRoom = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*11, SQUARE*6, SQUARE*2)
+    # desk = pygame.Rect(map.get_width()-SQUARE*10, SQUARE*23, SQUARE*5, SQUARE*2)
+    # libraryLivingRoom = pygame.Rect(SQUARE*17, SQUARE*4, SQUARE*5, SQUARE)
+    # plantHallway = pygame.Rect(SQUARE*14, map.get_height() - SQUARE*10, SQUARE, SQUARE)
+    # ovenAndStuff = pygame.Rect(map.get_width()-SQUARE*13, SQUARE*4, SQUARE*12, SQUARE)
     # Objects
-    chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*17, map.get_height()-SQUARE*22, SQUARE*2, SQUARE*3), "type" : type_chair.copy()}
-    chair2 = {"rect" : pygame.Rect(map.get_width()-SQUARE*14, map.get_height()-SQUARE*19, SQUARE*3, SQUARE*2), "type" : type_chair.copy()}
+    chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*15, SQUARE*8, SQUARE*8, SQUARE*7), "type" : type_chair.copy()}
     couch =  {"rect" : pygame.Rect(map.get_width()-SQUARE*23, map.get_height()-SQUARE*12, SQUARE*6, SQUARE*3), "type" : type_couch.copy()}
     trash =  {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE, SQUARE*3, SQUARE*2), "type" : type_trashCan.copy()}
-    tvPlug =  {"rect" : pygame.Rect(map.get_width()-SQUARE*19, map.get_height()-SQUARE*3, SQUARE*3, SQUARE*1), "type" : type_plug.copy()}
-    library =  {"rect" : pygame.Rect(map.get_width()-SQUARE*3, SQUARE*10, SQUARE*2, SQUARE*5), "type" : type_library.copy()}
-    shoeCase =  {"rect" : pygame.Rect(SQUARE, map.get_height()-SQUARE*4, SQUARE*7, SQUARE*2), "type" : type_shoeCase.copy()}
+    tvPlug =  {"rect" : pygame.Rect(map.get_width()-SQUARE*3, map.get_height()-SQUARE*5, SQUARE*2, SQUARE*2), "type" : type_plug.copy()}
+    library =  {"rect" : pygame.Rect(SQUARE*18, SQUARE*4, SQUARE*5, SQUARE*2), "type" : type_library.copy()}
+    shoeCase =  {"rect" : pygame.Rect(SQUARE*2, map.get_height()- SQUARE*12, SQUARE*6, SQUARE*4), "type" : type_shoeCase.copy()}
     shower = {"rect" : pygame.Rect(SQUARE*11, SQUARE*8, SQUARE*3, SQUARE*3), "type" : type_shower.copy()}
     toilets= {"rect" : pygame.Rect(SQUARE, SQUARE*10, SQUARE*2, SQUARE*3), "type" : type_toilets.copy()}
-    plant= {"rect" : pygame.Rect(SQUARE*15, map.get_height()-SQUARE*4, SQUARE*2, SQUARE*2), "type" : type_plant.copy()}
-    officePlug = {"rect" : pygame.Rect(map.get_width()-SQUARE*4, map.get_height()-SQUARE*4, SQUARE*3, SQUARE*2), "type" : type_plugOffice.copy()}
-    rug= {"rect" : pygame.Rect(map.get_width()-SQUARE*22, map.get_height()-SQUARE*8, SQUARE*4, SQUARE*4), "type" : type_Rug.copy()}
-    nightStandPlug = {"rect" : pygame.Rect(SQUARE*10, SQUARE, SQUARE*5, SQUARE*2), "type" : type_plug.copy()}
+    plantHallway= {"rect" : pygame.Rect(SQUARE*13, map.get_height()-SQUARE*10, SQUARE*3, SQUARE*2), "type" : type_plant.copy()}
+    plantKitchen= {"rect" : pygame.Rect(map.get_width()-SQUARE*3, SQUARE*5, SQUARE*2, SQUARE), "type" : type_plant.copy()}
+    officePlug = {"rect" : pygame.Rect(map.get_width()-SQUARE*10, SQUARE*22, SQUARE*6, SQUARE*4), "type" : type_plugOffice.copy()}
+    rug= {"rect" : pygame.Rect(SQUARE*19, map.get_height()-SQUARE*13, SQUARE*10, SQUARE*7), "type" : type_Rug.copy()}
+    nightStandPlug = {"rect" : pygame.Rect(SQUARE, SQUARE*4, SQUARE*2, SQUARE*2), "type" : type_plug.copy()}
 
 
-    # list = [chair, chair2, couch, tvPlug, library, shoeCase, shower, officePlug, rug, nightStandPlug]
-    list=[]
+    list = [chair ,couch, tvPlug, library, shoeCase, officePlug, rug, nightStandPlug, plantHallway, plantKitchen]
+    # list=[]
 
     isOn = None
     interact_timer = None
