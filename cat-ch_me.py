@@ -54,7 +54,7 @@ ALMOST_BLACK = (1, 1, 1)
 
 ### Background
 
-BG_GRAY_WALL = pygame.image.load(os.path.join("assets", "bg_gray_wall.jpg"))
+BG_GRAY_WALL = pygame.image.load(os.path.join("assets", "map-empty.jpg"))
 BG_GAME_UI = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "background-game-ui-1920x1080.jpg")))
 
 ### Cats Sprites
