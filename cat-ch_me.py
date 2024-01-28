@@ -168,6 +168,9 @@ SIAMESE_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", 
 
 ## Buttons
 
+OWNER_WALKING = img_load.image_loader.load(["assets", "owner", "homme", "owner.png"], 1)
+
+## Buttons
 
 BACK_BUTTON_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-back.png")))
 BACK_BUTTON_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-back-focus-hover.png")))
@@ -482,19 +485,31 @@ class owner_class:
     range = 20
     rage = 0
     max_rage = 100
-    body = pygame.Rect(1200, 600, SQUARE, SQUARE*2)
+    body = pygame.Rect(1200, 600, 170, 170)
     body_hitbox = pygame.Rect(body.x, body.y, SQUARE, SQUARE)
     
     max_speed = 5
     speed = 5
     max_bonus_speed = 15
     bonus_speed = 0
-    moving = True
+
+    moving = False
+    right = False
 
     target = None
     path = []
 
     last_rage_deduction_time = time.time()
+
+
+    frame = 0
+    frame_timer = pygame.time.get_ticks()
+    frame_cd = 300
+    state = [OWNER_WALKING]
+    current_state = 0
+    
+    img = pygame.Surface((body.width, body.height))
+
     
 
     def update(self):
@@ -503,7 +518,37 @@ class owner_class:
         self.update_move_speed()
 
         # Mettez à jour la position de la hitbox
-        self.body.x= self.body_hitbox.x
+        self.align_body()
+
+        self.change_state()
+
+        self.update_frame()
+        
+    def change_state(self):
+        if not self.moving and self.current_state != 0:
+            self.current_state = 0
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+
+    def update_frame(self):
+        # Get the correct img slate
+        state = self.state
+        current_state = self.current_state
+
+        if pygame.time.get_ticks() - self.frame_timer >= self.frame_cd:
+            self.frame += 1
+            self.frame_timer = pygame.time.get_ticks()
+        if self.frame >= state[current_state].get_width()/state[current_state].get_height():
+            self.frame = 0
+
+        self.img.fill(ALMOST_BLACK)
+        self.img.set_colorkey(ALMOST_BLACK)
+        self.img.blit(state[current_state], (0,0), (state[current_state].get_height() * self.frame, 0, state[current_state].get_height(), state[current_state].get_height()))
+        if self.right == False:
+            self.img = pygame.transform.flip(self.img, 1, 0)
+
+    def align_body(self):
+        self.body.centerx= self.body_hitbox.centerx
         self.body.bottom = self.body_hitbox.bottom
 
     def move_toward_cat(self):
@@ -1095,11 +1140,13 @@ class main_game_class:
         # Owner
         pygame.draw.rect(map, YELLOW, owner.body)
 
-        # Owner Body Hitbox
-        pygame.draw.rect(map, BLACK, owner.body_hitbox)
+        # # Owner Body Hitbox
+        # pygame.draw.rect(map, BLACK, owner.body_hitbox)
+        
+        map.blit(owner.img, (owner.body.x, owner.body.y))
         
         # Grid position
-        pygame.draw.rect(map, GREEN, grid.owner_position["rect"])
+        # pygame.draw.rect(map, GREEN, grid.owner_position["rect"])
 
 
         camera.update()
@@ -1643,20 +1690,20 @@ class settings_class:
     MAP_RIGHT_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 +  240, 200, 50)
     BACK_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
 
-    # Z_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-not-pressed.png")))
-    # Z_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-pressed.png")))
-    Q_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q.png")))
-    # Q_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-not-pressed.png")))
-    # Q_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-pressed.png")))
-    # S_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s-not-pressed.png")))
-    # S_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s-pressed.png")))
-    D_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d.png")))
-    # D_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d-not-pressed.png")))
-    # D_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d-pressed.png")))
+    Z_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-not-pressed.png")))
+    Z_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-pressed.png")))
+    Q_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-not-pressed.png")))
+    Q_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-pressed.png")))
+    S_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s-not-pressed.png")))
+    S_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s-pressed.png")))
+    D_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d-not-pressed.png")))
+    D_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d-pressed.png")))
     E_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e-not-pressed.png")))
     E_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e-pressed.png")))
-    # SHIFT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift.png")))
-    # SHIFT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift.png")))
+    SPACE_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "space-bar.png")))
+    SPACE_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "space-pressed.png")))
+    SHIFT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift-not-pressed.png")))
+    SHIFT_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift-pressed.png")))
 
     button_list = [MAP_UP_BTN, MAP_LEFT_BTN, MAP_DOWN_BTN, MAP_RIGHT_BTN, BACK_BTN]
 
