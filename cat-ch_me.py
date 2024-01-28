@@ -20,7 +20,7 @@ pygame.init()
 pygame.display.set_caption("Can't cat-ch me !")
 screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 SQUARE = 60
-map = pygame.Surface((42*SQUARE, 29*SQUARE))
+map = pygame.Surface((42*SQUARE, 38*SQUARE))
 
 
 WIDTH, HEIGHT = screen.get_width(), screen.get_height()
@@ -531,57 +531,53 @@ class owner_class:
 class obstacle_class:
 
     #Full Map
-    topWall = pygame.Rect(0, 0, map.get_width(), SQUARE*5)
-    bottomWall = pygame.Rect(0, map.get_height() - SQUARE*2, map.get_width(), SQUARE)
+    topWall = pygame.Rect(0, 0, map.get_width(), SQUARE*4)
+    bottomWall = pygame.Rect(0, map.get_height() - SQUARE*3, map.get_width(), SQUARE)
     leftWall = pygame.Rect(0, SQUARE*4, 60, map.get_height()-SQUARE*2)
     rightWall = pygame.Rect(map.get_width() - SQUARE, SQUARE*4, SQUARE, map.get_height()-SQUARE*2)
     #Bedroom
-    bedRoomBottomLeftHalf = pygame.Rect(SQUARE, SQUARE*12, SQUARE*6, SQUARE)
-    bedRoomBottomRightHalf = pygame.Rect(SQUARE*11, SQUARE*12, SQUARE*6, SQUARE)
-    bedRoomRightTopHalf= pygame.Rect(SQUARE*16, SQUARE*4, SQUARE, SQUARE*2)
-    bedRoomRightBottomHalf = pygame.Rect(SQUARE*16, SQUARE*10, SQUARE, SQUARE*2)
-    bed = pygame.Rect(SQUARE*5, SQUARE*6, SQUARE*4, SQUARE*4)
-    nightStandBedroom = pygame.Rect(SQUARE*10, SQUARE*6, SQUARE, SQUARE)
+    bedRoomBottomLeftHalf = pygame.Rect(0, SQUARE*16, SQUARE*6, SQUARE)
+    bedRoomBottomRightHalf = pygame.Rect(SQUARE*11, SQUARE*16, SQUARE*6, SQUARE)
+    bedRoomRightTopHalf= pygame.Rect(SQUARE*17, 0, SQUARE, SQUARE*6)
+    bedRoomRightBottomHalf = pygame.Rect(SQUARE*17, SQUARE*10, SQUARE, SQUARE*7)
+    bed = pygame.Rect(SQUARE*6, SQUARE*4, SQUARE*5, SQUARE*5)
+    nightStandBedroomRight = pygame.Rect(SQUARE*11, SQUARE*4, SQUARE*3, SQUARE*2)
+    nightStandBedroomLeft = pygame.Rect(SQUARE*3, SQUARE*4, SQUARE*3, SQUARE*2)
     #Bathroom
-    bathRoomBottomLeftHalf = pygame.Rect(0, SQUARE*20, SQUARE*7, SQUARE)
-    bathRoomBottomRightHalf = pygame.Rect(SQUARE*9, SQUARE*20, SQUARE*6, SQUARE)
-    bathRoomRightTopHalf= pygame.Rect(SQUARE*14, SQUARE*12, SQUARE, SQUARE*3)
-    bathRoomRightBottomHalf = pygame.Rect(SQUARE*14, SQUARE*17, SQUARE, SQUARE*3)
-    toiletsBathroom = pygame.Rect(SQUARE, SQUARE*15, SQUARE, SQUARE)
-    showerBathroom = pygame.Rect(SQUARE*12, SQUARE*12, SQUARE*2, SQUARE*2)
+    bathRoomBottomLeftHalf = pygame.Rect(0, SQUARE*27, SQUARE*7, SQUARE)
+    bathRoomBottomRightHalf = pygame.Rect(SQUARE*11, SQUARE*27, SQUARE*6, SQUARE)
+    bathRoomRightTopHalf= pygame.Rect(SQUARE*17, SQUARE*17, SQUARE, SQUARE*2)
+    bathRoomRightBottomHalf = pygame.Rect(SQUARE*17, SQUARE*23, SQUARE, SQUARE*5)
+    toiletsBathroom = pygame.Rect(SQUARE*2, SQUARE*17, SQUARE*2, SQUARE)
+    bathtubBathroom = pygame.Rect(SQUARE, SQUARE*21, SQUARE*3, SQUARE*7)
+    sinkBathroom = pygame.Rect(SQUARE*14, SQUARE*17, SQUARE*2, SQUARE)
     #Hallway
-    halwayRightTopHalf = pygame.Rect(SQUARE*14, SQUARE*20, SQUARE, SQUARE*3)
-    halwayRightBottomHalf = pygame.Rect(SQUARE*14, SQUARE*25, SQUARE, SQUARE*2)
-    shoeCaseHallway = pygame.Rect(SQUARE, map.get_height() - SQUARE*3, SQUARE*6, SQUARE)
+    halwayRightTopHalf = pygame.Rect(SQUARE*16, SQUARE*28, SQUARE, SQUARE*3)
+    halwayRightBottomHalf = pygame.Rect(SQUARE*16, SQUARE*28, SQUARE, SQUARE*2)
+    shoeCaseHallway = pygame.Rect(SQUARE*2, map.get_height() - SQUARE*10, SQUARE*5, SQUARE)
+    plantHallway = pygame.Rect(SQUARE*14, map.get_height() - SQUARE*10, SQUARE, SQUARE)
     #Living Room
-    couchLivingRoom = pygame.Rect(SQUARE*20, SQUARE*18, SQUARE*4, SQUARE*2)
-    tvLivingRoom = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*3, SQUARE*2, SQUARE*2)
-    libraryLivingRoom = pygame.Rect(map.get_width()-SQUARE*2, SQUARE*15, SQUARE*2, SQUARE*3)
+    couchLivingRoom = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*11, SQUARE*6, SQUARE*2)
+    chairLivingRoom = pygame.Rect(SQUARE*28, map.get_height()-SQUARE*9, SQUARE*2, SQUARE*2)
+    tvLivingRoomAndPlant = pygame.Rect(SQUARE*22, map.get_height()-SQUARE*4, SQUARE*6, SQUARE*1)
+    libraryLivingRoom = pygame.Rect(SQUARE*17, SQUARE*4, SQUARE*5, SQUARE)
     plantLivingRoom = pygame.Rect(SQUARE*15, map.get_height()-SQUARE*3, SQUARE, SQUARE)
     #Office
-    officeTopLeftHalf = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*10 , SQUARE*6, SQUARE)
-    officeTopRightHalf = pygame.Rect(map.get_width()-SQUARE*3, map.get_height()-SQUARE*10 , SQUARE*3, SQUARE)
-    officeLeftTopHalf= pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*10 , SQUARE, SQUARE*2)
-    officeLeftBottomHalf = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*4 , SQUARE, SQUARE*2)
-    desk = pygame.Rect(map.get_width()-SQUARE*10, map.get_height()-SQUARE*4, SQUARE*6, SQUARE*2)
+    desk = pygame.Rect(map.get_width()-SQUARE*10, SQUARE*23, SQUARE*5, SQUARE*2)
+    libraryOffice = pygame.Rect(map.get_width()-SQUARE*4, SQUARE*23, SQUARE*3, SQUARE)
     #Kitchen
-    kitchenBottom = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*16 , SQUARE*13, SQUARE)
-    table = pygame.Rect(map.get_width()-SQUARE*15, map.get_height()-SQUARE*22, SQUARE*5, SQUARE*3)
-    chairKitchen1 = pygame.Rect(map.get_width()-SQUARE*16, map.get_height()-SQUARE*21, SQUARE, SQUARE)
-    chairKitchen2 = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*19, SQUARE, SQUARE)
-    chairKitchen3 = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*23, SQUARE, SQUARE)
-    oven= pygame.Rect(map.get_width()-SQUARE*3, SQUARE*5, SQUARE*2, SQUARE*2)
-    fridge= pygame.Rect(map.get_width()-SQUARE*8, SQUARE*5, SQUARE*2, SQUARE*2)
-    trashCanKitchen= pygame.Rect(map.get_width()-SQUARE*5, SQUARE*5, SQUARE, SQUARE)
+    kitchenBottom = pygame.Rect(map.get_width()-SQUARE*11,SQUARE*22 , SQUARE*10, SQUARE)
+    table = pygame.Rect(map.get_width()-SQUARE*14, SQUARE*9, SQUARE*6, SQUARE*5)
+    ovenAndStuff = pygame.Rect(map.get_width()-SQUARE*13, SQUARE*4, SQUARE*12, SQUARE)
   
-    kitchen= [kitchenBottom,table, oven, fridge, trashCanKitchen, chairKitchen1, chairKitchen2]
-    office= [officeLeftBottomHalf, officeLeftTopHalf, officeTopLeftHalf, officeTopRightHalf, desk]
-    livingRoom = [couchLivingRoom, tvLivingRoom, libraryLivingRoom]
-    hallWay= [halwayRightTopHalf, halwayRightBottomHalf, shoeCaseHallway, plantLivingRoom]
-    bathRoom= [toiletsBathroom, showerBathroom, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
-    bedRoom = [bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf,bed, bedRoomRightBottomHalf, nightStandBedroom]
+    kitchen= [kitchenBottom, table, ovenAndStuff]
+    office= [desk, libraryOffice]
+    livingRoom = [couchLivingRoom, tvLivingRoomAndPlant, libraryLivingRoom, chairLivingRoom]
+    hallWay= [halwayRightTopHalf, halwayRightBottomHalf, shoeCaseHallway, plantHallway]
+    bathRoom= [toiletsBathroom, bathtubBathroom, sinkBathroom, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
+    bedRoom = [bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf,bed, bedRoomRightBottomHalf, nightStandBedroomRight, nightStandBedroomLeft]
     fullMap = [topWall, bottomWall, leftWall, rightWall]
-    list = [fullMap, bedRoom, bathRoom, hallWay, livingRoom, office, kitchen]
+    list = [fullMap, bedRoom, office, kitchen, bathRoom, hallWay, livingRoom]
 
 
 class interactible_class():
@@ -630,8 +626,8 @@ class interactible_class():
     nightStandPlug = {"rect" : pygame.Rect(SQUARE*10, SQUARE, SQUARE*5, SQUARE*2), "type" : type_plug.copy()}
 
 
-    list = [chair, chair2, couch, tvPlug, library, shoeCase, shower, officePlug, rug, nightStandPlug]
-    # list=[]
+    # list = [chair, chair2, couch, tvPlug, library, shoeCase, shower, officePlug, rug, nightStandPlug]
+    list=[]
 
     isOn = None
     interact_timer = None
