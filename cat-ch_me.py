@@ -484,6 +484,8 @@ class player_class:
 
         self.iframe_blinking()
 
+        self.apply_wall_filter()
+
 
     def apply_bonuses(self):
         if self.chaiyan:
@@ -647,6 +649,13 @@ class player_class:
                 new_alpha = 255 - (255 - self.i_frame_blinking_min_alpha) * ((1 + pygame.time.get_ticks() - self.i_frame_blinking_timer)/self.i_frame_blinking_duration)
             self.img.set_alpha(new_alpha)
         else:
+            self.img.set_alpha(255)
+
+    def apply_wall_filter(self):
+        if self.is_behind_wall:
+            self.img.set_alpha(50)
+        else:
+            # Si le joueur n'est pas derrière un mur, réinitialiser l'image sans filtre
             self.img.set_alpha(255)
 
     def change_cat_skin(self):
@@ -1339,9 +1348,9 @@ class main_game_class:
         #         pygame.draw.rect(map, RED, obs)
                     
         # Behind_Walls
-        for room in behind.list:
-            for obs in room:
-                pygame.draw.rect(map, BLACK, obs)
+        # for room in behind.list:
+        #     for obs in room:
+        #         pygame.draw.rect(map, BLACK, obs)
                 
 
     
@@ -1480,9 +1489,12 @@ class main_game_class:
                         for obs in room:
                             if player.hitbox.colliderect(obs):
                                 player.hitbox.x += player.speed
-                        for wall in behind_wall_class.walls:
-                            if player.hitbox.colliderect(wall):
-                                player.is_behind_wall = True
+                    wall_collision = any(player.hitbox.colliderect(wall) for wall in behind_wall_class.walls)
+                    if wall_collision:
+                        player.is_behind_wall = True
+                    else:
+                        player.is_behind_wall = False
+                       
                 # Player Go Right
                 if right and not interact:
                     player.hitbox.x += player.speed
@@ -1492,9 +1504,12 @@ class main_game_class:
                         for obs in room:
                             if player.hitbox.colliderect(obs):
                                 player.hitbox.x -= player.speed
-                        for wall in behind_wall_class.walls:
-                            if player.hitbox.colliderect(wall):
-                                player.is_behind_wall = True
+                    wall_collision = any(player.hitbox.colliderect(wall) for wall in behind_wall_class.walls)
+                    if wall_collision:
+                        player.is_behind_wall = True
+                    else:
+                        player.is_behind_wall = False
+                        
                 # Player Go Up
                 if up and not interact:
                     player.hitbox.y -= player.speed
@@ -1503,9 +1518,12 @@ class main_game_class:
                         for obs in room:
                             if player.hitbox.colliderect(obs):
                                 player.hitbox.y += player.speed
-                    for wall in behind_wall_class.walls:
-                        if player.hitbox.colliderect(wall):
-                            player.is_behind_wall = True           
+                    wall_collision = any(player.hitbox.colliderect(wall) for wall in behind_wall_class.walls)
+                    if wall_collision:
+                        player.is_behind_wall = True
+                    else:
+                        player.is_behind_wall = False    
+                              
                       
                 # Player Go Down
                 if down and not interact:
@@ -1516,10 +1534,13 @@ class main_game_class:
                             if player.hitbox.colliderect(obs):
                                 player.hitbox.y -= player.speed
                         # Check if colliding with behind walls
-                    for wall in behind_wall_class.walls:
-                        if player.hitbox.colliderect(wall):
-                            player.is_behind_wall = True
-                            print("behind wall")
+                    wall_collision = any(player.hitbox.colliderect(wall) for wall in behind_wall_class.walls)
+                    if wall_collision:
+                        player.is_behind_wall = True
+                    else:
+                        player.is_behind_wall = False
+                        
+                            
                                 
                 if left or right or up or down:
                     player.moving = True
