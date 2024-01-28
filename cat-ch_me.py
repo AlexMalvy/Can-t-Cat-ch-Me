@@ -172,9 +172,21 @@ SIAMESE_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "si
 
 SIAMESE_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-licking-nyan.png"], 3)
 
+
+## CHAIYAN
+CHAIYAN_CAT_IDLE = img_load.image_loader.load(["assets", "chaiyan", "cat-idle-chaiyan.png"], 3)
+CHAIYAN_CAT_WALKING = img_load.image_loader.load(["assets", "chaiyan", "cat-walking-chaiyan.png"], 3)
+CHAIYAN_CAT_RUNNING = img_load.image_loader.load(["assets", "chaiyan", "cat-running-chaiyan.png"], 3)
+CHAIYAN_CAT_SCRATCHING = img_load.image_loader.load(["assets", "chaiyan", "cat-scratching-chaiyan.png"], 3)
+CHAIYAN_CAT_JUMPING = img_load.image_loader.load(["assets", "chaiyan", "cat-jumping-chaiyan.png"], 3)
+CHAIYAN_CAT_PEE = img_load.image_loader.load(["assets", "chaiyan", "cat-peeing-chaiyan.png"], 3)
+CHAIYAN_CAT_PUKE = img_load.image_loader.load(["assets", "chaiyan", "cat-puking-chaiyan.png"], 3)
+
+CHAIYAN_CAT_LICKING = img_load.image_loader.load(["assets", "chaiyan", "cat-licking-chaiyan.png"], 3)
+
 ## Buttons
 
-OWNER_WALKING = img_load.image_loader.load(["assets", "owner", "homme", "owner.png"], 1)
+OWNER_WALKING = img_load.image_loader.load(["assets", "owner", "homme", "owner.png"], 1.5)
 
 ## Buttons
 
@@ -279,7 +291,7 @@ class player_class:
     hitbox = pygame.Rect(body.x, body.bottom, 60, 60)
 
     moving = False
-    right = False
+    right = True
 
     i_frame = False
     i_frame_timer = 0
@@ -320,7 +332,14 @@ class player_class:
     state_selection = [ORANGE_CAT_LOAF_BREAD]
 
     state_pregame = [ORANGE_CAT_SLEEPING]
+
+    chaiyan = False
+    transforming = False
+    transforming_timer = 0
     state_chaiyan_transformation = [ORANGE_CAT_TRANSFORM]
+    chaiyan_transform_cap = 1
+    chaiyan_state = [CHAIYAN_CAT_IDLE, CHAIYAN_CAT_WALKING, CHAIYAN_CAT_RUNNING, CHAIYAN_CAT_SCRATCHING, CHAIYAN_CAT_JUMPING, CHAIYAN_CAT_PEE, CHAIYAN_CAT_PUKE]
+    chaiyan_state_idle_bis = [CHAIYAN_CAT_LICKING]
 
     img = pygame.Surface((body.width, body.height))
 
@@ -339,15 +358,27 @@ class player_class:
 
 
     def apply_bonuses(self):
+        if self.chaiyan:
+            if game_variable.multiplier < self.chaiyan_transform_cap:
+                self.chaiyan = False
+
         self.bonus_speed = 0
         if self.i_frame:
             self.bonus_speed += 5
+        if self.chaiyan:
+            self.bonus_speed += 3
 
         self.speed = self.base_speed + self.bonus_speed
 
 
     def change_state(self):
         if not game_variable.started and self.current_state != 0:
+            self.current_state = 0
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+            self.idle_bis = False
+            self.idle_bis_counter = 0
+        elif self.transforming and self.current_state != 0:
             self.current_state = 0
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
@@ -402,14 +433,28 @@ class player_class:
 
     def update_frame(self):
         frame_cd = self.frame_cd
-        # Get the correct img slate
+        # Loaf Bread
         if self.in_selection:
             state = self.state_selection
             current_state = 0
+        # Sleeping
         elif not game_variable.started:
             state = self.state_pregame
             current_state = 0
             frame_cd = 300
+        # Transforming
+        elif self.transforming:
+            state = self.state_chaiyan_transformation
+            current_state = self.current_state
+        # Chaiyan
+        elif self.chaiyan:
+            if self.idle_bis:
+                state = self.chaiyan_state_idle_bis
+                current_state = self.idle_bis_state
+            else:
+                state = self.chaiyan_state
+                current_state = self.current_state
+        # Potte
         elif self.potte:
             if self.idle_bis:
                 state = self.state_potte_idle_bis
@@ -417,6 +462,7 @@ class player_class:
             else:
                 state = self.state_potte
                 current_state = self.current_state
+        # Nyan
         elif self.nyan:
             if self.idle_bis:
                 state = self.state_nyan_idle_bis
@@ -424,6 +470,7 @@ class player_class:
             else:
                 state = self.state_nyan
                 current_state = self.current_state
+        # Normal
         else:
             if self.idle_bis:
                 state = self.idle_bis_list
@@ -439,6 +486,9 @@ class player_class:
             self.frame = 0
 
             if self.current_state == 0:
+                if self.transforming:
+                    self.transforming = False
+                    self.chaiyan = True
                 if self.idle_bis:
                     self.idle_bis = False
                 else:
@@ -516,7 +566,7 @@ class owner_class:
     range = 20
     rage = 0
     max_rage = 100
-    body = pygame.Rect(1200, 600, 170, 170)
+    body = pygame.Rect(1200, 600, 170 * 1.5, 170 * 1.5)
     body_hitbox = pygame.Rect(body.x, body.y, SQUARE, SQUARE)
     
     max_speed = 5
@@ -544,7 +594,7 @@ class owner_class:
     
 
     def update(self):
-        if game_variable.score > 0:
+        if game_variable.score > 0 and not player.transforming:
             self.move_toward_cat()
 
         self.update_move_speed()
@@ -1311,6 +1361,8 @@ class main_game_class:
                 if miaou and time.time() - player.miaou_timer > player.miaou_cd and not player.miaou:
                     player.miaou_timer = time.time()
                     player.miaou = True
+                    if game_variable.multiplier >= player.chaiyan_transform_cap and not player.chaiyan:
+                        player.transforming = True
                 
                 if player.miaou and time.time() - player.miaou_timer > player.miaou_duration:
                     player.miaou_timer = time.time()
@@ -1507,7 +1559,8 @@ class cat_selection_class:
         player.img.fill(ALMOST_BLACK)
         player.img.set_colorkey(ALMOST_BLACK)
         player.img.blit(ORANGE_CAT_LOAF_BREAD, (0,0), (ORANGE_CAT_LOAF_BREAD.get_height() * player.frame, 0, ORANGE_CAT_LOAF_BREAD.get_height(), ORANGE_CAT_LOAF_BREAD.get_height()))
-        screen.blit(player.img, ((self.CAT_1_CARD.centerx - player.img.get_width()//2, self.CAT_1_CARD.y + self.CAT_1_CARD.height//4 - player.img.get_height()//2)))
+        img = pygame.transform.scale(player.img, (player.img.get_width() * 3, player.img.get_height() * 3))
+        screen.blit(img, ((self.CAT_1_CARD.centerx - img.get_width()//2, self.CAT_1_CARD.y + self.CAT_1_CARD.height//4 - img.get_height()//2)))
 
         if self.index == 2:
             screen.blit(self.CAT_BLACK_HOVER_IMG, (740, 330))
@@ -1517,7 +1570,8 @@ class cat_selection_class:
         player.img.fill(ALMOST_BLACK)
         player.img.set_colorkey(ALMOST_BLACK)
         player.img.blit(BLACK_CAT_LOAF_BREAD, (0,0), (BLACK_CAT_LOAF_BREAD.get_height() * player.frame, 0, BLACK_CAT_LOAF_BREAD.get_height(), BLACK_CAT_LOAF_BREAD.get_height()))
-        screen.blit(player.img, ((self.CAT_2_CARD.centerx - player.img.get_width()//2, self.CAT_2_CARD.y + self.CAT_2_CARD.height//4 - player.img.get_height()//2)))
+        img = pygame.transform.scale(player.img, (player.img.get_width() * 3, player.img.get_height() * 3))
+        screen.blit(img, ((self.CAT_2_CARD.centerx - img.get_width()//2, self.CAT_2_CARD.y + self.CAT_2_CARD.height//4 - img.get_height()//2)))
 
         if self.index == 3:
             screen.blit(self.CAT_SIAMESE_HOVER_IMG, (1200, 330))
@@ -1527,7 +1581,8 @@ class cat_selection_class:
         player.img.fill(ALMOST_BLACK)
         player.img.set_colorkey(ALMOST_BLACK)
         player.img.blit(SIAMESE_CAT_LOAF_BREAD, (0,0), (SIAMESE_CAT_LOAF_BREAD.get_height() * player.frame, 0, SIAMESE_CAT_LOAF_BREAD.get_height(), SIAMESE_CAT_LOAF_BREAD.get_height()))
-        screen.blit(player.img, ((self.CAT_3_CARD.centerx - player.img.get_width()//2, self.CAT_3_CARD.y + self.CAT_3_CARD.height//4 - player.img.get_height()//2)))
+        img = pygame.transform.scale(player.img, (player.img.get_width() * 3, player.img.get_height() * 3))
+        screen.blit(img, ((self.CAT_3_CARD.centerx - img.get_width()//2, self.CAT_3_CARD.y + self.CAT_3_CARD.height//4 - img.get_height()//2)))
 
 
         pygame.display.update()
