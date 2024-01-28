@@ -367,8 +367,8 @@ class music_class:
         self.selected_sound.play()
         self.selected_sound.set_volume(0.5)
 
-    def stop_sound(self):
-        self.selected_sound.stop()
+    def stop_sound(self, sound):
+        sound.stop()
 
     def play_music():
         pygame.mixer.music.load(os.path.join('assets', os.path.join("music", "main_theme.mp3")))
@@ -1544,6 +1544,7 @@ class main_game_class:
         miaou = False
         puke = False
         click = False
+        music.play_sound(music.PURRING)
         
         while run:
             clock.tick(60)
@@ -1712,6 +1713,7 @@ class main_game_class:
             elif left or right or up or down:
                 game_variable.started = True
                 game_variable.timer = time.time()
+                music.stop_sound(music.PURRING)
             else:
                 player.update()
                 owner.update()
