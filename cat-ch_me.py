@@ -274,8 +274,10 @@ class player_class:
     i_frame_timer = 0
     i_frame_duration = 2
 
-    miaou_cd = 5
+    miaou = False
+    miaou_cd = 3
     miaou_timer = 0
+    miaou_duration = 3
 
     puke_cd = 15
     puke_timer = 0
@@ -303,6 +305,8 @@ class player_class:
     state_selection = [ORANGE_CAT_LOAF_BREAD]
 
     img = pygame.Surface((body.width, body.height))
+
+    SPEECH_BUBBLE_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bubble-yes.png")))
     
     def update(self):
         self.align_body()
@@ -1054,10 +1058,12 @@ class main_game_class:
 
         # Player (Cat)
         # pygame.draw.rect(map, BLACK, player.body)
-        # pygame.draw.rect(map, GREEN, player.hitbox)
+        pygame.draw.rect(map, GREEN, player.hitbox)
         # if player.i_frame:
         #     pygame.draw.rect(map, GREEN, player.hitbox)
         map.blit(player.img, (player.body.x, player.body.y))
+        if player.miaou:
+            map.blit(player.SPEECH_BUBBLE_IMG, (player.hitbox.x, player.hitbox.y - player.SPEECH_BUBBLE_IMG.get_height()))
 
         # Grid Position
         # pygame.draw.rect(map, GREEN, grid.cat_position["rect"])
@@ -1186,9 +1192,13 @@ class main_game_class:
             elif interactible.interact_timer != None:
                 interactible.cancel_interact()
 
-            if miaou and time.time() - player.miaou_timer > player.miaou_cd:
+            if miaou and time.time() - player.miaou_timer > player.miaou_cd and not player.miaou:
                 player.miaou_timer = time.time()
-                print("miaou")
+                player.miaou = True
+            
+            if player.miaou and time.time() - player.miaou_timer > player.miaou_duration:
+                player.miaou_timer = time.time()
+                player.miaou = False
 
             if puke and time.time() - player.puke_timer > player.puke_cd:
                 player.puke_timer = time.time()
