@@ -21,7 +21,7 @@ pygame.init()
 pygame.display.set_caption("Can't cat-ch me !")
 screen = pygame.display.set_mode((0, 0), FULLSCREEN)
 SQUARE = 60
-map = pygame.Surface((42*SQUARE, 29*SQUARE))
+map = pygame.Surface((42*SQUARE, 38*SQUARE))
 
 
 WIDTH, HEIGHT = screen.get_width(), screen.get_height()
@@ -54,7 +54,7 @@ ALMOST_BLACK = (1, 1, 1)
 
 ### Background
 
-BG_GRAY_WALL = pygame.image.load(os.path.join("assets", "bg_gray_wall.jpg"))
+BG_GRAY_WALL = pygame.image.load(os.path.join("assets", "map-empty.jpg"))
 BG_GAME_UI = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "background-game-ui-1920x1080.jpg")))
 
 ### Cats Sprites
@@ -70,6 +70,8 @@ ORANGE_CAT_PUKE = img_load.image_loader.load(["assets", "orange-cat", "orange-ca
 
 ORANGE_CAT_LICKING = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-licking.png"], 3)
 ORANGE_CAT_LOAF_BREAD = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-loaf-bread.png"], 3)
+ORANGE_CAT_SLEEPING = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-sleeping-zz.png"], 3)
+ORANGE_CAT_TRANSFORM = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-transform-chaiyan.png"], 3)
 
 # Potte
 ORANGE_CAT_IDLE_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-idle-potte.png"], 3)
@@ -77,8 +79,8 @@ ORANGE_CAT_WALKING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "
 ORANGE_CAT_RUNNING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-running-potte.png"], 3)
 ORANGE_CAT_SCRATCHING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-scratching-potte.png"], 3)
 ORANGE_CAT_JUMPING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-jumping-potte.png"], 3)
-# ORANGE_CAT_PEE_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-pee-potte.png"], 3)
-# ORANGE_CAT_PUKE_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-puke-potte.png"], 3)
+ORANGE_CAT_PEE_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-peeing-potte.png"], 3)
+ORANGE_CAT_PUKE_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-puking-potte.png"], 3)
 
 ORANGE_CAT_LICKING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-licking-potte.png"], 3)
 ORANGE_CAT_LOAF_BREAD_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-loaf-bread-potte.png"], 3)
@@ -89,8 +91,8 @@ ORANGE_CAT_WALKING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "o
 ORANGE_CAT_RUNNING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-running-nyan.png"], 3)
 ORANGE_CAT_SCRATCHING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-scratching-nyan.png"], 3)
 ORANGE_CAT_JUMPING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-jumping-nyan.png"], 3)
-# ORANGE_CAT_PEE_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-pee-nyan.png"], 3)
-# ORANGE_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-puke-nyan.png"], 3)
+ORANGE_CAT_PEE_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-peeing-nyan.png"], 3)
+ORANGE_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-puking-nyan.png"], 3)
 
 ORANGE_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-licking-nyan.png"], 3)
 
@@ -106,6 +108,8 @@ BLACK_CAT_PUKE = img_load.image_loader.load(["assets", "black-cat", "black-cat-p
 
 BLACK_CAT_LICKING = img_load.image_loader.load(["assets", "black-cat", "black-cat-licking.png"], 3)
 BLACK_CAT_LOAF_BREAD = img_load.image_loader.load(["assets", "black-cat", "black-cat-loaf-bread.png"], 3)
+BLACK_CAT_SLEEPING = img_load.image_loader.load(["assets", "black-cat", "black-cat-sleeping-zz.png"], 3)
+BLACK_CAT_TRANSFORM = img_load.image_loader.load(["assets", "black-cat", "black-cat-transform-chaiyan.png"], 3)
 
 # Potte
 BLACK_CAT_IDLE_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-idle-potte.png"], 3)
@@ -113,8 +117,8 @@ BLACK_CAT_WALKING_POTTE = img_load.image_loader.load(["assets", "black-cat", "bl
 BLACK_CAT_RUNNING_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-running-potte.png"], 3)
 BLACK_CAT_SCRATCHING_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-scratching-potte.png"], 3)
 BLACK_CAT_JUMPING_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-jumping-potte.png"], 3)
-# BLACK_CAT_PEE_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-pee-potte.png"], 3)
-# BLACK_CAT_PUKE_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-puke-potte.png"], 3)
+BLACK_CAT_PEE_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-peeing-potte.png"], 3)
+BLACK_CAT_PUKE_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-puking-potte.png"], 3)
 
 BLACK_CAT_LICKING_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-licking-potte.png"], 3)
 BLACK_CAT_LOAF_BREAD_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-loaf-bread-potte.png"], 3)
@@ -125,12 +129,12 @@ BLACK_CAT_WALKING_NYAN = img_load.image_loader.load(["assets", "black-cat", "bla
 BLACK_CAT_RUNNING_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-running-nyan.png"], 3)
 BLACK_CAT_SCRATCHING_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-scratching-nyan.png"], 3)
 BLACK_CAT_JUMPING_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-jumping-nyan.png"], 3)
-# BLACK_CAT_PEE_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-pee-nyan.png"], 3)
-# # BLACK_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-puke-nyan.png"], 3)
+BLACK_CAT_PEE_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-peeing-nyan.png"], 3)
+BLACK_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-puking-nyan.png"], 3)
 
 BLACK_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-licking-nyan.png"], 3)
 
-## Orange
+## SIAMESE
 # Normal
 SIAMESE_CAT_IDLE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-idle.png"], 3)
 SIAMESE_CAT_WALKING = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-walking.png"], 3)
@@ -142,6 +146,8 @@ SIAMESE_CAT_PUKE = img_load.image_loader.load(["assets", "siamese-cat", "siamese
 
 SIAMESE_CAT_LICKING = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-licking.png"], 3)
 SIAMESE_CAT_LOAF_BREAD = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-loaf-bread.png"], 3)
+SIAMESE_CAT_SLEEPING = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-sleeping-zz.png"], 3)
+SIAMESE_CAT_TRANSFORM = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-transform-chaiyan.png"], 3)
 
 # Potte
 SIAMESE_CAT_IDLE_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-idle-potte.png"], 3)
@@ -149,8 +155,8 @@ SIAMESE_CAT_WALKING_POTTE = img_load.image_loader.load(["assets", "siamese-cat",
 SIAMESE_CAT_RUNNING_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-running-potte.png"], 3)
 SIAMESE_CAT_SCRATCHING_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-scratching-potte.png"], 3)
 SIAMESE_CAT_JUMPING_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-jumping-potte.png"], 3)
-# SIAMESE_CAT_PEE_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-pee-potte.png"], 3)
-# # SIAMESE_CAT_PUKE_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-puke-potte.png"], 3)
+SIAMESE_CAT_PEE_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-peeing-potte.png"], 3)
+SIAMESE_CAT_PUKE_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-puking-potte.png"], 3)
 
 SIAMESE_CAT_LICKING_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-licking-potte.png"], 3)
 SIAMESE_CAT_LOAF_BREAD_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-loaf-bread-potte.png"], 3)
@@ -161,10 +167,26 @@ SIAMESE_CAT_WALKING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", 
 SIAMESE_CAT_RUNNING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-running-nyan.png"], 3)
 SIAMESE_CAT_SCRATCHING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-scratching-nyan.png"], 3)
 SIAMESE_CAT_JUMPING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-jumping-nyan.png"], 3)
-# SIAMESE_CAT_PEE_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-pee-nyan.png"], 3)
-# SIAMESE_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-puke-nyan.png"], 3)
+SIAMESE_CAT_PEE_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-peeing-nyan.png"], 3)
+SIAMESE_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-puking-nyan.png"], 3)
 
 SIAMESE_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-licking-nyan.png"], 3)
+
+
+## CHAIYAN
+CHAIYAN_CAT_IDLE = img_load.image_loader.load(["assets", "chaiyan", "cat-idle-chaiyan.png"], 3)
+CHAIYAN_CAT_WALKING = img_load.image_loader.load(["assets", "chaiyan", "cat-walking-chaiyan.png"], 3)
+CHAIYAN_CAT_RUNNING = img_load.image_loader.load(["assets", "chaiyan", "cat-running-chaiyan.png"], 3)
+CHAIYAN_CAT_SCRATCHING = img_load.image_loader.load(["assets", "chaiyan", "cat-scratching-chaiyan.png"], 3)
+CHAIYAN_CAT_JUMPING = img_load.image_loader.load(["assets", "chaiyan", "cat-jumping-chaiyan.png"], 3)
+CHAIYAN_CAT_PEE = img_load.image_loader.load(["assets", "chaiyan", "cat-peeing-chaiyan.png"], 3)
+CHAIYAN_CAT_PUKE = img_load.image_loader.load(["assets", "chaiyan", "cat-puking-chaiyan.png"], 3)
+
+CHAIYAN_CAT_LICKING = img_load.image_loader.load(["assets", "chaiyan", "cat-licking-chaiyan.png"], 3)
+
+## Buttons
+
+OWNER_WALKING = img_load.image_loader.load(["assets", "owner", "homme", "owner.png"], 1.5)
 
 ## Buttons
 
@@ -353,6 +375,8 @@ class game_variable_class:
     score = 0
     multiplier = 1
 
+    started = False
+
     all_cats = ["orange", "black", "siamese"]
     selected_cat = "orange"
     
@@ -393,7 +417,7 @@ class player_class:
     hitbox = pygame.Rect(body.x, body.bottom, 60, 60)
 
     moving = False
-    right = False
+    right = True
 
     i_frame = False
     i_frame_timer = 0
@@ -423,15 +447,25 @@ class player_class:
     idle_bis_list = [ORANGE_CAT_LICKING]
 
     potte = False
-    state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE, ORANGE_CAT_SCRATCHING_POTTE, ORANGE_CAT_JUMPING_POTTE, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
+    state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE, ORANGE_CAT_SCRATCHING_POTTE, ORANGE_CAT_JUMPING_POTTE, ORANGE_CAT_PEE_POTTE, ORANGE_CAT_PUKE_POTTE]
     state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
 
     nyan = False
-    state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
+    state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE_NYAN, ORANGE_CAT_PUKE_NYAN]
     state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
 
     in_selection = False
     state_selection = [ORANGE_CAT_LOAF_BREAD]
+
+    state_pregame = [ORANGE_CAT_SLEEPING]
+
+    chaiyan = False
+    transforming = False
+    transforming_timer = 0
+    state_chaiyan_transformation = [ORANGE_CAT_TRANSFORM]
+    chaiyan_transform_cap = 1
+    chaiyan_state = [CHAIYAN_CAT_IDLE, CHAIYAN_CAT_WALKING, CHAIYAN_CAT_RUNNING, CHAIYAN_CAT_SCRATCHING, CHAIYAN_CAT_JUMPING, CHAIYAN_CAT_PEE, CHAIYAN_CAT_PUKE]
+    chaiyan_state_idle_bis = [CHAIYAN_CAT_LICKING]
 
     img = pygame.Surface((body.width, body.height))
 
@@ -450,65 +484,103 @@ class player_class:
 
 
     def apply_bonuses(self):
+        if self.chaiyan:
+            if game_variable.multiplier < self.chaiyan_transform_cap:
+                self.chaiyan = False
+
         self.bonus_speed = 0
         if self.i_frame:
             self.bonus_speed += 5
+        if self.chaiyan:
+            self.bonus_speed += 3
 
         self.speed = self.base_speed + self.bonus_speed
 
 
     def change_state(self):
-        # if not self.moving and interactible.interact_timer and self.current_state != 6 and interactible.isOn["type"]["animation_type"] == "puke":
-        #     self.current_state = 6
-        #     self.frame = 0
-        #     self.frame_timer = pygame.time.get_ticks()
-        #     self.idle_bis = False
-        #     self.idle_bis_counter = 0
-        if not self.moving and interactible.interact_timer and self.current_state != 5 and interactible.isOn["type"]["animation_type"] == "pee":
-            self.current_state = 5
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-            self.idle_bis = False
-            self.idle_bis_counter = 0
-        elif not self.moving and interactible.interact_timer and self.current_state != 4 and interactible.isOn["type"]["animation_type"] == "jumping":
-            self.current_state = 4
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-            self.idle_bis = False
-            self.idle_bis_counter = 0
-        elif not self.moving and interactible.interact_timer and self.current_state != 3 and interactible.isOn["type"]["animation_type"] == "scratching":
-            self.current_state = 3
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-            self.idle_bis = False
-            self.idle_bis_counter = 0
-        elif self.moving and self.i_frame and self.current_state != 2:
-            self.current_state = 2
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-            self.idle_bis = False
-            self.idle_bis_counter = 0
-        elif self.moving and not self.i_frame and self.current_state != 1:
-            self.current_state = 1
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-            self.idle_bis = False
-            self.idle_bis_counter = 0
-        elif not self.moving and not interactible.interact_timer and self.current_state != 0:
+        if not game_variable.started and self.current_state != 0:
             self.current_state = 0
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
-        elif not self.moving and not interactible.interact_timer and self.current_state == 0 and self.idle_bis_counter == 3:
+            self.idle_bis = False
             self.idle_bis_counter = 0
-            self.idle_bis = True
-            # self.idle_bis_state = random.randint(0, 1)
-            self.idle_bis_state = 0
+        elif self.transforming and self.current_state != 0:
+            self.current_state = 0
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+            self.idle_bis = False
+            self.idle_bis_counter = 0
+        else:
+            # if not self.moving and interactible.interact_timer and self.current_state != 6 and interactible.isOn["type"]["animation_type"] == "puke":
+            #     self.current_state = 6
+            #     self.frame = 0
+            #     self.frame_timer = pygame.time.get_ticks()
+            #     self.idle_bis = False
+            #     self.idle_bis_counter = 0
+            if not self.moving and interactible.interact_timer and self.current_state != 5 and interactible.isOn["type"]["animation_type"] == "pee":
+                self.current_state = 5
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+                self.idle_bis = False
+                self.idle_bis_counter = 0
+            elif not self.moving and interactible.interact_timer and self.current_state != 4 and interactible.isOn["type"]["animation_type"] == "jumping":
+                self.current_state = 4
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+                self.idle_bis = False
+                self.idle_bis_counter = 0
+            elif not self.moving and interactible.interact_timer and self.current_state != 3 and interactible.isOn["type"]["animation_type"] == "scratching":
+                self.current_state = 3
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+                self.idle_bis = False
+                self.idle_bis_counter = 0
+            elif self.moving and self.i_frame and self.current_state != 2:
+                self.current_state = 2
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+                self.idle_bis = False
+                self.idle_bis_counter = 0
+            elif self.moving and not self.i_frame and self.current_state != 1:
+                self.current_state = 1
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+                self.idle_bis = False
+                self.idle_bis_counter = 0
+            elif not self.moving and not interactible.interact_timer and self.current_state != 0:
+                self.current_state = 0
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+            elif not self.moving and not interactible.interact_timer and self.current_state == 0 and self.idle_bis_counter == 3:
+                self.idle_bis_counter = 0
+                self.idle_bis = True
+                # self.idle_bis_state = random.randint(0, 1)
+                self.idle_bis_state = 0
 
     def update_frame(self):
-        # Get the correct img slate
+        frame_cd = self.frame_cd
+        # Loaf Bread
         if self.in_selection:
             state = self.state_selection
             current_state = 0
+        # Sleeping
+        elif not game_variable.started:
+            state = self.state_pregame
+            current_state = 0
+            frame_cd = 300
+        # Transforming
+        elif self.transforming:
+            state = self.state_chaiyan_transformation
+            current_state = self.current_state
+        # Chaiyan
+        elif self.chaiyan:
+            if self.idle_bis:
+                state = self.chaiyan_state_idle_bis
+                current_state = self.idle_bis_state
+            else:
+                state = self.chaiyan_state
+                current_state = self.current_state
+        # Potte
         elif self.potte:
             if self.idle_bis:
                 state = self.state_potte_idle_bis
@@ -516,6 +588,7 @@ class player_class:
             else:
                 state = self.state_potte
                 current_state = self.current_state
+        # Nyan
         elif self.nyan:
             if self.idle_bis:
                 state = self.state_nyan_idle_bis
@@ -523,6 +596,7 @@ class player_class:
             else:
                 state = self.state_nyan
                 current_state = self.current_state
+        # Normal
         else:
             if self.idle_bis:
                 state = self.idle_bis_list
@@ -531,13 +605,16 @@ class player_class:
                 state = self.state
                 current_state = self.current_state
 
-        if pygame.time.get_ticks() - self.frame_timer >= self.frame_cd:
+        if pygame.time.get_ticks() - self.frame_timer >= frame_cd:
             self.frame += 1
             self.frame_timer = pygame.time.get_ticks()
         if self.frame >= state[current_state].get_width()/state[current_state].get_height():
             self.frame = 0
 
             if self.current_state == 0:
+                if self.transforming:
+                    self.transforming = False
+                    self.chaiyan = True
                 if self.idle_bis:
                     self.idle_bis = False
                 else:
@@ -574,32 +651,40 @@ class player_class:
         if game_variable.selected_cat == "orange":
             self.state = [ORANGE_CAT_IDLE, ORANGE_CAT_WALKING, ORANGE_CAT_RUNNING, ORANGE_CAT_SCRATCHING, ORANGE_CAT_JUMPING, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
             self.idle_bis_list = [ORANGE_CAT_LICKING]
-            self.state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE, ORANGE_CAT_SCRATCHING_POTTE, ORANGE_CAT_JUMPING_POTTE, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
+            self.state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE, ORANGE_CAT_SCRATCHING_POTTE, ORANGE_CAT_JUMPING_POTTE, ORANGE_CAT_PEE_POTTE, ORANGE_CAT_PUKE_POTTE]
             self.state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
-            self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
+            self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE_NYAN, ORANGE_CAT_PUKE_NYAN]
             self.state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
+            self.state_pregame = [ORANGE_CAT_SLEEPING]
+            self.state_chaiyan_transformation = [ORANGE_CAT_TRANSFORM]
         elif game_variable.selected_cat == "black":
             self.state = [BLACK_CAT_IDLE, BLACK_CAT_WALKING, BLACK_CAT_RUNNING, BLACK_CAT_SCRATCHING, BLACK_CAT_JUMPING, BLACK_CAT_PEE, BLACK_CAT_PUKE]
             self.idle_bis_list = [BLACK_CAT_LICKING]
-            self.state_potte = [BLACK_CAT_IDLE_POTTE, BLACK_CAT_WALKING_POTTE, BLACK_CAT_RUNNING_POTTE, BLACK_CAT_SCRATCHING_POTTE, BLACK_CAT_JUMPING_POTTE, BLACK_CAT_PEE, BLACK_CAT_PUKE]
+            self.state_potte = [BLACK_CAT_IDLE_POTTE, BLACK_CAT_WALKING_POTTE, BLACK_CAT_RUNNING_POTTE, BLACK_CAT_SCRATCHING_POTTE, BLACK_CAT_JUMPING_POTTE, BLACK_CAT_PEE_POTTE, BLACK_CAT_PUKE_POTTE]
             self.state_potte_idle_bis = [BLACK_CAT_LICKING_POTTE]
-            self.state_nyan = [BLACK_CAT_IDLE_NYAN, BLACK_CAT_WALKING_NYAN, BLACK_CAT_RUNNING_NYAN, BLACK_CAT_SCRATCHING_NYAN, BLACK_CAT_JUMPING_NYAN, BLACK_CAT_PEE, BLACK_CAT_PUKE]
+            self.state_nyan = [BLACK_CAT_IDLE_NYAN, BLACK_CAT_WALKING_NYAN, BLACK_CAT_RUNNING_NYAN, BLACK_CAT_SCRATCHING_NYAN, BLACK_CAT_JUMPING_NYAN, BLACK_CAT_PEE_NYAN, BLACK_CAT_PUKE_NYAN]
             self.state_nyan_idle_bis = [BLACK_CAT_LICKING_NYAN]
+            self.state_pregame = [BLACK_CAT_SLEEPING]
+            self.state_chaiyan_transformation = [BLACK_CAT_TRANSFORM]
         elif game_variable.selected_cat == "siamese":
             self.state = [SIAMESE_CAT_IDLE, SIAMESE_CAT_WALKING, SIAMESE_CAT_RUNNING, SIAMESE_CAT_SCRATCHING, SIAMESE_CAT_JUMPING, SIAMESE_CAT_PEE, SIAMESE_CAT_PUKE]
             self.idle_bis_list = [SIAMESE_CAT_LICKING]
-            self.state_potte = [SIAMESE_CAT_IDLE_POTTE, SIAMESE_CAT_WALKING_POTTE, SIAMESE_CAT_RUNNING_POTTE, SIAMESE_CAT_SCRATCHING_POTTE, SIAMESE_CAT_JUMPING_POTTE, SIAMESE_CAT_PEE, SIAMESE_CAT_PUKE]
+            self.state_potte = [SIAMESE_CAT_IDLE_POTTE, SIAMESE_CAT_WALKING_POTTE, SIAMESE_CAT_RUNNING_POTTE, SIAMESE_CAT_SCRATCHING_POTTE, SIAMESE_CAT_JUMPING_POTTE, SIAMESE_CAT_PEE_POTTE, SIAMESE_CAT_PUKE_POTTE]
             self.state_potte_idle_bis = [SIAMESE_CAT_LICKING_POTTE]
-            self.state_nyan = [SIAMESE_CAT_IDLE_NYAN, SIAMESE_CAT_WALKING_NYAN, SIAMESE_CAT_RUNNING_NYAN, SIAMESE_CAT_SCRATCHING_NYAN, SIAMESE_CAT_JUMPING_NYAN, SIAMESE_CAT_PEE, SIAMESE_CAT_PUKE]
+            self.state_nyan = [SIAMESE_CAT_IDLE_NYAN, SIAMESE_CAT_WALKING_NYAN, SIAMESE_CAT_RUNNING_NYAN, SIAMESE_CAT_SCRATCHING_NYAN, SIAMESE_CAT_JUMPING_NYAN, SIAMESE_CAT_PEE_NYAN, SIAMESE_CAT_PUKE_NYAN]
             self.state_nyan_idle_bis = [SIAMESE_CAT_LICKING_NYAN]
+            self.state_pregame = [SIAMESE_CAT_SLEEPING]
+            self.state_chaiyan_transformation = [SIAMESE_CAT_TRANSFORM]
         # Default Skin
         else:
             self.state = [ORANGE_CAT_IDLE, ORANGE_CAT_WALKING, ORANGE_CAT_RUNNING, ORANGE_CAT_SCRATCHING, ORANGE_CAT_JUMPING, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
             self.idle_bis_list = [ORANGE_CAT_LICKING]
-            self.state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE, ORANGE_CAT_SCRATCHING_POTTE, ORANGE_CAT_JUMPING_POTTE, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
+            self.state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE, ORANGE_CAT_SCRATCHING_POTTE, ORANGE_CAT_JUMPING_POTTE, ORANGE_CAT_PEE_POTTE, ORANGE_CAT_PUKE_POTTE]
             self.state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
-            self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
+            self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE_NYAN, ORANGE_CAT_PUKE_NYAN]
             self.state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
+            self.state_pregame = [ORANGE_CAT_SLEEPING]
+            self.state_chaiyan_transformation = [ORANGE_CAT_TRANSFORM]
 
 
 class owner_class:
@@ -607,28 +692,71 @@ class owner_class:
     range = 20
     rage = 0
     max_rage = 100
-    body = pygame.Rect(1200, 600, SQUARE, SQUARE*2)
+    body = pygame.Rect(1200, 600, 170 * 1.5, 170 * 1.5)
     body_hitbox = pygame.Rect(body.x, body.y, SQUARE, SQUARE)
     
     max_speed = 5
     speed = 5
     max_bonus_speed = 15
     bonus_speed = 0
-    moving = True
+
+    moving = False
+    right = False
 
     target = None
     path = []
 
     last_rage_deduction_time = time.time()
+
+
+    frame = 0
+    frame_timer = pygame.time.get_ticks()
+    frame_cd = 300
+    state = [OWNER_WALKING]
+    current_state = 0
+    
+    img = pygame.Surface((body.width, body.height))
+
     
 
     def update(self):
-        # self.move_toward_cat()
+        if game_variable.score > 0 and not player.transforming:
+            self.move_toward_cat()
 
         self.update_move_speed()
 
         # Mettez à jour la position de la hitbox
-        self.body.x= self.body_hitbox.x
+        self.align_body()
+
+        self.change_state()
+
+        self.update_frame()
+        
+    def change_state(self):
+        if not self.moving and self.current_state != 0:
+            self.current_state = 0
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+
+    def update_frame(self):
+        # Get the correct img slate
+        state = self.state
+        current_state = self.current_state
+
+        if pygame.time.get_ticks() - self.frame_timer >= self.frame_cd:
+            self.frame += 1
+            self.frame_timer = pygame.time.get_ticks()
+        if self.frame >= state[current_state].get_width()/state[current_state].get_height():
+            self.frame = 0
+
+        self.img.fill(ALMOST_BLACK)
+        self.img.set_colorkey(ALMOST_BLACK)
+        self.img.blit(state[current_state], (0,0), (state[current_state].get_height() * self.frame, 0, state[current_state].get_height(), state[current_state].get_height()))
+        if self.right == False:
+            self.img = pygame.transform.flip(self.img, 1, 0)
+
+    def align_body(self):
+        self.body.centerx= self.body_hitbox.centerx
         self.body.bottom = self.body_hitbox.bottom
 
     def move_toward_cat(self):
@@ -679,57 +807,54 @@ class owner_class:
 class obstacle_class:
 
     #Full Map
-    topWall = pygame.Rect(0, 0, map.get_width(), SQUARE*5)
-    bottomWall = pygame.Rect(0, map.get_height() - SQUARE*2, map.get_width(), SQUARE)
+    topWall = pygame.Rect(0, 0, map.get_width(), SQUARE*4)
+    bottomWall = pygame.Rect(0, map.get_height() - SQUARE*3, map.get_width(), SQUARE)
     leftWall = pygame.Rect(0, SQUARE*4, 60, map.get_height()-SQUARE*2)
     rightWall = pygame.Rect(map.get_width() - SQUARE, SQUARE*4, SQUARE, map.get_height()-SQUARE*2)
     #Bedroom
-    bedRoomBottomLeftHalf = pygame.Rect(SQUARE, SQUARE*12, SQUARE*6, SQUARE)
-    bedRoomBottomRightHalf = pygame.Rect(SQUARE*11, SQUARE*12, SQUARE*6, SQUARE)
-    bedRoomRightTopHalf= pygame.Rect(SQUARE*16, SQUARE*4, SQUARE, SQUARE*2)
-    bedRoomRightBottomHalf = pygame.Rect(SQUARE*16, SQUARE*10, SQUARE, SQUARE*2)
-    bed = pygame.Rect(SQUARE*5, SQUARE*6, SQUARE*4, SQUARE*4)
-    nightStandBedroom = pygame.Rect(SQUARE*10, SQUARE*6, SQUARE, SQUARE)
+    bedRoomBottomLeftHalf = pygame.Rect(0, SQUARE*16, SQUARE*6, SQUARE)
+    bedRoomBottomRightHalf = pygame.Rect(SQUARE*11, SQUARE*16, SQUARE*6, SQUARE)
+    bedRoomRightTopHalf= pygame.Rect(SQUARE*17, 0, SQUARE, SQUARE*6)
+    bedRoomRightBottomHalf = pygame.Rect(SQUARE*17, SQUARE*10, SQUARE, SQUARE*7)
+    bed = pygame.Rect(SQUARE*6, SQUARE*4, SQUARE*5, SQUARE*5)
+    nightStandBedroomRight = pygame.Rect(SQUARE*11, SQUARE*4, SQUARE*3, SQUARE*2)
+    nightStandBedroomLeft = pygame.Rect(SQUARE*3, SQUARE*4, SQUARE*3, SQUARE*2)
     #Bathroom
-    bathRoomBottomLeftHalf = pygame.Rect(0, SQUARE*20, SQUARE*7, SQUARE)
-    bathRoomBottomRightHalf = pygame.Rect(SQUARE*9, SQUARE*20, SQUARE*6, SQUARE)
-    bathRoomRightTopHalf= pygame.Rect(SQUARE*14, SQUARE*12, SQUARE, SQUARE*3)
-    bathRoomRightBottomHalf = pygame.Rect(SQUARE*14, SQUARE*17, SQUARE, SQUARE*3)
-    toiletsBathroom = pygame.Rect(SQUARE, SQUARE*15, SQUARE, SQUARE)
-    showerBathroom = pygame.Rect(SQUARE*12, SQUARE*12, SQUARE*2, SQUARE*2)
+    bathRoomBottomLeftHalf = pygame.Rect(0, SQUARE*27, SQUARE*7, SQUARE)
+    bathRoomBottomRightHalf = pygame.Rect(SQUARE*11, SQUARE*27, SQUARE*6, SQUARE)
+    bathRoomRightTopHalf= pygame.Rect(SQUARE*17, SQUARE*17, SQUARE, SQUARE*2)
+    bathRoomRightBottomHalf = pygame.Rect(SQUARE*17, SQUARE*23, SQUARE, SQUARE*5)
+    toiletsBathroom = pygame.Rect(SQUARE*2, SQUARE*17, SQUARE*2, SQUARE)
+    bathtubBathroom = pygame.Rect(SQUARE, SQUARE*21, SQUARE*3, SQUARE*7)
+    sinkBathroom = pygame.Rect(SQUARE*14, SQUARE*17, SQUARE*2, SQUARE)
     #Hallway
-    halwayRightTopHalf = pygame.Rect(SQUARE*14, SQUARE*20, SQUARE, SQUARE*3)
-    halwayRightBottomHalf = pygame.Rect(SQUARE*14, SQUARE*25, SQUARE, SQUARE*2)
-    shoeCaseHallway = pygame.Rect(SQUARE, map.get_height() - SQUARE*3, SQUARE*6, SQUARE)
+    halwayRightTopHalf = pygame.Rect(SQUARE*16, SQUARE*28, SQUARE, SQUARE*3)
+    halwayRightBottomHalf = pygame.Rect(SQUARE*16, SQUARE*28, SQUARE, SQUARE*2)
+    shoeCaseHallway = pygame.Rect(SQUARE*2, map.get_height() - SQUARE*10, SQUARE*5, SQUARE)
+    plantHallway = pygame.Rect(SQUARE*14, map.get_height() - SQUARE*10, SQUARE, SQUARE)
     #Living Room
-    couchLivingRoom = pygame.Rect(SQUARE*20, SQUARE*18, SQUARE*4, SQUARE*2)
-    tvLivingRoom = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*3, SQUARE*2, SQUARE*2)
-    libraryLivingRoom = pygame.Rect(map.get_width()-SQUARE*2, SQUARE*15, SQUARE*2, SQUARE*3)
+    couchLivingRoom = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*11, SQUARE*6, SQUARE*2)
+    chairLivingRoom = pygame.Rect(SQUARE*28, map.get_height()-SQUARE*9, SQUARE*2, SQUARE*2)
+    tvLivingRoomAndPlant = pygame.Rect(SQUARE*22, map.get_height()-SQUARE*4, SQUARE*6, SQUARE*1)
+    libraryLivingRoom = pygame.Rect(SQUARE*17, SQUARE*4, SQUARE*5, SQUARE)
     plantLivingRoom = pygame.Rect(SQUARE*15, map.get_height()-SQUARE*3, SQUARE, SQUARE)
     #Office
-    officeTopLeftHalf = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*10 , SQUARE*6, SQUARE)
-    officeTopRightHalf = pygame.Rect(map.get_width()-SQUARE*3, map.get_height()-SQUARE*10 , SQUARE*3, SQUARE)
-    officeLeftTopHalf= pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*10 , SQUARE, SQUARE*2)
-    officeLeftBottomHalf = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*4 , SQUARE, SQUARE*2)
-    desk = pygame.Rect(map.get_width()-SQUARE*10, map.get_height()-SQUARE*4, SQUARE*6, SQUARE*2)
+    desk = pygame.Rect(map.get_width()-SQUARE*10, SQUARE*23, SQUARE*6, SQUARE*2)
+    deskChair= pygame.Rect(map.get_width()-SQUARE*9, SQUARE*25, SQUARE, SQUARE)
+    libraryOffice = pygame.Rect(map.get_width()-SQUARE*4, SQUARE*23, SQUARE*3, SQUARE)
     #Kitchen
-    kitchenBottom = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*16 , SQUARE*13, SQUARE)
-    table = pygame.Rect(map.get_width()-SQUARE*15, map.get_height()-SQUARE*22, SQUARE*5, SQUARE*3)
-    chairKitchen1 = pygame.Rect(map.get_width()-SQUARE*16, map.get_height()-SQUARE*21, SQUARE, SQUARE)
-    chairKitchen2 = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*19, SQUARE, SQUARE)
-    chairKitchen3 = pygame.Rect(map.get_width()-SQUARE*13, map.get_height()-SQUARE*23, SQUARE, SQUARE)
-    oven= pygame.Rect(map.get_width()-SQUARE*3, SQUARE*5, SQUARE*2, SQUARE*2)
-    fridge= pygame.Rect(map.get_width()-SQUARE*8, SQUARE*5, SQUARE*2, SQUARE*2)
-    trashCanKitchen= pygame.Rect(map.get_width()-SQUARE*5, SQUARE*5, SQUARE, SQUARE)
+    kitchenBottom = pygame.Rect(map.get_width()-SQUARE*11,SQUARE*22 , SQUARE*10, SQUARE)
+    table = pygame.Rect(map.get_width()-SQUARE*14, SQUARE*9, SQUARE*6, SQUARE*5)
+    ovenAndStuff = pygame.Rect(map.get_width()-SQUARE*13, SQUARE*4, SQUARE*12, SQUARE)
   
-    kitchen= [kitchenBottom,table, oven, fridge, trashCanKitchen, chairKitchen1, chairKitchen2]
-    office= [officeLeftBottomHalf, officeLeftTopHalf, officeTopLeftHalf, officeTopRightHalf, desk]
-    livingRoom = [couchLivingRoom, tvLivingRoom, libraryLivingRoom]
-    hallWay= [halwayRightTopHalf, halwayRightBottomHalf, shoeCaseHallway, plantLivingRoom]
-    bathRoom= [toiletsBathroom, showerBathroom, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
-    bedRoom = [bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf,bed, bedRoomRightBottomHalf, nightStandBedroom]
+    kitchen= [kitchenBottom, table, ovenAndStuff]
+    office= [desk, libraryOffice, deskChair]
+    livingRoom = [couchLivingRoom, tvLivingRoomAndPlant, libraryLivingRoom, chairLivingRoom]
+    hallWay= [halwayRightTopHalf, halwayRightBottomHalf, shoeCaseHallway, plantHallway]
+    bathRoom= [toiletsBathroom, bathtubBathroom, sinkBathroom, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
+    bedRoom = [bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf,bed, bedRoomRightBottomHalf, nightStandBedroomRight, nightStandBedroomLeft]
     fullMap = [topWall, bottomWall, leftWall, rightWall]
-    list = [fullMap, bedRoom, bathRoom, hallWay, livingRoom, office, kitchen]
+    list = [fullMap, bedRoom, office, kitchen, bathRoom, hallWay, livingRoom]
 
 
 class interactible_class():
@@ -759,26 +884,26 @@ class interactible_class():
     type_shoeCase = {"type" : "shoe_case", "score" : 500, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 25, "animation_type" : "jumping", "sprite" : SHOES_IMG, "sprite_broken" : SHOES_BROKEN_IMG}
     type_toilets = {"type" : "toilets", "score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "pee", "sprite" : None, "sprite_broken" : None}
     type_shower = {"type" : "shower", "score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "pee", "sprite" : None, "sprite_broken" : None}
-    type_plant = {"type" : "plant", "score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 20, "animation_type" : "jumping", "sprite" : PLANT_IMG, "sprite_broken" : PLANT_BROKEN_IMG}
+    type_plant = {"type" : "plant", "score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 20, "animation_type" : "jumping", "sprite" : PLANT_IMG, "sprite_broken" : PLANT_BROKEN_IMG}
     type_Rug = {"type" : "rug", "score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "pee", "sprite" : RUG_IMG, "sprite_broken" : RUG_PUKE_IMG}
 
     # Objects
-    chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*17, map.get_height()-SQUARE*22, SQUARE*2, SQUARE*3), "type" : type_chair.copy()}
-    chair2 = {"rect" : pygame.Rect(map.get_width()-SQUARE*14, map.get_height()-SQUARE*19, SQUARE*3, SQUARE*2), "type" : type_chair.copy()}
+    chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*15, SQUARE*8, SQUARE*8, SQUARE*7), "type" : type_chair.copy()}
     couch =  {"rect" : pygame.Rect(map.get_width()-SQUARE*23, map.get_height()-SQUARE*12, SQUARE*6, SQUARE*3), "type" : type_couch.copy()}
     trash =  {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE, SQUARE*3, SQUARE*2), "type" : type_trashCan.copy()}
-    tvPlug =  {"rect" : pygame.Rect(map.get_width()-SQUARE*19, map.get_height()-SQUARE*3, SQUARE*3, SQUARE*1), "type" : type_plug.copy()}
-    library =  {"rect" : pygame.Rect(map.get_width()-SQUARE*3, SQUARE*10, SQUARE*2, SQUARE*5), "type" : type_library.copy()}
-    shoeCase =  {"rect" : pygame.Rect(SQUARE, map.get_height()-SQUARE*4, SQUARE*7, SQUARE*2), "type" : type_shoeCase.copy()}
+    tvPlug =  {"rect" : pygame.Rect(map.get_width()-SQUARE*3, map.get_height()-SQUARE*5, SQUARE*2, SQUARE*2), "type" : type_plug.copy()}
+    library =  {"rect" : pygame.Rect(SQUARE*18, SQUARE*4, SQUARE*5, SQUARE*2), "type" : type_library.copy()}
+    shoeCase =  {"rect" : pygame.Rect(SQUARE*2, map.get_height()- SQUARE*12, SQUARE*6, SQUARE*4), "type" : type_shoeCase.copy()}
     shower = {"rect" : pygame.Rect(SQUARE*11, SQUARE*8, SQUARE*3, SQUARE*3), "type" : type_shower.copy()}
     toilets= {"rect" : pygame.Rect(SQUARE, SQUARE*10, SQUARE*2, SQUARE*3), "type" : type_toilets.copy()}
-    plant= {"rect" : pygame.Rect(SQUARE*15, map.get_height()-SQUARE*4, SQUARE*2, SQUARE*2), "type" : type_plant.copy()}
-    officePlug = {"rect" : pygame.Rect(map.get_width()-SQUARE*4, map.get_height()-SQUARE*4, SQUARE*3, SQUARE*2), "type" : type_plugOffice.copy()}
-    rug= {"rect" : pygame.Rect(map.get_width()-SQUARE*22, map.get_height()-SQUARE*8, SQUARE*4, SQUARE*4), "type" : type_Rug.copy()}
-    nightStandPlug = {"rect" : pygame.Rect(SQUARE*10, SQUARE, SQUARE*5, SQUARE*2), "type" : type_plug.copy()}
+    plantHallway= {"rect" : pygame.Rect(SQUARE*13, map.get_height()-SQUARE*10, SQUARE*3, SQUARE*2), "type" : type_plant.copy()}
+    plantKitchen= {"rect" : pygame.Rect(map.get_width()-SQUARE*3, SQUARE*5, SQUARE*2, SQUARE), "type" : type_plant.copy()}
+    officePlug = {"rect" : pygame.Rect(map.get_width()-SQUARE*10, SQUARE*22, SQUARE*6, SQUARE*4), "type" : type_plugOffice.copy()}
+    rug= {"rect" : pygame.Rect(SQUARE*19, map.get_height()-SQUARE*13, SQUARE*10, SQUARE*7), "type" : type_Rug.copy()}
+    nightStandPlug = {"rect" : pygame.Rect(SQUARE, SQUARE*4, SQUARE*2, SQUARE*2), "type" : type_plug.copy()}
 
 
-    list = [chair, chair2, couch, tvPlug, library, shoeCase, shower, officePlug, rug, nightStandPlug]
+    list = [chair ,couch, tvPlug, library, shoeCase, officePlug, rug, nightStandPlug, plantHallway, plantKitchen]
     # list=[]
 
     isOn = None
@@ -1036,6 +1161,7 @@ class game_ui_class:
     spacer = 40
 
     def draw_ui(self):
+        # Left Pannel
         screen.blit(self.LOWER_LEFT_PANNEL_IMG, (self.LOWER_LEFT_PANNEL_RECT.x, self.LOWER_LEFT_PANNEL_RECT.y))
         
         if game_variable.selected_cat == "black":
@@ -1071,8 +1197,7 @@ class game_ui_class:
             screen.blit(self.RAGE_BAR_0_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.HEART_3_IMG.get_width() + self.spacer * 3, self.LOWER_LEFT_PANNEL_RECT.centery - self.RAGE_BAR_0_IMG.get_height()//2))
 
 
-
-
+        # Right Pannel
         screen.blit(self.LOWER_LEFT_PANNEL_IMG, (self.LOWER_RIGHT_PANNEL_RECT.x, self.LOWER_RIGHT_PANNEL_RECT.y))
 
         score_text = font.render(f"SCORE : {game_variable.score}", 1, BLACK)
@@ -1087,8 +1212,8 @@ class button_smash_class:
 
     SOUND = pygame.mixer.Sound(os.path.join('assets', os.path.join("minigame", "ora-ora.mp3")))
 
-    LEFT_BUTTON = pygame.Rect(WIDTH//2 - 150, HEIGHT//2, 50, 50)
-    RIGHT_BUTTON = pygame.Rect(WIDTH//2 + 100, HEIGHT//2, 50, 50)
+    LEFT_BUTTON = pygame.Rect(WIDTH//2 - 150, HEIGHT//4 * 3, 70, 70)
+    RIGHT_BUTTON = pygame.Rect(WIDTH//2 + 100, HEIGHT//4 * 3, 70, 70)
 
     TIMER_BAR = pygame.Rect(WIDTH//2 - 101, HEIGHT//4 - 1, 202, 52)
     TIMER_BAR_PROGRESS = pygame.Rect(WIDTH//2 - 100, HEIGHT//4, 200, 50)
@@ -1096,7 +1221,7 @@ class button_smash_class:
     max_break_free = 40
     break_free = 40
     timer = 0
-    max_timer = 5
+    max_timer = 50
     smash_right = True
     
     def update_progress_bar(self):
@@ -1114,16 +1239,10 @@ class button_smash_class:
         screen.blit(break_free_text, (WIDTH//2 - break_free_text.get_width()//2 - 50, HEIGHT//2 - 300))
         
         if not self.smash_right:
-            pygame.draw.rect(screen, RED, (self.LEFT_BUTTON.x - 1, self.LEFT_BUTTON.y - 1, self.LEFT_BUTTON.width + 2, self.LEFT_BUTTON.height + 2))
-        pygame.draw.rect(screen, DARK_GRAY, self.LEFT_BUTTON)
-        q_button_text = font.render("Q", 1, WHITE)
-        screen.blit(q_button_text, (self.LEFT_BUTTON.centerx - q_button_text.get_width()//2, self.LEFT_BUTTON.centery - q_button_text.get_height()//2))
+            screen.blit(settings.Q_KEY_IMG, (self.LEFT_BUTTON.centerx - settings.Q_KEY_IMG.get_width()//2, self.LEFT_BUTTON.centery - settings.Q_KEY_IMG.get_height()//2))
 
         if self.smash_right:
-            pygame.draw.rect(screen, RED, (self.RIGHT_BUTTON.x - 1, self.RIGHT_BUTTON.y - 1, self.RIGHT_BUTTON.width + 2, self.RIGHT_BUTTON.height + 2))
-        pygame.draw.rect(screen, DARK_GRAY, self.RIGHT_BUTTON)
-        d_button_text = font.render("D", 1, WHITE)
-        screen.blit(d_button_text, (self.RIGHT_BUTTON.centerx - d_button_text.get_width()//2, self.RIGHT_BUTTON.centery - d_button_text.get_height()//2))
+            screen.blit(settings.D_KEY_IMG, (self.RIGHT_BUTTON.centerx - settings.D_KEY_IMG.get_width()//2, self.RIGHT_BUTTON.centery - settings.D_KEY_IMG.get_height()//2))
 
         pygame.draw.rect(screen, BLACK, self.TIMER_BAR)
         self.update_progress_bar()
@@ -1139,7 +1258,7 @@ class button_smash_class:
         self.break_free = self.max_break_free
         self.timer = time.time()
         self.SOUND.play()
-        self.SOUND.set_volume(0.5)
+        self.SOUND.set_volume(0.1)
         
         while run:
             clock.tick(60)
@@ -1163,10 +1282,12 @@ class button_smash_class:
             right = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.SOUND.stop()
                     run = False
                     general_use.close_the_game()
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
+                        self.SOUND.stop()
                         return False
                     if event.key == K_q:
                         left = True
@@ -1197,14 +1318,28 @@ class main_game_class:
 
         # Interactibles
         for item in interactible.list:
+            item_type = item["type"]["type"]
+
             if item["type"]["sprite"]:
+                sprite_position = (item["rect"].x, item["rect"].y)
+
+                sprite_dict = {
+                    "plant": (item["rect"].x, item["rect"].y - SQUARE*2)
+                    # Ajoutez d'autres types avec leurs positions respectives ici
+                }
+                sprite_dict_broken = {
+                    "plant": (item["rect"].x- SQUARE*2, item["rect"].y)
+                    # Ajoutez d'autres types avec leurs positions respectives ici
+                }
+
                 if item["type"]["is_enabled"]:
-                    # pygame.draw.rect(map, YELLOW, item["rect"])
-                    map.blit(item["type"]["sprite"], (item["rect"].x, item["rect"].y))
+                    map.blit(item["type"]["sprite"], sprite_dict.get(item_type, sprite_position))
                 else:
-                    map.blit(item["type"]["sprite_broken"], (item["rect"].x, item["rect"].y))
+                    map.blit(item["type"]["sprite_broken"], sprite_dict_broken.get(item_type, sprite_position))
             else:
                 pygame.draw.rect(map, YELLOW, item["rect"])
+
+
 
         # Player (Cat)
         # pygame.draw.rect(map, BLACK, player.body)
@@ -1213,7 +1348,10 @@ class main_game_class:
         #     pygame.draw.rect(map, GREEN, player.hitbox)
         map.blit(player.img, (player.body.x, player.body.y))
         if player.miaou:
-            map.blit(player.SPEECH_BUBBLE_IMG, (player.hitbox.x, player.hitbox.y - player.SPEECH_BUBBLE_IMG.get_height()))
+            if player.right:
+                map.blit(player.SPEECH_BUBBLE_IMG, (player.hitbox.x + player.hitbox.width//2, player.hitbox.y - player.SPEECH_BUBBLE_IMG.get_height()))
+            else:
+                map.blit(player.SPEECH_BUBBLE_IMG, (player.hitbox.x, player.hitbox.y - player.SPEECH_BUBBLE_IMG.get_height()))
 
         # Grid Position
         # pygame.draw.rect(map, GREEN, grid.cat_position["rect"])
@@ -1221,11 +1359,13 @@ class main_game_class:
         # Owner
         pygame.draw.rect(map, YELLOW, owner.body)
 
-        # Owner Body Hitbox
-        pygame.draw.rect(map, BLACK, owner.body_hitbox)
+        # # Owner Body Hitbox
+        # pygame.draw.rect(map, BLACK, owner.body_hitbox)
+        
+        map.blit(owner.img, (owner.body.x, owner.body.y))
         
         # Grid position
-        pygame.draw.rect(map, GREEN, grid.owner_position["rect"])
+        # pygame.draw.rect(map, GREEN, grid.owner_position["rect"])
 
 
         camera.update()
@@ -1266,105 +1406,115 @@ class main_game_class:
             clock.tick(60)
             owner.remove_rage(1)
 
-            # Collision with cat
-            if grid.owner_position["rect"].colliderect(grid.cat_position["rect"]) and not player.i_frame:
-                player.i_frame = True
+            if game_variable.started:
 
-                # Start button smash to try to escape
-                result = button_smash.main_loop()
-                # result = True
-                game_variable.multiplier = 1
-                left = False
-                right = False
-                up = False
-                down = False
-                interact = False
-                miaou = False
-                puke = False
-                click = False
+                # Collision with cat
+                if grid.owner_position["rect"].colliderect(grid.cat_position["rect"]) and not player.i_frame:
+                    player.i_frame = True
 
-                player.i_frame_timer = time.time()
-                if not result:
-                    player.hp -= 1
-                    if player.hp <= 0:
-                        game_over.main_loop()
-                        run = False
+                    # Start button smash to try to escape
+                    result = button_smash.main_loop()
+                    # result = True
+                    game_variable.multiplier = 1
+                    left = False
+                    right = False
+                    up = False
+                    down = False
+                    interact = False
+                    miaou = False
+                    puke = False
+                    click = False
 
-            # i-frame logic
-            if player.i_frame:
-                if time.time() - player.i_frame_timer >= player.i_frame_duration:
-                    player.i_frame = False
+                    player.i_frame_timer = time.time()
+                    if not result:
+                        player.hp -= 1
+                        if player.hp <= 0:
+                            game_over.main_loop()
+                            run = False
+
+                # i-frame logic
+                if player.i_frame:
+                    if time.time() - player.i_frame_timer >= player.i_frame_duration:
+                        player.i_frame = False
+                
+                # Player Go Left
+                if left and not interact:
+                    player.hitbox.x -= player.speed
+                    player.right = False
+                    # Check if colliding with obstacle
+                    for room in obstacle.list:
+                        for obs in room:
+                            if player.hitbox.colliderect(obs):
+                                player.hitbox.x += player.speed
+                # Player Go Right
+                if right and not interact:
+                    player.hitbox.x += player.speed
+                    player.right = True
+                    # Check if colliding with obstacle
+                    for room in obstacle.list:
+                        for obs in room:
+                            if player.hitbox.colliderect(obs):
+                                player.hitbox.x -= player.speed
+                # Player Go Up
+                if up and not interact:
+                    player.hitbox.y -= player.speed
+                    # Check if colliding with obstacle
+                    for room in obstacle.list:
+                        for obs in room:
+                            if player.hitbox.colliderect(obs):
+                                player.hitbox.y += player.speed
+                # Player Go Down
+                if down and not interact:
+                    player.hitbox.y += player.speed
+                    # Check if colliding with obstacle
+                    for room in obstacle.list:
+                        for obs in room:
+                            if player.hitbox.colliderect(obs):
+                                player.hitbox.y -= player.speed
+                                
+                if left or right or up or down:
+                    player.moving = True
+                else:
+                    player.moving = False
+
+                interactible.update()
+
+                if interact:
+                    interactible.interact()
+                elif interactible.interact_timer != None:
+                    interactible.cancel_interact()
+
+                if miaou and time.time() - player.miaou_timer > player.miaou_cd and not player.miaou:
+                    player.miaou_timer = time.time()
+                    player.miaou = True
+                    if game_variable.multiplier >= player.chaiyan_transform_cap and not player.chaiyan:
+                        player.transforming = True
+                
+                if player.miaou and time.time() - player.miaou_timer > player.miaou_duration:
+                    player.miaou_timer = time.time()
+                    player.miaou = False
+
+                if puke and time.time() - player.puke_timer > player.puke_cd:
+                    player.puke_timer = time.time()
+                    print("puke")
+
+                owner.update()
+
+                player.update()
+
+                grid.update()
+                pathfinder.owner_pos, pathfinder.cat_pos = grid.owner_position, grid.cat_position
+                if random.randrange(0, 10) == 1:
+                    pathfinder.create_path()
+
+                if click:
+                    owner.rage += 10
             
-            # Player Go Left
-            if left and not interact:
-                player.hitbox.x -= player.speed
-                player.right = False
-                # Check if colliding with obstacle
-                for room in obstacle.list:
-                    for obs in room:
-                        if player.hitbox.colliderect(obs):
-                            player.hitbox.x += player.speed
-            # Player Go Right
-            if right and not interact:
-                player.hitbox.x += player.speed
-                player.right = True
-                # Check if colliding with obstacle
-                for room in obstacle.list:
-                    for obs in room:
-                        if player.hitbox.colliderect(obs):
-                            player.hitbox.x -= player.speed
-            # Player Go Up
-            if up and not interact:
-                player.hitbox.y -= player.speed
-                # Check if colliding with obstacle
-                for room in obstacle.list:
-                    for obs in room:
-                        if player.hitbox.colliderect(obs):
-                            player.hitbox.y += player.speed
-            # Player Go Down
-            if down and not interact:
-                player.hitbox.y += player.speed
-                # Check if colliding with obstacle
-                for room in obstacle.list:
-                    for obs in room:
-                        if player.hitbox.colliderect(obs):
-                            player.hitbox.y -= player.speed
-                            
-            if left or right or up or down:
-                player.moving = True
+            elif left or right or up or down:
+                game_variable.started = True
             else:
-                player.moving = False
-
-            interactible.update()
-
-            if interact:
-                interactible.interact()
-            elif interactible.interact_timer != None:
-                interactible.cancel_interact()
-
-            if miaou and time.time() - player.miaou_timer > player.miaou_cd and not player.miaou:
-                player.miaou_timer = time.time()
-                player.miaou = True
-            
-            if player.miaou and time.time() - player.miaou_timer > player.miaou_duration:
-                player.miaou_timer = time.time()
-                player.miaou = False
-
-            if puke and time.time() - player.puke_timer > player.puke_cd:
-                player.puke_timer = time.time()
-                print("puke")
-
-            owner.update()
-
-            player.update()
-
-            grid.update()
-            pathfinder.owner_pos, pathfinder.cat_pos = grid.owner_position, grid.cat_position
-            if random.randrange(0, 10) == 1:
-                pathfinder.create_path()
-
-            if click:
-                owner.rage += 10
+                player.update()
+                
 
             miaou = False
             puke = False
@@ -1535,7 +1685,8 @@ class cat_selection_class:
         player.img.fill(ALMOST_BLACK)
         player.img.set_colorkey(ALMOST_BLACK)
         player.img.blit(ORANGE_CAT_LOAF_BREAD, (0,0), (ORANGE_CAT_LOAF_BREAD.get_height() * player.frame, 0, ORANGE_CAT_LOAF_BREAD.get_height(), ORANGE_CAT_LOAF_BREAD.get_height()))
-        screen.blit(player.img, ((self.CAT_1_CARD.centerx - player.img.get_width()//2, self.CAT_1_CARD.y + self.CAT_1_CARD.height//4 - player.img.get_height()//2)))
+        img = pygame.transform.scale(player.img, (player.img.get_width() * 3, player.img.get_height() * 3))
+        screen.blit(img, ((self.CAT_1_CARD.centerx - img.get_width()//2, self.CAT_1_CARD.y + self.CAT_1_CARD.height//4 - img.get_height()//2)))
 
         if self.index == 2:
             screen.blit(self.CAT_BLACK_HOVER_IMG, (740, 330))
@@ -1545,7 +1696,8 @@ class cat_selection_class:
         player.img.fill(ALMOST_BLACK)
         player.img.set_colorkey(ALMOST_BLACK)
         player.img.blit(BLACK_CAT_LOAF_BREAD, (0,0), (BLACK_CAT_LOAF_BREAD.get_height() * player.frame, 0, BLACK_CAT_LOAF_BREAD.get_height(), BLACK_CAT_LOAF_BREAD.get_height()))
-        screen.blit(player.img, ((self.CAT_2_CARD.centerx - player.img.get_width()//2, self.CAT_2_CARD.y + self.CAT_2_CARD.height//4 - player.img.get_height()//2)))
+        img = pygame.transform.scale(player.img, (player.img.get_width() * 3, player.img.get_height() * 3))
+        screen.blit(img, ((self.CAT_2_CARD.centerx - img.get_width()//2, self.CAT_2_CARD.y + self.CAT_2_CARD.height//4 - img.get_height()//2)))
 
         if self.index == 3:
             screen.blit(self.CAT_SIAMESE_HOVER_IMG, (1200, 330))
@@ -1555,7 +1707,8 @@ class cat_selection_class:
         player.img.fill(ALMOST_BLACK)
         player.img.set_colorkey(ALMOST_BLACK)
         player.img.blit(SIAMESE_CAT_LOAF_BREAD, (0,0), (SIAMESE_CAT_LOAF_BREAD.get_height() * player.frame, 0, SIAMESE_CAT_LOAF_BREAD.get_height(), SIAMESE_CAT_LOAF_BREAD.get_height()))
-        screen.blit(player.img, ((self.CAT_3_CARD.centerx - player.img.get_width()//2, self.CAT_3_CARD.y + self.CAT_3_CARD.height//4 - player.img.get_height()//2)))
+        img = pygame.transform.scale(player.img, (player.img.get_width() * 3, player.img.get_height() * 3))
+        screen.blit(img, ((self.CAT_3_CARD.centerx - img.get_width()//2, self.CAT_3_CARD.y + self.CAT_3_CARD.height//4 - img.get_height()//2)))
 
 
         pygame.display.update()
@@ -1773,15 +1926,22 @@ class settings_class:
     MAP_RIGHT_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 +  240, 200, 50)
     ACTION_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
     SELECT_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 420, 200, 50)
-    BACK_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 460, 200, 50)
+    BACK_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
 
-    UP_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z.png")))
-    LEFT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q.png")))
-    DOWN_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s.png")))
-    RIGHT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d.png")))
-    ACTION_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e.png")))
-    SELECT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift.png")))
-    BACK_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift.png")))
+    Z_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-not-pressed.png")))
+    Z_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-pressed.png")))
+    Q_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-not-pressed.png")))
+    Q_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-pressed.png")))
+    S_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s-not-pressed.png")))
+    S_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s-pressed.png")))
+    D_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d-not-pressed.png")))
+    D_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d-pressed.png")))
+    E_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e-not-pressed.png")))
+    E_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e-pressed.png")))
+    SPACE_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "space-bar.png")))
+    SPACE_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "space-pressed.png")))
+    SHIFT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift-not-pressed.png")))
+    SHIFT_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift-pressed.png")))
 
     button_list = [MAP_UP_BTN, MAP_LEFT_BTN, MAP_DOWN_BTN, MAP_RIGHT_BTN, BACK_BTN]
 
