@@ -713,7 +713,7 @@ class owner_class:
     
     max_speed = 5
     speed = 5
-    max_bonus_speed = 15
+    max_bonus_speed = 5
     bonus_speed = 0
 
     moving = False
@@ -816,7 +816,7 @@ class owner_class:
         time_elapsed = current_time - self.last_rage_deduction_time
 
         # Deduct 1 from rage every 5 seconds
-        if time_elapsed >= 5 and self.rage > 0:
+        if time_elapsed >= 2 and self.rage > 0:
             self.rage -= amount
             self.last_rage_deduction_time = current_time
 
@@ -845,8 +845,8 @@ class obstacle_class:
     bathRoomBottomLeftHalf = pygame.Rect(0, SQUARE*27, SQUARE*8, SQUARE)
     bathRoomBottomRightHalf = pygame.Rect(SQUARE*12, SQUARE*27, SQUARE*5, SQUARE)
     bathRoomRightTopHalf= pygame.Rect(SQUARE*17, SQUARE*17, SQUARE, SQUARE)
-    bathRoomRightBottomHalf = pygame.Rect(SQUARE*17, SQUARE*22, SQUARE, SQUARE*4)
-    toiletsBathroom = pygame.Rect(SQUARE*2, SQUARE*17, SQUARE*2, SQUARE)
+    bathRoomRightBottomHalf = pygame.Rect(SQUARE*17, SQUARE*22, SQUARE, SQUARE*6)
+    toiletsBathroom = pygame.Rect(SQUARE*3, SQUARE*17, SQUARE, SQUARE)
     bathtubBathroom = pygame.Rect(SQUARE, SQUARE*21, SQUARE*3, SQUARE*7)
     sinkBathroom = pygame.Rect(SQUARE*14, SQUARE*17, SQUARE*2, SQUARE)
     #Hallway
@@ -855,8 +855,8 @@ class obstacle_class:
     shoeCaseHallway = pygame.Rect(SQUARE*2, map.get_height() - SQUARE*10, SQUARE*5, SQUARE)
     plantHallway = pygame.Rect(SQUARE*13, map.get_height() - SQUARE*10, SQUARE*2, SQUARE)
     #Living Room
-    couchLivingRoom = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*11, SQUARE*6, SQUARE*2)
-    chairLivingRoom = pygame.Rect(SQUARE*28, map.get_height()-SQUARE*9, SQUARE*2, SQUARE*2)
+    couchLivingRoom = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*10, SQUARE*5.5, SQUARE)
+    chairLivingRoom = pygame.Rect(SQUARE*28, map.get_height()-SQUARE*8, SQUARE*2, SQUARE)
     tvLivingRoomAndPlant = pygame.Rect(SQUARE*23, map.get_height()-SQUARE*4, SQUARE*7, SQUARE*1)
     libraryLivingRoom = pygame.Rect(SQUARE*17, SQUARE*4, SQUARE*5, SQUARE)
     plantLivingRoom = pygame.Rect(SQUARE*15, map.get_height()-SQUARE*3, SQUARE, SQUARE)
@@ -866,15 +866,15 @@ class obstacle_class:
     libraryOffice = pygame.Rect(map.get_width()-SQUARE*4, SQUARE*23, SQUARE*3, SQUARE)
     #Kitchen
     kitchenBottom = pygame.Rect(map.get_width()-SQUARE*12,SQUARE*22 , SQUARE*13, SQUARE)
-    table = pygame.Rect(map.get_width()-SQUARE*14, SQUARE*9, SQUARE*6, SQUARE*5)
+    table = pygame.Rect(map.get_width()-SQUARE*14, SQUARE*9, SQUARE*6, SQUARE*4)
     ovenAndStuff = pygame.Rect(map.get_width()-SQUARE*13, SQUARE*4, SQUARE*12, SQUARE)
     plantKitchen = pygame.Rect(map.get_width()-SQUARE*3, SQUARE*5, SQUARE*2, SQUARE)
   
     kitchen= [kitchenBottom, table, ovenAndStuff, plantKitchen]
-    office= [desk, libraryOffice, deskChair]
+    office= [desk, deskChair]
     livingRoom = [couchLivingRoom, tvLivingRoomAndPlant, libraryLivingRoom, chairLivingRoom]
     hallWay= [halwayRightTopHalf, halwayRightBottomHalf, shoeCaseHallway, plantHallway]
-    bathRoom= [toiletsBathroom, bathtubBathroom, sinkBathroom, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
+    bathRoom= [bathtubBathroom, bathRoomBottomLeftHalf, bathRoomBottomRightHalf, bathRoomRightTopHalf, bathRoomRightBottomHalf]
     bedRoom = [bedRoomBottomLeftHalf, bedRoomBottomRightHalf, bedRoomRightTopHalf,bed, bedRoomRightBottomHalf, nightStandBedroomRight, nightStandBedroomLeft]
     fullMap = [topWall, bottomWall, leftWall, rightWall]
     list = [fullMap, bedRoom, office, kitchen, bathRoom, hallWay, livingRoom]
@@ -887,10 +887,15 @@ class behind_wall_class():
     wallKitchenBottom = pygame.Rect(map.get_width()-SQUARE*12, SQUARE*19, SQUARE*11, SQUARE*3)
     wallBathroomBottomRight = pygame.Rect(SQUARE*12, SQUARE*24, SQUARE*5, SQUARE*3)
     wallBathroomBottomLeft = pygame.Rect(SQUARE*4, SQUARE*24, SQUARE*4, SQUARE*3)
-    wallTV = pygame.Rect(SQUARE*24, map.get_height()-SQUARE*6, SQUARE*4, SQUARE*2)
+    wallTV = pygame.Rect(SQUARE*24, map.get_height()-SQUARE*5.5, SQUARE*4, SQUARE*2)
+    wallCouch = pygame.Rect(SQUARE*21.2, map.get_height()-SQUARE*11, SQUARE*5.8, SQUARE)
+    wallChairCouch = pygame.Rect(SQUARE*28, map.get_height()-SQUARE*9, SQUARE*2, SQUARE*2)
+    wallTable = pygame.Rect(map.get_width()-SQUARE*14, SQUARE*8, SQUARE*6, SQUARE*5)
+
+
     
   
-    walls= [wallBathroomUpLeft, wallBathroomUpRight, wallKitchenBottom, wallBathroomBottomRight, wallBathroomBottomLeft, wallTV]
+    walls= [wallBathroomUpLeft, wallBathroomUpRight, wallKitchenBottom, wallBathroomBottomRight, wallBathroomBottomLeft, wallTV, wallCouch, wallChairCouch, wallTable]
     list = [walls]
 
 
@@ -908,39 +913,63 @@ class interactible_class():
     SHOES_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "shoes-furniture-1.png")))
     SHOES_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "shoes-furniture-2.png")))
 
+    COFFEE_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tasse-1.png")))
+    COFFEE_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tasse-2.png")))
+
+    COMPUTER_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "ordinateur-1.png")))
+    COMPUTER_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "ordinateur-2.png")))
+
+    BIG_LIBRARY_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "etagere-1.png")))
+    BIG_LIBRARY_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "etagere-2.png")))
+
+    TABLE_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "table-1.png")))
+    TABLE_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "table-2.png")))
+
+    LIBRARY_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "bibliotheque-1.png")))
+    LIBRARY_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "bibliotheque-2.png")))
+
+    COUCH_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "canape-fauteuil-1.png")))
+
+
     # DESK_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "desk-1.png")))
     # DESK_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "desk-2.png")))
 
     # Types
-    type_chair = {"type" : "chair", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "scratching", "sprite" : None, "sprite_broken" : None}
-    type_couch = {"type" : "couch", "score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : None, "sprite_broken" : None}
     type_trashCan = {"type" : "trash_can", "score" : 400, "multiplier" : 0.4, "duration" : 4, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 15, "animation_type" : "jumping", "sprite" : None, "sprite_broken" : None}
-    type_library = {"type" : "library", "score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 20, "animation_type" : "jumping", "sprite" : None, "sprite_broken" : None}
-    type_plug = {"type" : "plug", "score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 5, "animation_type" : "scratching", "sprite" : LAMPE_IMG, "sprite_broken" : LAMPE_BROKEN_IMG}
-    type_plugOffice = {"type" : "desk", "score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 30, "rage_amount" : 50, "animation_type" : "scratching", "sprite" : None, "sprite_broken" : None}
-    type_shoeCase = {"type" : "shoe_case", "score" : 500, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 25, "animation_type" : "jumping", "sprite" : SHOES_IMG, "sprite_broken" : SHOES_BROKEN_IMG}
     type_toilets = {"type" : "toilets", "score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "pee", "sprite" : None, "sprite_broken" : None}
     type_shower = {"type" : "shower", "score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "pee", "sprite" : None, "sprite_broken" : None}
-    type_plant = {"type" : "plant", "score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 20, "animation_type" : "jumping", "sprite" : PLANT_IMG, "sprite_broken" : PLANT_BROKEN_IMG}
-    type_Rug = {"type" : "rug", "score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "pee", "sprite" : RUG_IMG, "sprite_broken" : RUG_PUKE_IMG}
+    type_couch = {"type" : "couch", "score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : COUCH_IMG, "sprite_broken" : COUCH_IMG}
+    
+    type_chair = {"type" : "chair", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "scratching", "sprite" : TABLE_IMG, "sprite_broken" : TABLE_BROKEN_IMG}
+    type_big_library = {"type" : "library", "score" : 500, "multiplier" : 0.5, "duration" : 3.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 15, "animation_type" : "jumping", "sprite" : BIG_LIBRARY_IMG, "sprite_broken" : BIG_LIBRARY_BROKEN_IMG}
+    type_library = {"type" : "library", "score" : 250, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : LIBRARY_IMG, "sprite_broken" : LIBRARY_BROKEN_IMG}
+    type_plug = {"type" : "plug", "score" : 300, "multiplier" : 0.3, "duration" : 2.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 20, "animation_type" : "scratching", "sprite" : LAMPE_IMG, "sprite_broken" : LAMPE_BROKEN_IMG}
+    type_plugOffice = {"type" : "desk", "score" : 500, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 30, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : COMPUTER_IMG, "sprite_broken" : COMPUTER_BROKEN_IMG}
+    type_coffee = {"type" : "coffee", "score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 20, "animation_type" : "jumping", "sprite" : COFFEE_IMG, "sprite_broken" : COFFEE_BROKEN_IMG}
+    type_shoeCase = {"type" : "shoe_case", "score" : 500, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 10, "animation_type" : "jumping", "sprite" : SHOES_IMG, "sprite_broken" : SHOES_BROKEN_IMG}
+    type_plant = {"type" : "plant", "score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 15, "animation_type" : "jumping", "sprite" : PLANT_IMG, "sprite_broken" : PLANT_BROKEN_IMG}
+    type_Rug = {"type" : "rug", "score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 10, "animation_type" : "pee", "sprite" : RUG_IMG, "sprite_broken" : RUG_PUKE_IMG}
 
     # Objects
-    chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*15, SQUARE*8, SQUARE*8, SQUARE*7), "type" : type_chair.copy()}
-    couch =  {"rect" : pygame.Rect(map.get_width()-SQUARE*23, map.get_height()-SQUARE*12, SQUARE*6, SQUARE*3), "type" : type_couch.copy()}
+    rug= {"rect" : pygame.Rect(SQUARE*19, map.get_height()-SQUARE*13, SQUARE*10, SQUARE*7), "type" : type_Rug.copy()}
+    chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*14, SQUARE*8, SQUARE*8, SQUARE*7), "type" : type_chair.copy()}
+    couch =  {"rect" : pygame.Rect(map.get_width()-SQUARE*21, map.get_height()-SQUARE*11, SQUARE*0, SQUARE*0), "type" : type_couch.copy()}
     trash =  {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE, SQUARE*3, SQUARE*2), "type" : type_trashCan.copy()}
     tvPlug =  {"rect" : pygame.Rect(map.get_width()-SQUARE*3, map.get_height()-SQUARE*5, SQUARE*2, SQUARE*2), "type" : type_plug.copy()}
-    library =  {"rect" : pygame.Rect(SQUARE*18, SQUARE*4, SQUARE*5, SQUARE*2), "type" : type_library.copy()}
+    library =  {"rect" : pygame.Rect(SQUARE*18, SQUARE*4, SQUARE*4, SQUARE*2), "type" : type_big_library.copy()}
     shoeCase =  {"rect" : pygame.Rect(SQUARE*2, map.get_height()- SQUARE*12, SQUARE*6, SQUARE*4), "type" : type_shoeCase.copy()}
     shower = {"rect" : pygame.Rect(SQUARE*11, SQUARE*8, SQUARE*3, SQUARE*3), "type" : type_shower.copy()}
     toilets= {"rect" : pygame.Rect(SQUARE, SQUARE*10, SQUARE*2, SQUARE*3), "type" : type_toilets.copy()}
     plantHallway= {"rect" : pygame.Rect(SQUARE*13, map.get_height()-SQUARE*10, SQUARE*3, SQUARE*2), "type" : type_plant.copy()}
     plantKitchen= {"rect" : pygame.Rect(map.get_width()-SQUARE*3, SQUARE*5, SQUARE*2, SQUARE*2), "type" : type_plant.copy()}
-    officePlug = {"rect" : pygame.Rect(map.get_width()-SQUARE*10, SQUARE*22, SQUARE*6, SQUARE*4), "type" : type_plugOffice.copy()}
-    rug= {"rect" : pygame.Rect(SQUARE*19, map.get_height()-SQUARE*13, SQUARE*10, SQUARE*7), "type" : type_Rug.copy()}
+    computer = {"rect" : pygame.Rect(map.get_width()-SQUARE*9, SQUARE*21, SQUARE*2, SQUARE*3), "type" : type_plugOffice.copy()}
+    libraryOffice = {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE*22, SQUARE*6, SQUARE*2), "type" : type_library.copy()}
+    
     nightStandPlug = {"rect" : pygame.Rect(SQUARE, SQUARE*4, SQUARE*2, SQUARE*2), "type" : type_plug.copy()}
+    coffee = {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE*22, SQUARE*2, SQUARE*2), "type" : type_coffee.copy()}
 
 
-    list = [chair ,couch, tvPlug, library, shoeCase, rug, nightStandPlug, plantHallway, plantKitchen]
+    list = [chair ,couch, tvPlug, library, rug, shoeCase, nightStandPlug, plantHallway, plantKitchen, computer, coffee, couch, libraryOffice]
     # list=[]
 
     isOn = None
@@ -1389,12 +1418,16 @@ class main_game_class:
 
                 sprite_dict = {
                     "plant": (item["rect"].x, item["rect"].y - SQUARE*2),
-                    "plug": (item["rect"].x, item["rect"].y - SQUARE*2)
+                    "plug": (item["rect"].x, item["rect"].y - SQUARE*2),
+                    "library": (item["rect"].x, item["rect"].y - SQUARE*2),
+                     "chair": (item["rect"].x, item["rect"].y)
                     # Ajoutez d'autres types avec leurs positions respectives ici
                 }
                 sprite_dict_broken = {
                     "plant": (item["rect"].x- SQUARE*2, item["rect"].y),
-                    "plug": (item["rect"].x-20, item["rect"].y - SQUARE*2)
+                    "plug": (item["rect"].x-20, item["rect"].y - SQUARE*2),
+                    "library": (item["rect"].x, item["rect"].y - SQUARE*2),
+                    "chair": (item["rect"].x - SQUARE, item["rect"].y)
 
                 }
 
