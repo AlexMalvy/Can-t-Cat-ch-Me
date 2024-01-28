@@ -138,8 +138,11 @@ SIAMESE_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", 
 
 ## Buttons
 
-BACK_BUTTON = pygame.Rect(10, HEIGHT - 60, 100, 50)
-NEXT_BUTTON = pygame.Rect(WIDTH - 110, HEIGHT - 60, 100, 50)
+
+BACK_BUTTON_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-back.png")))
+BACK_BUTTON_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-back-focus-hover.png")))
+
+BACK_BUTTON = pygame.Rect(10, HEIGHT - 10 - BACK_BUTTON_IMG.get_height(), BACK_BUTTON_IMG.get_width(), BACK_BUTTON_IMG.get_height())
 
 #############
 
@@ -1113,10 +1116,9 @@ class owner_selection_class:
         screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
 
         if self.index == 0:
-            pygame.draw.rect(screen, RED, pygame.Rect(BACK_BUTTON.x - 1, BACK_BUTTON.y - 1, BACK_BUTTON.width + 2, BACK_BUTTON.height + 2))
-        pygame.draw.rect(screen, GRAY, BACK_BUTTON)
-        back_button_text = font.render("Back", 1, BLACK)
-        screen.blit(back_button_text, (BACK_BUTTON.centerx - back_button_text.get_width()//2, BACK_BUTTON.centery - back_button_text.get_height()//2))
+            screen.blit(BACK_BUTTON_HOVER_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
+        else:
+            screen.blit(BACK_BUTTON_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
 
         if self.index == 1:
             pygame.draw.rect(screen, RED, pygame.Rect(self.OWNER_1_CARD.x - 1, self.OWNER_1_CARD.y - 1, self.OWNER_1_CARD.width + 2, self.OWNER_1_CARD.height + 2))
@@ -1216,10 +1218,9 @@ class cat_selection_class:
         screen.blit(self.TITLE_IMG, (WIDTH//2 - self.TITLE_IMG.get_width()//2, 160))
 
         if self.index == 0:
-            pygame.draw.rect(screen, RED, pygame.Rect(BACK_BUTTON.x - 1, BACK_BUTTON.y - 1, BACK_BUTTON.width + 2, BACK_BUTTON.height + 2))
-        pygame.draw.rect(screen, GRAY, BACK_BUTTON)
-        back_button_text = font.render("Back", 1, BLACK)
-        screen.blit(back_button_text, (BACK_BUTTON.centerx - back_button_text.get_width()//2, BACK_BUTTON.centery - back_button_text.get_height()//2))
+            screen.blit(BACK_BUTTON_HOVER_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
+        else:
+            screen.blit(BACK_BUTTON_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
 
         if self.index == 1:
             screen.blit(self.CAT_ORANGE_HOVER_IMG, (280, 330))
