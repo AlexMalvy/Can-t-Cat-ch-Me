@@ -52,6 +52,7 @@ ALMOST_BLACK = (1, 1, 1)
 ### Background
 
 BG_GRAY_WALL = pygame.image.load(os.path.join("assets", "bg_gray_wall.jpg"))
+BG_GAME_UI = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "background-game-ui-1920x1080.jpg")))
 
 ### Cats Sprites
 ## Orange
@@ -1100,7 +1101,7 @@ class owner_selection_class:
     index = 1
 
     def draw_window(self):
-        screen.fill(WHITE)
+        screen.blit(BG_GAME_UI, (0,0))
         
         title_text = font.render("Title", 1, BLACK)
         screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
@@ -1191,7 +1192,7 @@ class cat_selection_class:
     index = 1
 
     def draw_window(self):
-        screen.fill(WHITE)
+        screen.blit(BG_GAME_UI, (0,0))
         
         title_text = font.render("Title", 1, BLACK)
         screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
@@ -1305,6 +1306,26 @@ class menu_class:
     QUIT_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 160, 200, 50)
     SETTINGS_BUTTON = pygame.Rect(WIDTH - 60, HEIGHT - 60, 50, 50)
 
+    LOGO_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "logo-game-ui.png")))
+    LOGO_ANIMATION_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "logo-game-ui-animation.png")))
+
+    PLAY_BUTTON_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-play.png")))
+    PLAY_BUTTON_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-play-focus-hover.png")))
+
+    CREDITS_BUTTON_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-credits.png")))
+    CREDITS_BUTTON_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-credits-focus-hover.png")))
+
+    EXIT_BUTTON_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-exit.png")))
+    EXIT_BUTTON_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-exit-focus-hover.png")))
+
+    SETTINGS_BUTTON_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-settings.png")))
+    SETTINGS_BUTTON_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-settings-focus-hover.png")))
+
+    in_animation = False
+    animation_timer = 0
+    animation_duration = 0.15
+    animation_cooldown = 2
+
     button_list = [PLAY_BUTTON, CREDITS_BUTTON, QUIT_BUTTON, SETTINGS_BUTTON]
     index = 0
 
@@ -1312,34 +1333,32 @@ class menu_class:
         self.exitedGameProperty = exitedGameProperty
 
     def draw_window(self):
-        screen.fill(WHITE)
+        screen.blit(BG_GAME_UI, (0,0))
         
-        title_text = font.render("Cat-CH ME !", 1, BLACK)
-        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
+        if self.in_animation:
+            screen.blit(self.LOGO_ANIMATION_IMG, (260, 210))
+        else:
+            screen.blit(self.LOGO_IMG, (260, 210))
 
         if self.index == 0:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.PLAY_BUTTON.x - 1, self.PLAY_BUTTON.y - 1, self.PLAY_BUTTON.width + 2, self.PLAY_BUTTON.height + 2))
-        pygame.draw.rect(screen, GRAY, self.PLAY_BUTTON)
-        play_text = font.render("Play", 1, BLACK)
-        screen.blit(play_text, (self.PLAY_BUTTON.centerx - play_text.get_width()//2, self.PLAY_BUTTON.centery - play_text.get_height()//2))
+            screen.blit(self.PLAY_BUTTON_HOVER_IMG, (1140, 315))
+        else:
+            screen.blit(self.PLAY_BUTTON_IMG, (1140, 315))
 
         if self.index == 1:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.CREDITS_BUTTON.x - 1, self.CREDITS_BUTTON.y - 1, self.CREDITS_BUTTON.width + 2, self.CREDITS_BUTTON.height + 2))
-        pygame.draw.rect(screen, GRAY, self.CREDITS_BUTTON)
-        credits_text = font.render("Credits", 1, BLACK)
-        screen.blit(credits_text, (self.CREDITS_BUTTON.centerx - credits_text.get_width()//2, self.CREDITS_BUTTON.centery - credits_text.get_height()//2))
+            screen.blit(self.CREDITS_BUTTON_HOVER_IMG, (1140, 485))
+        else:
+            screen.blit(self.CREDITS_BUTTON_IMG, (1140, 485))
 
         if self.index == 2:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.QUIT_BUTTON.x - 1, self.QUIT_BUTTON.y - 1, self.QUIT_BUTTON.width + 2, self.QUIT_BUTTON.height + 2))
-        pygame.draw.rect(screen, GRAY, self.QUIT_BUTTON)
-        exit_text = font.render("Exit", 1, BLACK)
-        screen.blit(exit_text, (self.QUIT_BUTTON.centerx - exit_text.get_width()//2, self.QUIT_BUTTON.centery - exit_text.get_height()//2))
+            screen.blit(self.EXIT_BUTTON_HOVER_IMG, (1140, 645))
+        else:
+            screen.blit(self.EXIT_BUTTON_IMG, (1140, 645))
 
         if self.index == 3:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.SETTINGS_BUTTON.x - 1, self.SETTINGS_BUTTON.y - 1, self.SETTINGS_BUTTON.width + 2, self.SETTINGS_BUTTON.height + 2))
-        pygame.draw.rect(screen, GRAY, self.SETTINGS_BUTTON)
-        settings_text = font.render("Settings", 1, BLACK)
-        screen.blit(settings_text, (self.SETTINGS_BUTTON.centerx - settings_text.get_width()//2, self.SETTINGS_BUTTON.centery - settings_text.get_height()//2))
+            screen.blit(self.SETTINGS_BUTTON_HOVER_IMG, (WIDTH - 200, HEIGHT - 190))
+        else:
+            screen.blit(self.SETTINGS_BUTTON_IMG, (WIDTH - 200, HEIGHT - 190))
 
         pygame.display.update()
 
@@ -1351,9 +1370,19 @@ class menu_class:
         down = False
         interact = False
         click = False
+        self.animation_timer = time.time()
         # music_class.play_music()
         while run:
             clock.tick(60)
+
+            if self.in_animation:
+                if time.time() - self.animation_timer > self.animation_duration:
+                    self.in_animation = False
+                    self.animation_timer = time.time()
+            else:
+                if time.time() - self.animation_timer > self.animation_cooldown:
+                    self.in_animation = True
+                    self.animation_timer = time.time()
 
             if (up or left) and self.index > 0:
                 self.index -= 1
