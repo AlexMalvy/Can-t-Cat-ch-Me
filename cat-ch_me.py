@@ -937,8 +937,8 @@ class button_smash_class:
 
     SOUND = pygame.mixer.Sound(os.path.join('assets', os.path.join("minigame", "ora-ora.mp3")))
 
-    LEFT_BUTTON = pygame.Rect(WIDTH//2 - 150, HEIGHT//2, 50, 50)
-    RIGHT_BUTTON = pygame.Rect(WIDTH//2 + 100, HEIGHT//2, 50, 50)
+    LEFT_BUTTON = pygame.Rect(WIDTH//2 - 150, HEIGHT//4 * 3, 70, 70)
+    RIGHT_BUTTON = pygame.Rect(WIDTH//2 + 100, HEIGHT//4 * 3, 70, 70)
 
     TIMER_BAR = pygame.Rect(WIDTH//2 - 101, HEIGHT//4 - 1, 202, 52)
     TIMER_BAR_PROGRESS = pygame.Rect(WIDTH//2 - 100, HEIGHT//4, 200, 50)
@@ -946,7 +946,7 @@ class button_smash_class:
     max_break_free = 40
     break_free = 40
     timer = 0
-    max_timer = 5
+    max_timer = 50
     smash_right = True
     
     def update_progress_bar(self):
@@ -964,16 +964,10 @@ class button_smash_class:
         screen.blit(break_free_text, (WIDTH//2 - break_free_text.get_width()//2 - 50, HEIGHT//2 - 300))
         
         if not self.smash_right:
-            pygame.draw.rect(screen, RED, (self.LEFT_BUTTON.x - 1, self.LEFT_BUTTON.y - 1, self.LEFT_BUTTON.width + 2, self.LEFT_BUTTON.height + 2))
-        pygame.draw.rect(screen, DARK_GRAY, self.LEFT_BUTTON)
-        q_button_text = font.render("Q", 1, WHITE)
-        screen.blit(q_button_text, (self.LEFT_BUTTON.centerx - q_button_text.get_width()//2, self.LEFT_BUTTON.centery - q_button_text.get_height()//2))
+            screen.blit(settings.Q_KEY_IMG, (self.LEFT_BUTTON.centerx - settings.Q_KEY_IMG.get_width()//2, self.LEFT_BUTTON.centery - settings.Q_KEY_IMG.get_height()//2))
 
         if self.smash_right:
-            pygame.draw.rect(screen, RED, (self.RIGHT_BUTTON.x - 1, self.RIGHT_BUTTON.y - 1, self.RIGHT_BUTTON.width + 2, self.RIGHT_BUTTON.height + 2))
-        pygame.draw.rect(screen, DARK_GRAY, self.RIGHT_BUTTON)
-        d_button_text = font.render("D", 1, WHITE)
-        screen.blit(d_button_text, (self.RIGHT_BUTTON.centerx - d_button_text.get_width()//2, self.RIGHT_BUTTON.centery - d_button_text.get_height()//2))
+            screen.blit(settings.D_KEY_IMG, (self.RIGHT_BUTTON.centerx - settings.D_KEY_IMG.get_width()//2, self.RIGHT_BUTTON.centery - settings.D_KEY_IMG.get_height()//2))
 
         pygame.draw.rect(screen, BLACK, self.TIMER_BAR)
         self.update_progress_bar()
@@ -989,7 +983,7 @@ class button_smash_class:
         self.break_free = self.max_break_free
         self.timer = time.time()
         self.SOUND.play()
-        self.SOUND.set_volume(0.5)
+        self.SOUND.set_volume(0.1)
         
         while run:
             clock.tick(60)
@@ -1013,10 +1007,12 @@ class button_smash_class:
             right = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.SOUND.stop()
                     run = False
                     general_use.close_the_game()
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
+                        self.SOUND.stop()
                         return False
                     if event.key == K_q:
                         left = True
