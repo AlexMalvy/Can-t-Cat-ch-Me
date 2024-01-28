@@ -780,6 +780,9 @@ class game_over_class:
 
 
 class button_smash_class:
+    IMG_1 = pygame.image.load(os.path.join("assets", os.path.join("minigame", "ORA1.svg")))
+    IMG_2 = pygame.image.load(os.path.join("assets", os.path.join("minigame", "ORA2.svg")))
+
     LEFT_BUTTON = pygame.Rect(WIDTH//2 - 150, HEIGHT//2, 50, 50)
     RIGHT_BUTTON = pygame.Rect(WIDTH//2 + 100, HEIGHT//2, 50, 50)
 
@@ -796,7 +799,11 @@ class button_smash_class:
             self.TIMER_BAR_PROGRESS.width = (self.TIMER_BAR.width - 2) * (1 - (time.time() - self.timer) / self.max_timer)
 
     def draw_window(self):
-        screen.fill(GRAY)
+        screen.fill(WHITE)
+        if self.smash_right:
+            screen.blit(self.IMG_1, (0,0))
+        else:
+            screen.blit(self.IMG_2, (0,0))
         
         break_free_text = font.render(f"{self.break_free}", 1, BLACK)
         screen.blit(break_free_text, (WIDTH//2 - break_free_text.get_width()//2 - 50, HEIGHT//2 - 300))
