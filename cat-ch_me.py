@@ -357,8 +357,16 @@ class music_class:
 
     GLASS_BREAKING_1 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "glass-breaking-1.mp3")))
     GLASS_BREAKING_2 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "glass-breaking-2.mp3")))
+    
+    CHAIYAN = pygame.mixer.Sound(os.path.join('assets', os.path.join("chaiyan", os.path.join("transformation", "saiyan.mp3"))))
 
     NYAN_CAT_THEME = os.path.join('assets', os.path.join("music", "nyan-cat-theme.mp3"))
+    POTTE_CAT_THEME = os.path.join('assets', os.path.join("music", "potte-cat-theme.mp3"))
+    MAIN_THEME = os.path.join('assets', os.path.join("music", "main_theme.mp3"))
+
+    LOSE = os.path.join('assets', os.path.join("music", "you-lose.mp3"))
+    WIN = os.path.join('assets', os.path.join("music", "you-win.mp3"))
+
 
     selected_sound = None
 
@@ -370,16 +378,14 @@ class music_class:
     def stop_sound(self, sound):
         sound.stop()
 
-    def play_music():
-        pygame.mixer.music.load(os.path.join('assets', os.path.join("music", "main_theme.mp3")))
+    def play_music(self, music):
+        pygame.mixer.music.load(music)
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play()
 
 
 class camera_class:
     bg = pygame.transform.scale(BG_GRAY_WALL, (map.get_width(), map.get_height()))
-    # bg = pygame.Surface((map.get_width(), map.get_height()))
-    # bg.fill(GRAY)
     def bg_blit(self):
         map.blit(self.bg, (0,0))
 
@@ -649,6 +655,7 @@ class player_class:
             if self.current_state == 0:
                 if self.transforming:
                     self.transforming = False
+                    music.stop_sound(music.CHAIYAN)
                     self.chaiyan = True
                 if self.idle_bis:
                     self.idle_bis = False
@@ -1050,9 +1057,11 @@ class interactible_class():
                 if self.isOn["type"]["type"] == "shoe_case":
                     player.potte = True
                     player.nyan = False
+                    music.play_music(music.POTTE_CAT_THEME)
                 elif self.isOn["type"]["type"] == "desk":
                     player.nyan = True
                     player.potte = False
+                    music.play_music(music.NYAN_CAT_THEME)
 
 
             self.update_progress_bar()
@@ -1197,16 +1206,13 @@ class Pathfinder:
         
 
 class game_over_class:
+    GAME_OVER_BG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "game-over-screen.jpg")))
+
     def draw_window(self):
-        screen.fill(GRAY)
+        screen.blit(self.GAME_OVER_BG, (0,0))
         
-        title_text = font.render("Game Over !", 1, WHITE)
-        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
-
-        screen.blit(player.img, (WIDTH//2 - player.body.width//2, HEIGHT//2 - player.body.height//2))
-
-        score_text = font.render(f"Score : {game_variable.score}", 1, WHITE)
-        screen.blit(score_text, (WIDTH//2 - score_text.get_width()//2, HEIGHT//2 + 50))
+        score_text = font.render(f"{game_variable.score}", 1, BLACK)
+        screen.blit(score_text, (1000, 727))
 
         pygame.display.update()
 
@@ -1219,6 +1225,10 @@ class game_over_class:
         interact = False
         miaou = False
         click = False
+        if game_variable.enraged:
+            music.play_music(music.WIN)
+        else:
+            music.play_music(music.LOSE)
         
         # grid.solver()
         while run:
@@ -1579,7 +1589,7 @@ class main_game_class:
                         if game_variable.enraged:
                             player.hp = 0
                         else:
-                            player.hp -= 1
+                            player.hp -= 3
                         if player.hp <= 0:
                             game_over.main_loop()
                             run = False
@@ -1689,6 +1699,7 @@ class main_game_class:
                     music.play_sound(random.choice(music.MEOWS))
                     if game_variable.multiplier >= player.chaiyan_transform_cap and not player.chaiyan:
                         player.transforming = True
+                        music.play_sound(music.CHAIYAN)
                 
                 if player.miaou and time.time() - player.miaou_timer > player.miaou_duration:
                     player.miaou_timer = time.time()
@@ -2056,7 +2067,7 @@ class menu_class:
         interact = False
         click = False
         self.animation_timer = time.time()
-        music_class.play_music()
+        music.play_music(music.MAIN_THEME)
         while run:
             clock.tick(60)
 
