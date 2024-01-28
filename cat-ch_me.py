@@ -1920,14 +1920,29 @@ class menu_class:
 
 # Class representing settings menu
 class settings_class:
-    # List of buttons objects
-    MAP_UP_BTN = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2, 200, 50)
-    MAP_LEFT_BTN = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 80, 200, 50)
-    MAP_DOWN_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 160, 200, 50)
-    MAP_RIGHT_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 +  240, 200, 50)
-    ACTION_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
-    SELECT_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 420, 200, 50)
+    # Title
+    title_text = big_font.render("Liste des contôles", 1, BLACK)
 
+    # Button
+    Z_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 200, 240, 50)
+    Q_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 120, 240, 50)
+    S_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 40, 240, 50)
+    D_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 40, 240, 50)
+    E_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 120, 200, 50)
+    SPACE_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 200, 200, 50)
+
+    # Descriptions
+    Z_DESC = font.render("UP", 1, BLACK)
+    Q_DESC = font.render("LEFT", 1, BLACK)
+    S_DESC = font.render("DOWN", 1, BLACK)
+    D_DESC = font.render("RIGHT", 1, BLACK)
+    E_DESC = font.render("ACTION", 1, BLACK)
+    SPACE_DESC = font.render("SELECT", 1, BLACK)
+
+    # Buttons list
+    button_list = [ Z_BUTTON, Q_BUTTON, S_BUTTON, D_BUTTON, E_BUTTON, SPACE_BUTTON, BACK_BUTTON ]
+
+    # List of buttons objects
     Z_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-not-pressed.png")))
     Z_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-pressed.png")))
     Q_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-not-pressed.png")))
@@ -1940,10 +1955,6 @@ class settings_class:
     E_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e-pressed.png")))
     SPACE_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "space-bar.png")))
     SPACE_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "space-pressed.png")))
-    SHIFT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift-not-pressed.png")))
-    SHIFT_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift-pressed.png")))
-
-    button_list = [MAP_UP_BTN, MAP_LEFT_BTN, MAP_DOWN_BTN, MAP_RIGHT_BTN, BACK_BUTTON]
 
     def __init__(self):
         # Index
@@ -1952,34 +1963,45 @@ class settings_class:
     def draw_window(self):
         screen.blit(BG_GAME_UI, (0,0))
         
-        title_text = big_font.render("Paramètres", 1, BLACK)
-        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 320 - title_text.get_height()//2))
+        screen.blit(self.title_text, (WIDTH//2 - self.title_text.get_width()//2, HEIGHT//2 - 320 - self.title_text.get_height()//2))
+        screen.blit(self.Z_DESC, (WIDTH//2 - self.Z_BUTTON.x//2, self.Z_BUTTON.y))   
+        screen.blit(self.Q_DESC, (WIDTH//2 - self.Q_BUTTON.x//2, self.Q_BUTTON.y))    
+        screen.blit(self.S_DESC, (WIDTH//2 - self.S_BUTTON.x//2, self.S_BUTTON.y))   
+        screen.blit(self.D_DESC, (WIDTH//2 - self.D_BUTTON.x//2, self.D_BUTTON.y))  
+        screen.blit(self.E_DESC, (WIDTH//2 - self.E_BUTTON.x//2, self.E_BUTTON.y))  
+        screen.blit(self.SPACE_DESC, (WIDTH//2 - self.SPACE_BUTTON.x//2, self.SPACE_BUTTON.y))  
 
         if self.index == 0:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.MAP_UP_BTN.x - 1, self.MAP_UP_BTN.y - 1, self.MAP_UP_BTN.width + 2, self.MAP_UP_BTN.height + 2))
-        pygame.draw.rect(screen, GRAY, self.MAP_UP_BTN)
-        play_text = font.render("Touche directionnelle haut", 1, BLACK)
-        screen.blit(play_text, (self.MAP_UP_BTN.centerx - play_text.get_width()//2, self.MAP_UP_BTN.centery - play_text.get_height()//2))
+            screen.blit(self.Z_KEY_PRESSED_IMG, (self.Z_BUTTON.x, self.Z_BUTTON.y))
+        else:
+            screen.blit(self.Z_KEY_IMG, (self.Z_BUTTON.x, self.Z_BUTTON.y))     
 
         if self.index == 1:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.MAP_LEFT_BTN.x - 1, self.MAP_LEFT_BTN.y - 1, self.MAP_LEFT_BTN.width + 2, self.MAP_LEFT_BTN.height + 2))
-        pygame.draw.rect(screen, GRAY, self.MAP_LEFT_BTN)
-        credits_text = font.render("Touche directionnelle gauche", 1, BLACK)
-        screen.blit(credits_text, (self.MAP_LEFT_BTN.centerx - credits_text.get_width()//2, self.MAP_LEFT_BTN.centery - credits_text.get_height()//2))
-
+            screen.blit(self.Q_KEY_PRESSED_IMG, (self.Q_BUTTON.x, self.Q_BUTTON.y))
+        else:
+            screen.blit(self.Q_KEY_IMG, (self.Q_BUTTON.x, self.Q_BUTTON.y))
+            
         if self.index == 2:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.MAP_DOWN_BTN.x - 1, self.MAP_DOWN_BTN.y - 1, self.MAP_DOWN_BTN.width + 2, self.MAP_DOWN_BTN.height + 2))
-        pygame.draw.rect(screen, GRAY, self.MAP_DOWN_BTN)
-        exit_text = font.render("Touche directionnelle bas", 1, BLACK)
-        screen.blit(exit_text, (self.MAP_DOWN_BTN.centerx - exit_text.get_width()//2, self.MAP_DOWN_BTN.centery - exit_text.get_height()//2))
-
+            screen.blit(self.S_KEY_PRESSED_IMG, (self.S_BUTTON.x, self.S_BUTTON.y))
+        else:
+            screen.blit(self.S_KEY_IMG, (self.S_BUTTON.x, self.S_BUTTON.y)) 
+            
         if self.index == 3:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.MAP_RIGHT_BTN.x - 1, self.MAP_RIGHT_BTN.y - 1, self.MAP_RIGHT_BTN.width + 2, self.MAP_RIGHT_BTN.height + 2))
-        pygame.draw.rect(screen, GRAY, self.MAP_RIGHT_BTN)
-        settings_text = font.render("Touche directionnelle droite", 1, BLACK)
-        screen.blit(settings_text, (self.MAP_RIGHT_BTN.centerx - settings_text.get_width()//2, self.MAP_RIGHT_BTN.centery - settings_text.get_height()//2))
-
+            screen.blit(self.D_KEY_PRESSED_IMG, (self.D_BUTTON.x, self.D_BUTTON.y))
+        else:
+            screen.blit(self.D_KEY_IMG, (self.D_BUTTON.x, self.D_BUTTON.y))
+            
         if self.index == 4:
+            screen.blit(self.E_KEY_PRESSED_IMG, (self.E_BUTTON.x, self.E_BUTTON.y))
+        else:
+            screen.blit(self.E_KEY_IMG, (self.E_BUTTON.x, self.E_BUTTON.y))
+            
+        if self.index == 5:
+            screen.blit(self.SPACE_KEY_PRESSED_IMG, (self.SPACE_BUTTON.x, self.SPACE_BUTTON.y))
+        else:
+            screen.blit(self.SPACE_KEY_IMG, (self.SPACE_BUTTON.x, self.SPACE_BUTTON.y))
+
+        if self.index == 6:
             screen.blit(BACK_BUTTON_HOVER_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
         else:
             screen.blit(BACK_BUTTON_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
@@ -1988,12 +2010,14 @@ class settings_class:
 
     def main_loop(self):
         run = True
+        
         left = False
         right = False
         up = False
         down = False
         interact = False
         click = False
+
         while run:
             clock.tick(60)
 
@@ -2015,6 +2039,12 @@ class settings_class:
                         break
                     case 3:
                         print('RIGHT')
+                        break
+                    case 4:
+                        print('ACTION')
+                        break
+                    case 5:
+                        print('RUN')
                         break
                     case _:
                         run = False
