@@ -138,8 +138,11 @@ SIAMESE_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", 
 
 ## Buttons
 
-BACK_BUTTON = pygame.Rect(10, HEIGHT - 60, 100, 50)
-NEXT_BUTTON = pygame.Rect(WIDTH - 110, HEIGHT - 60, 100, 50)
+
+BACK_BUTTON_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-back.png")))
+BACK_BUTTON_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-back-focus-hover.png")))
+
+BACK_BUTTON = pygame.Rect(10, HEIGHT - 10 - BACK_BUTTON_IMG.get_height(), BACK_BUTTON_IMG.get_width(), BACK_BUTTON_IMG.get_height())
 
 #############
 
@@ -266,6 +269,9 @@ class player_class:
     state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN]
     state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
 
+    in_selection = False
+    state_selection = [ORANGE_CAT_LOAF_BREAD]
+
     img = pygame.Surface((body.width, body.height))
     
     def update(self):
@@ -317,7 +323,10 @@ class player_class:
 
     def update_frame(self):
         # Get the correct img slate
-        if self.potte:
+        if self.in_selection:
+            state = self.state_selection
+            current_state = 0
+        elif self.potte:
             if self.idle_bis:
                 state = self.state_potte_idle_bis
                 current_state = self.idle_bis_state
@@ -1107,10 +1116,9 @@ class owner_selection_class:
         screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
 
         if self.index == 0:
-            pygame.draw.rect(screen, RED, pygame.Rect(BACK_BUTTON.x - 1, BACK_BUTTON.y - 1, BACK_BUTTON.width + 2, BACK_BUTTON.height + 2))
-        pygame.draw.rect(screen, GRAY, BACK_BUTTON)
-        back_button_text = font.render("Back", 1, BLACK)
-        screen.blit(back_button_text, (BACK_BUTTON.centerx - back_button_text.get_width()//2, BACK_BUTTON.centery - back_button_text.get_height()//2))
+            screen.blit(BACK_BUTTON_HOVER_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
+        else:
+            screen.blit(BACK_BUTTON_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
 
         if self.index == 1:
             pygame.draw.rect(screen, RED, pygame.Rect(self.OWNER_1_CARD.x - 1, self.OWNER_1_CARD.y - 1, self.OWNER_1_CARD.width + 2, self.OWNER_1_CARD.height + 2))
@@ -1134,6 +1142,7 @@ class owner_selection_class:
         down = False
         interact = False
         click = False
+        player.in_selection = False
         while run:
             clock.tick(60)
 
@@ -1184,9 +1193,21 @@ class owner_selection_class:
             self.draw_window()
 
 class cat_selection_class:
-    CAT_1_CARD = pygame.Rect(WIDTH//2 - 700, HEIGHT//2 - 100, 400, 400)
-    CAT_2_CARD = pygame.Rect(WIDTH//2 - 200, HEIGHT//2 - 100, 400, 400)
-    CAT_3_CARD = pygame.Rect(WIDTH//2 + 300 , HEIGHT//2 - 100, 400, 400)
+    CAT_1_CARD = pygame.Rect(280, 330, 445, 565)
+    CAT_2_CARD = pygame.Rect(740, 330, 445, 565)
+    CAT_3_CARD = pygame.Rect(1200, 330, 445, 565)
+
+    TITLE_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "title.png")))
+
+    CAT_ORANGE_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "cat-choice-orange.png")))
+    CAT_ORANGE_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "cat-choice-orange-focus-hover.png")))
+
+    CAT_BLACK_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "cat-choice-black.png")))
+    CAT_BLACK_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "cat-choice-black-focus-hover.png")))
+
+    CAT_SIAMESE_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "cat-choice-siamese.png")))
+    CAT_SIAMESE_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "cat-choice-siamese-focus-hover.png")))
+
 
     button_list = [BACK_BUTTON, CAT_1_CARD, CAT_2_CARD, CAT_3_CARD]
     index = 1
@@ -1194,44 +1215,42 @@ class cat_selection_class:
     def draw_window(self):
         screen.blit(BG_GAME_UI, (0,0))
         
-        title_text = font.render("Title", 1, BLACK)
-        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
+        screen.blit(self.TITLE_IMG, (WIDTH//2 - self.TITLE_IMG.get_width()//2, 160))
 
         if self.index == 0:
-            pygame.draw.rect(screen, RED, pygame.Rect(BACK_BUTTON.x - 1, BACK_BUTTON.y - 1, BACK_BUTTON.width + 2, BACK_BUTTON.height + 2))
-        pygame.draw.rect(screen, GRAY, BACK_BUTTON)
-        back_button_text = font.render("Back", 1, BLACK)
-        screen.blit(back_button_text, (BACK_BUTTON.centerx - back_button_text.get_width()//2, BACK_BUTTON.centery - back_button_text.get_height()//2))
+            screen.blit(BACK_BUTTON_HOVER_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
+        else:
+            screen.blit(BACK_BUTTON_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
 
         if self.index == 1:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.CAT_1_CARD.x - 1, self.CAT_1_CARD.y - 1, self.CAT_1_CARD.width + 2, self.CAT_1_CARD.height + 2))
-        pygame.draw.rect(screen, GRAY, self.CAT_1_CARD)
-        cat_1_text = font.render("Nougat", 1, BLACK)
-        screen.blit(cat_1_text, (self.CAT_1_CARD.centerx - cat_1_text.get_width()//2, self.CAT_1_CARD.y + 10))
+            screen.blit(self.CAT_ORANGE_HOVER_IMG, (280, 330))
+        else:
+            screen.blit(self.CAT_ORANGE_IMG, (280, 330))
+
         player.img.fill(ALMOST_BLACK)
         player.img.set_colorkey(ALMOST_BLACK)
-        player.img.blit(ORANGE_CAT_IDLE, (0,0), (ORANGE_CAT_IDLE.get_height() * 1, 0, ORANGE_CAT_IDLE.get_height(), ORANGE_CAT_IDLE.get_height()))
-        screen.blit(player.img, ((self.CAT_1_CARD.centerx - player.img.get_width()//2, self.CAT_1_CARD.centery - player.img.get_height()//2)))
+        player.img.blit(ORANGE_CAT_LOAF_BREAD, (0,0), (ORANGE_CAT_LOAF_BREAD.get_height() * player.frame, 0, ORANGE_CAT_LOAF_BREAD.get_height(), ORANGE_CAT_LOAF_BREAD.get_height()))
+        screen.blit(player.img, ((self.CAT_1_CARD.centerx - player.img.get_width()//2, self.CAT_1_CARD.y + self.CAT_1_CARD.height//4 - player.img.get_height()//2)))
 
         if self.index == 2:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.CAT_2_CARD.x - 1, self.CAT_2_CARD.y - 1, self.CAT_2_CARD.width + 2, self.CAT_2_CARD.height + 2))
-        pygame.draw.rect(screen, GRAY, self.CAT_2_CARD)
-        cat_2_text = font.render("Hypnolos", 1, BLACK)
-        screen.blit(cat_2_text, (self.CAT_2_CARD.centerx - cat_2_text.get_width()//2, self.CAT_2_CARD.y + 10))
+            screen.blit(self.CAT_BLACK_HOVER_IMG, (740, 330))
+        else:
+            screen.blit(self.CAT_BLACK_IMG, (740, 330))
+
         player.img.fill(ALMOST_BLACK)
         player.img.set_colorkey(ALMOST_BLACK)
-        player.img.blit(BLACK_CAT_IDLE, (0,0), (BLACK_CAT_IDLE.get_height() * 1, 0, BLACK_CAT_IDLE.get_height(), BLACK_CAT_IDLE.get_height()))
-        screen.blit(player.img, ((self.CAT_2_CARD.centerx - player.img.get_width()//2, self.CAT_2_CARD.centery - player.img.get_height()//2)))
+        player.img.blit(BLACK_CAT_LOAF_BREAD, (0,0), (BLACK_CAT_LOAF_BREAD.get_height() * player.frame, 0, BLACK_CAT_LOAF_BREAD.get_height(), BLACK_CAT_LOAF_BREAD.get_height()))
+        screen.blit(player.img, ((self.CAT_2_CARD.centerx - player.img.get_width()//2, self.CAT_2_CARD.y + self.CAT_2_CARD.height//4 - player.img.get_height()//2)))
 
         if self.index == 3:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.CAT_3_CARD.x - 1, self.CAT_3_CARD.y - 1, self.CAT_3_CARD.width + 2, self.CAT_3_CARD.height + 2))
-        pygame.draw.rect(screen, GRAY, self.CAT_3_CARD)
-        cat_3_text = font.render("Her Majesty", 1, BLACK)
-        screen.blit(cat_3_text, (self.CAT_3_CARD.centerx - cat_3_text.get_width()//2, self.CAT_3_CARD.y + 10))
+            screen.blit(self.CAT_SIAMESE_HOVER_IMG, (1200, 330))
+        else:
+            screen.blit(self.CAT_SIAMESE_IMG, (1200, 330))
+
         player.img.fill(ALMOST_BLACK)
         player.img.set_colorkey(ALMOST_BLACK)
-        player.img.blit(SIAMESE_CAT_IDLE, (0,0), (SIAMESE_CAT_IDLE.get_height() * 1, 0, SIAMESE_CAT_IDLE.get_height(), SIAMESE_CAT_IDLE.get_height()))
-        screen.blit(player.img, ((self.CAT_3_CARD.centerx - player.img.get_width()//2, self.CAT_3_CARD.centery - player.img.get_height()//2)))
+        player.img.blit(SIAMESE_CAT_LOAF_BREAD, (0,0), (SIAMESE_CAT_LOAF_BREAD.get_height() * player.frame, 0, SIAMESE_CAT_LOAF_BREAD.get_height(), SIAMESE_CAT_LOAF_BREAD.get_height()))
+        screen.blit(player.img, ((self.CAT_3_CARD.centerx - player.img.get_width()//2, self.CAT_3_CARD.y + self.CAT_3_CARD.height//4 - player.img.get_height()//2)))
 
 
         pygame.display.update()
@@ -1246,6 +1265,8 @@ class cat_selection_class:
         click = False
         while run:
             clock.tick(60)
+
+            player.in_selection = True
 
             if (up or left) and self.index > 0:
                 self.index -= 1
@@ -1268,6 +1289,7 @@ class cat_selection_class:
                     player.change_cat_skin()
                     owner_selection.main_loop()
 
+            player.update_frame()
 
             left = False
             right = False
