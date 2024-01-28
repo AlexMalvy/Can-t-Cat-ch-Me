@@ -36,7 +36,7 @@ sys_font = pygame.font.SysFont("sherif", 40)
 small_sys_font = pygame.font.SysFont("sherif", 10)
 
 font = pygame.font.Font(os.path.join("assets", os.path.join("font", "PixelOperator-Bold.ttf")), 40)
-# bold_font = pygame.font.Font(os.path.join("assets", os.path.join("font", "PixelOperator-Bold.ttf")), 40)
+big_font = pygame.font.Font(os.path.join("assets", os.path.join("font", "PixelOperator-Bold.ttf")), 120)
 
 ### Colors
 
@@ -1749,7 +1749,6 @@ class cat_selection_class:
     CAT_SIAMESE_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "cat-choice-siamese.png")))
     CAT_SIAMESE_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "cat-choice-siamese-focus-hover.png")))
 
-
     button_list = [BACK_BUTTON, CAT_1_CARD, CAT_2_CARD, CAT_3_CARD]
     index = 1
 
@@ -2015,7 +2014,6 @@ class settings_class:
     MAP_RIGHT_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 +  240, 200, 50)
     ACTION_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
     SELECT_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 420, 200, 50)
-    BACK_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
 
     Z_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-not-pressed.png")))
     Z_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-pressed.png")))
@@ -2032,17 +2030,17 @@ class settings_class:
     SHIFT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift-not-pressed.png")))
     SHIFT_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift-pressed.png")))
 
-    button_list = [MAP_UP_BTN, MAP_LEFT_BTN, MAP_DOWN_BTN, MAP_RIGHT_BTN, BACK_BTN]
+    button_list = [MAP_UP_BTN, MAP_LEFT_BTN, MAP_DOWN_BTN, MAP_RIGHT_BTN, BACK_BUTTON]
 
     def __init__(self):
         # Index
         self.index = 0
 
     def draw_window(self):
-        screen.fill(WHITE)
+        screen.blit(BG_GAME_UI, (0,0))
         
-        title_text = font.render("Paramètres", 1, BLACK)
-        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
+        title_text = big_font.render("Paramètres", 1, BLACK)
+        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 320 - title_text.get_height()//2))
 
         if self.index == 0:
             pygame.draw.rect(screen, RED, pygame.Rect(self.MAP_UP_BTN.x - 1, self.MAP_UP_BTN.y - 1, self.MAP_UP_BTN.width + 2, self.MAP_UP_BTN.height + 2))
@@ -2069,10 +2067,9 @@ class settings_class:
         screen.blit(settings_text, (self.MAP_RIGHT_BTN.centerx - settings_text.get_width()//2, self.MAP_RIGHT_BTN.centery - settings_text.get_height()//2))
 
         if self.index == 4:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.BACK_BTN.x - 1, self.BACK_BTN.y - 1, self.BACK_BTN.width + 2, self.BACK_BTN.height + 2))
-        pygame.draw.rect(screen, GRAY, self.BACK_BTN)
-        settings_text = font.render("Retour", 1, BLACK)
-        screen.blit(settings_text, (self.BACK_BTN.centerx - settings_text.get_width()//2, self.BACK_BTN.centery - settings_text.get_height()//2))
+            screen.blit(BACK_BUTTON_HOVER_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
+        else:
+            screen.blit(BACK_BUTTON_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
 
         pygame.display.update()
 
@@ -2154,27 +2151,21 @@ class credits_class:
         # People list
         self.people = [ 'Fatality67', 'RedMorgane', 'Molalix', 'Nyaek', 'Noraxya', 'TotleEclipse' ]
         self.index = 0
-    
-    # List of buttons objects
-    BACK_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
-
-    button_list = [BACK_BTN]
 
     def draw_window(self):
-        screen.fill(WHITE)
+        screen.blit(BG_GAME_UI, (0,0))
         
-        title_text = font.render("Crédits", 1, BLACK)
-        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
+        title_text = big_font.render("Crédits", 1, BLACK)
+        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 320 - title_text.get_height()//2))
 
         for listIndex in range(0, len(self.people)):
-            credit_area = font.render(self.people[listIndex], 1, BLACK)
-            screen.blit(credit_area, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 100 + 50 * listIndex - title_text.get_height()//2))        
+            creditMemberText = font.render(self.people[listIndex], 1, BLACK)
+            screen.blit(creditMemberText, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 100 + 50 * listIndex - title_text.get_height()//2))        
 
         if self.index == 0:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.BACK_BTN.x - 1, self.BACK_BTN.y - 1, self.BACK_BTN.width + 2, self.BACK_BTN.height + 2))
-        pygame.draw.rect(screen, GRAY, self.BACK_BTN)
-        play_text = font.render("Retour", 1, BLACK)
-        screen.blit(play_text, (self.BACK_BTN.centerx - play_text.get_width()//2, self.BACK_BTN.centery - play_text.get_height()//2))
+            screen.blit(BACK_BUTTON_HOVER_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
+        else:
+            screen.blit(BACK_BUTTON_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
 
         pygame.display.update()
 
