@@ -1788,9 +1788,9 @@ class credits_class:
         title_text = font.render("Crédits", 1, BLACK)
         screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
 
-        for person_index in range(0, len(self.people)):
-            credit_area = font.render(self.people[person_index], 1, BLACK)
-            screen.blit(credit_area, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 100 + 50 * person_index - title_text.get_height()//2))        
+        for listIndex in range(0, len(self.people)):
+            credit_area = font.render(self.people[listIndex], 1, BLACK)
+            screen.blit(credit_area, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 100 + 50 * listIndex - title_text.get_height()//2))        
 
         if self.index == 0:
             pygame.draw.rect(screen, RED, pygame.Rect(self.BACK_BTN.x - 1, self.BACK_BTN.y - 1, self.BACK_BTN.width + 2, self.BACK_BTN.height + 2))
