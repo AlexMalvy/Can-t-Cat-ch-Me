@@ -184,9 +184,10 @@ CHAIYAN_CAT_PUKE = img_load.image_loader.load(["assets", "chaiyan", "cat-puking-
 
 CHAIYAN_CAT_LICKING = img_load.image_loader.load(["assets", "chaiyan", "cat-licking-chaiyan.png"], 3)
 
-## Buttons
+## Owner
 
-OWNER_WALKING = img_load.image_loader.load(["assets", "owner", "homme", "owner.png"], 1.5)
+OWNER_IDLE = img_load.image_loader.load(["assets", "owner", "homme", "owner-idle.png"], 1.5)
+OWNER_WALKING = img_load.image_loader.load(["assets", "owner", "homme", "owner-walking.png"], 1.5)
 
 ## Buttons
 
@@ -374,6 +375,9 @@ class camera_class:
 class game_variable_class:
     score = 0
     multiplier = 1
+
+    timer = 0
+    max_timer = 60
 
     started = False
 
@@ -712,7 +716,7 @@ class owner_class:
     frame = 0
     frame_timer = pygame.time.get_ticks()
     frame_cd = 300
-    state = [OWNER_WALKING]
+    state = [OWNER_IDLE, OWNER_WALKING]
     current_state = 0
     
     img = pygame.Surface((body.width, body.height))
@@ -733,6 +737,10 @@ class owner_class:
         self.update_frame()
         
     def change_state(self):
+        if self.moving and self.current_state != 1:
+            self.current_state = 1
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
         if not self.moving and self.current_state != 0:
             self.current_state = 0
             self.frame = 0
@@ -1138,13 +1146,15 @@ class game_ui_class:
 
     LOWER_LEFT_PANNEL_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "fond-gauche-jauges.png")))
     LOWER_LEFT_PANNEL_RECT = pygame.Rect(25, HEIGHT - 25 - LOWER_LEFT_PANNEL_IMG.get_height(), LOWER_LEFT_PANNEL_IMG.get_width(), LOWER_LEFT_PANNEL_IMG.get_height())
-    LOWER_RIGHT_PANNEL_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "fond-droite-score-multiplier.png")))
-    LOWER_RIGHT_PANNEL_RECT = pygame.Rect(WIDTH - 25 - LOWER_LEFT_PANNEL_IMG.get_width(), HEIGHT - 25 - LOWER_LEFT_PANNEL_IMG.get_height(), LOWER_LEFT_PANNEL_IMG.get_width(), LOWER_LEFT_PANNEL_IMG.get_height())
+    LOWER_RIGHT_PANNEL_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "white-background-area.png")))
+    LOWER_RIGHT_PANNEL_RECT = pygame.Rect(WIDTH - 25 - LOWER_RIGHT_PANNEL_IMG.get_width(), HEIGHT - 25 - LOWER_RIGHT_PANNEL_IMG.get_height(), LOWER_RIGHT_PANNEL_IMG.get_width(), LOWER_RIGHT_PANNEL_IMG.get_height())
 
     HEART_0_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "heart-0-3.png")))
     HEART_1_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "heart-1-3.png")))
     HEART_2_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "heart-2-3.png")))
     HEART_3_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "heart-3-3.png")))
+    
+    HOURGLASS_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "hourglass-icon.png")))
 
     CAT_HEAD_ORANGE_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "tete-chat-orange.png")))
     CAT_HEAD_BLACK_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "tete-chat-noir.png")))
@@ -1198,13 +1208,21 @@ class game_ui_class:
 
 
         # Right Pannel
-        screen.blit(self.LOWER_LEFT_PANNEL_IMG, (self.LOWER_RIGHT_PANNEL_RECT.x, self.LOWER_RIGHT_PANNEL_RECT.y))
+        screen.blit(self.LOWER_RIGHT_PANNEL_IMG, (self.LOWER_RIGHT_PANNEL_RECT.x, self.LOWER_RIGHT_PANNEL_RECT.y))
+
+        screen.blit(self.HOURGLASS_IMG, ((self.LOWER_RIGHT_PANNEL_RECT.x + 20, self.LOWER_RIGHT_PANNEL_RECT.centery - self.HOURGLASS_IMG.get_height()//2)))
+
+        if game_variable.started:
+            time_text = font.render(f"{game_variable.max_timer - (time.time() - game_variable.timer):.2f} s", 1, BLACK)
+        else:
+            time_text = font.render(f"{game_variable.max_timer} s", 1, BLACK)
+        screen.blit(time_text, (self.LOWER_RIGHT_PANNEL_RECT.x + self.HOURGLASS_IMG.get_width() + self.spacer * 1, self.LOWER_RIGHT_PANNEL_RECT.centery - time_text.get_height()//2))
 
         score_text = font.render(f"SCORE : {game_variable.score}", 1, BLACK)
-        screen.blit(score_text, (self.LOWER_RIGHT_PANNEL_RECT.x + self.spacer, self.LOWER_RIGHT_PANNEL_RECT.centery - score_text.get_height()//2))
+        screen.blit(score_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 20 + time_text.get_width() + self.spacer * 2, self.LOWER_RIGHT_PANNEL_RECT.centery - score_text.get_height()//2))
 
         multiplier_text = font.render(f"MULTIPLIER : {game_variable.multiplier:.1f}", 1, BLACK)
-        screen.blit(multiplier_text, (self.LOWER_RIGHT_PANNEL_RECT.x + score_text.get_width() + self.spacer * 2, self.LOWER_RIGHT_PANNEL_RECT.centery - multiplier_text.get_height()//2))
+        screen.blit(multiplier_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 20 + score_text.get_width() + time_text.get_width() + self.spacer * 3, self.LOWER_RIGHT_PANNEL_RECT.centery - multiplier_text.get_height()//2))
 
 class button_smash_class:
     IMG_1 = pygame.image.load(os.path.join("assets", os.path.join("minigame", "ORA1.png")))
@@ -1357,7 +1375,7 @@ class main_game_class:
         # pygame.draw.rect(map, GREEN, grid.cat_position["rect"])
 
         # Owner
-        pygame.draw.rect(map, YELLOW, owner.body)
+        # pygame.draw.rect(map, YELLOW, owner.body)
 
         # # Owner Body Hitbox
         # pygame.draw.rect(map, BLACK, owner.body_hitbox)
@@ -1369,9 +1387,6 @@ class main_game_class:
 
 
         camera.update()
-
-        selected_owner_text = font.render(f"Owner : {game_variable.selected_owner}", 1, WHITE)
-        screen.blit(selected_owner_text, (10, 170))
 
         owner_rage_text = font.render(f"Rage : {owner.rage}", 1, WHITE)
         screen.blit(owner_rage_text, (WIDTH - owner_rage_text.get_width() - 10, 10))
@@ -1514,6 +1529,7 @@ class main_game_class:
             
             elif left or right or up or down:
                 game_variable.started = True
+                game_variable.timer = time.time()
             else:
                 player.update()
                 
@@ -1739,15 +1755,18 @@ class cat_selection_class:
                 if self.index == 1:
                     game_variable.selected_cat = game_variable.all_cats[0]
                     player.change_cat_skin()
-                    owner_selection.main_loop()
+                    player.in_selection = False
+                    main.main_loop()
                 if self.index == 2:
                     game_variable.selected_cat = game_variable.all_cats[1]
                     player.change_cat_skin()
-                    owner_selection.main_loop()
+                    player.in_selection = False
+                    main.main_loop()
                 if self.index == 3:
                     game_variable.selected_cat = game_variable.all_cats[2]
                     player.change_cat_skin()
-                    owner_selection.main_loop()
+                    player.in_selection = False
+                    main.main_loop()
 
             player.update_frame()
 
