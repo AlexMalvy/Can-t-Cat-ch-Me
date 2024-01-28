@@ -911,6 +911,7 @@ class game_ui_class:
     spacer = 40
 
     def draw_ui(self):
+        # Left Pannel
         screen.blit(self.LOWER_LEFT_PANNEL_IMG, (self.LOWER_LEFT_PANNEL_RECT.x, self.LOWER_LEFT_PANNEL_RECT.y))
         
         if game_variable.selected_cat == "black":
@@ -946,8 +947,7 @@ class game_ui_class:
             screen.blit(self.RAGE_BAR_0_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.HEART_3_IMG.get_width() + self.spacer * 3, self.LOWER_LEFT_PANNEL_RECT.centery - self.RAGE_BAR_0_IMG.get_height()//2))
 
 
-
-
+        # Right Pannel
         screen.blit(self.LOWER_LEFT_PANNEL_IMG, (self.LOWER_RIGHT_PANNEL_RECT.x, self.LOWER_RIGHT_PANNEL_RECT.y))
 
         score_text = font.render(f"SCORE : {game_variable.score}", 1, BLACK)
@@ -1084,7 +1084,10 @@ class main_game_class:
         #     pygame.draw.rect(map, GREEN, player.hitbox)
         map.blit(player.img, (player.body.x, player.body.y))
         if player.miaou:
-            map.blit(player.SPEECH_BUBBLE_IMG, (player.hitbox.x, player.hitbox.y - player.SPEECH_BUBBLE_IMG.get_height()))
+            if player.right:
+                map.blit(player.SPEECH_BUBBLE_IMG, (player.hitbox.x + player.hitbox.width//2, player.hitbox.y - player.SPEECH_BUBBLE_IMG.get_height()))
+            else:
+                map.blit(player.SPEECH_BUBBLE_IMG, (player.hitbox.x, player.hitbox.y - player.SPEECH_BUBBLE_IMG.get_height()))
 
         # Grid Position
         # pygame.draw.rect(map, GREEN, grid.cat_position["rect"])
@@ -1640,12 +1643,20 @@ class settings_class:
     MAP_RIGHT_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 +  240, 200, 50)
     BACK_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
 
-    Z_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z.png")))
+    # Z_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-not-pressed.png")))
+    # Z_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-pressed.png")))
     Q_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q.png")))
-    S_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s.png")))
+    # Q_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-not-pressed.png")))
+    # Q_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-pressed.png")))
+    # S_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s-not-pressed.png")))
+    # S_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s-pressed.png")))
     D_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d.png")))
-    E_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e.png")))
-    SHIFT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift.png")))
+    # D_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d-not-pressed.png")))
+    # D_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d-pressed.png")))
+    E_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e-not-pressed.png")))
+    E_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e-pressed.png")))
+    # SHIFT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift.png")))
+    # SHIFT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift.png")))
 
     button_list = [MAP_UP_BTN, MAP_LEFT_BTN, MAP_DOWN_BTN, MAP_RIGHT_BTN, BACK_BTN]
 
