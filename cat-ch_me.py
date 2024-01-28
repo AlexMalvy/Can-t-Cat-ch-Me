@@ -1593,15 +1593,19 @@ class menu_class:
 
             if click or interact:
                 if self.index == 0:
+                    # Go to Cat selection
                     cat_selection.main_loop()
                 if self.index == 1:
-                    video_path  = os.path.join(r'./assets/videos', 'test.mp4')
+                    # Go to Credits
+                    credits.main_loop()
                     # print("credits")
-                if self.index == 2: # QUIT GAME
+                if self.index == 2: 
+                    # QUIT GAME
                     run = False
                     self.exitedGameProperty = True
                     pass # Break loop iteration and goes to the next
                 if self.index == 3:
+                    # Go to settings
                     settings.main_loop()
 
             left = False
@@ -1766,11 +1770,69 @@ class settings_class:
 
 # Class representing credits
 class credits_class:
+
+    # Ctor
+    def __init__(self):        
+        # People list
+        self.people = [ 'Fatality67', 'RedMorgane', 'Molalix', 'Nyaek', 'Noraxya', 'TotleEclipse' ]
+        self.index = 0
+    
     # List of buttons objects
-    BACK_BTN = pygame.Rect(WIDTH - 60, HEIGHT // 2 + 300, 50, 50)
+    BACK_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
 
     button_list = [BACK_BTN]
-    index = 0
+
+    def draw_window(self):
+        screen.fill(WHITE)
+        
+        title_text = font.render("Crédits", 1, BLACK)
+        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
+
+        for person_index in range(0, len(self.people)):
+            credit_area = font.render(self.people[person_index], 1, BLACK)
+            screen.blit(credit_area, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 100 + 50 * person_index - title_text.get_height()//2))        
+
+        if self.index == 0:
+            pygame.draw.rect(screen, RED, pygame.Rect(self.BACK_BTN.x - 1, self.BACK_BTN.y - 1, self.BACK_BTN.width + 2, self.BACK_BTN.height + 2))
+        pygame.draw.rect(screen, GRAY, self.BACK_BTN)
+        play_text = font.render("Retour", 1, BLACK)
+        screen.blit(play_text, (self.BACK_BTN.centerx - play_text.get_width()//2, self.BACK_BTN.centery - play_text.get_height()//2))
+
+        pygame.display.update()
+
+    def main_loop(self):
+        run = True
+        interact = False
+        click = False
+        while run:
+            clock.tick(60)
+            if click or interact:
+                match self.index:
+                    case _:
+                        run = False
+                        print('RETURN')
+                        # Reset navigation index
+                        self.index = 0
+                        break
+            
+            interact = False
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    general_use.close_the_game()
+                if event.type == MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        run = False
+                        general_use.close_the_game()
+                    if event.key == K_SPACE:
+                        click = True
+                    if event.key == K_e:
+                        interact = True
+            self.draw_window()
 
 # Property designed to quit the game
 exitedGameProperty = False
@@ -1790,6 +1852,7 @@ main = main_game_class()
 cat_selection = cat_selection_class()
 owner_selection = owner_selection_class()
 menu = menu_class(exitedGameProperty)
+credits = credits_class()
 settings = settings_class()
 grid.maze = redefineMaze(grid.maze)
 pathfinder = Pathfinder(grid.maze)
