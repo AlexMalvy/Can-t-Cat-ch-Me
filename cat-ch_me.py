@@ -273,6 +273,10 @@ class player_class:
     i_frame = False
     i_frame_timer = 0
     i_frame_duration = 2
+    i_frame_blinking_state = False
+    i_frame_blinking_min_alpha = 130
+    i_frame_blinking_timer = 0
+    i_frame_blinking_duration = 200
 
     miaou = False
     miaou_cd = 3
@@ -316,6 +320,8 @@ class player_class:
         self.update_frame()
 
         self.apply_bonuses()
+
+        self.iframe_blinking()
 
 
     def apply_bonuses(self):
@@ -421,6 +427,23 @@ class player_class:
     def align_body(self):
         self.body.centerx = self.hitbox.centerx
         self.body.centery = self.hitbox.centery
+
+    def iframe_blinking(self):
+        if self.i_frame:
+            if pygame.time.get_ticks() - self.i_frame_blinking_timer > self.i_frame_blinking_duration or not self.i_frame_blinking_timer:
+                self.i_frame_blinking_timer = pygame.time.get_ticks()
+                if self.i_frame_blinking_state:
+                    self.i_frame_blinking_state = False
+                else:
+                    self.i_frame_blinking_state = True
+
+            if self.i_frame_blinking_state:
+                new_alpha = self.i_frame_blinking_min_alpha + (255 - self.i_frame_blinking_min_alpha) * ((1 + pygame.time.get_ticks() - self.i_frame_blinking_timer)/self.i_frame_blinking_duration)
+            else:
+                new_alpha = 255 - (255 - self.i_frame_blinking_min_alpha) * ((1 + pygame.time.get_ticks() - self.i_frame_blinking_timer)/self.i_frame_blinking_duration)
+            self.img.set_alpha(new_alpha)
+        else:
+            self.img.set_alpha(255)
 
     def change_cat_skin(self):
         if game_variable.selected_cat == "orange":
@@ -665,8 +688,10 @@ class interactible_class():
                 owner.add_rage(self.list[index]["type"]["rage_amount"])
                 if self.isOn["type"]["type"] == "shoe_case":
                     player.potte = True
+                    player.nyan = False
                 elif self.isOn["type"]["type"] == "desk":
                     player.nyan = True
+                    player.potte = False
 
             self.update_progress_bar()
 
@@ -1058,7 +1083,7 @@ class main_game_class:
 
         # Player (Cat)
         # pygame.draw.rect(map, BLACK, player.body)
-        pygame.draw.rect(map, GREEN, player.hitbox)
+        # pygame.draw.rect(map, GREEN, player.hitbox)
         # if player.i_frame:
         #     pygame.draw.rect(map, GREEN, player.hitbox)
         map.blit(player.img, (player.body.x, player.body.y))
@@ -1122,6 +1147,7 @@ class main_game_class:
 
                 # Start button smash to try to escape
                 result = button_smash.main_loop()
+                # result = True
                 game_variable.multiplier = 1
                 left = False
                 right = False
