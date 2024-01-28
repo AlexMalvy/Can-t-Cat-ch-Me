@@ -864,7 +864,7 @@ class game_ui_class:
     LOWER_LEFT_PANNEL_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "fond-gauche-jauges.png")))
     LOWER_LEFT_PANNEL_RECT = pygame.Rect(25, HEIGHT - 25 - LOWER_LEFT_PANNEL_IMG.get_height(), LOWER_LEFT_PANNEL_IMG.get_width(), LOWER_LEFT_PANNEL_IMG.get_height())
     LOWER_RIGHT_PANNEL_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "fond-droite-score-multiplier.png")))
-    LOWER_RIGHT_PANNEL_RECT = pygame.Rect(WIDTH - 25 - LOWER_RIGHT_PANNEL_IMG.get_width(), HEIGHT - 25 - LOWER_RIGHT_PANNEL_IMG.get_height(), LOWER_RIGHT_PANNEL_IMG.get_width(), LOWER_RIGHT_PANNEL_IMG.get_height())
+    LOWER_RIGHT_PANNEL_RECT = pygame.Rect(WIDTH - 25 - LOWER_LEFT_PANNEL_IMG.get_width(), HEIGHT - 25 - LOWER_LEFT_PANNEL_IMG.get_height(), LOWER_LEFT_PANNEL_IMG.get_width(), LOWER_LEFT_PANNEL_IMG.get_height())
 
     HEART_0_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "heart-0-3.png")))
     HEART_1_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "heart-1-3.png")))
@@ -923,13 +923,13 @@ class game_ui_class:
 
 
 
-        screen.blit(self.LOWER_RIGHT_PANNEL_IMG, (self.LOWER_RIGHT_PANNEL_RECT.x, self.LOWER_RIGHT_PANNEL_RECT.y))
+        screen.blit(self.LOWER_LEFT_PANNEL_IMG, (self.LOWER_RIGHT_PANNEL_RECT.x, self.LOWER_RIGHT_PANNEL_RECT.y))
 
-        score_text = font.render(f"{game_variable.score}", 1, BLACK)
-        screen.blit(score_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 165, self.LOWER_RIGHT_PANNEL_RECT.centery - score_text.get_height()//2))
+        score_text = font.render(f"SCORE : {game_variable.score}", 1, BLACK)
+        screen.blit(score_text, (self.LOWER_RIGHT_PANNEL_RECT.x + self.spacer, self.LOWER_RIGHT_PANNEL_RECT.centery - score_text.get_height()//2))
 
-        multiplier_text = font.render(f"{game_variable.multiplier:.1f}", 1, BLACK)
-        screen.blit(multiplier_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 445, self.LOWER_RIGHT_PANNEL_RECT.centery - multiplier_text.get_height()//2))
+        multiplier_text = font.render(f"MULTIPLIER : {game_variable.multiplier:.1f}", 1, BLACK)
+        screen.blit(multiplier_text, (self.LOWER_RIGHT_PANNEL_RECT.x + score_text.get_width() + self.spacer * 2, self.LOWER_RIGHT_PANNEL_RECT.centery - multiplier_text.get_height()//2))
 
 class button_smash_class:
     IMG_1 = pygame.image.load(os.path.join("assets", os.path.join("minigame", "ORA1.png")))
@@ -1090,8 +1090,7 @@ class main_game_class:
         screen.blit(owner_speed_text, (WIDTH - owner_speed_text.get_width() - 10, 50))
 
         if interactible.isOn:
-            press_interact_text = font.render(f"Press E", 1, WHITE)
-            screen.blit(press_interact_text, (screen.get_width()//2 - press_interact_text.get_width()//2, screen.get_height()//3 * 2))
+            screen.blit(settings.E_KEY_IMG, (screen.get_width()//2 - settings.E_KEY_IMG.get_width()//2, screen.get_height()//3 * 2))
 
         if interactible.interact_timer != None:
             pygame.draw.rect(screen, WHITE, interactible.PROGRESS_BAR)
@@ -1618,6 +1617,13 @@ class settings_class:
     MAP_DOWN_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 160, 200, 50)
     MAP_RIGHT_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 +  240, 200, 50)
     BACK_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
+
+    Z_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z.png")))
+    Q_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q.png")))
+    S_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s.png")))
+    D_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d.png")))
+    E_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e.png")))
+    SHIFT_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-shift.png")))
 
     button_list = [MAP_UP_BTN, MAP_LEFT_BTN, MAP_DOWN_BTN, MAP_RIGHT_BTN, BACK_BTN]
 
