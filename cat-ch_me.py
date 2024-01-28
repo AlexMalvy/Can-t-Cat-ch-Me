@@ -1,3 +1,4 @@
+import json
 import pygame
 import sys
 import time
@@ -50,7 +51,6 @@ DARK_GRAY = (100, 100, 100)
 GREEN = (0, 128, 0)
 BROWN = (83, 61, 50)
 ALMOST_BLACK = (1, 1, 1)
-
 
 ### Background
 
@@ -196,6 +196,132 @@ BACK_BUTTON_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("g
 BACK_BUTTON = pygame.Rect(10, HEIGHT - 10 - BACK_BUTTON_IMG.get_height(), BACK_BUTTON_IMG.get_width(), BACK_BUTTON_IMG.get_height())
 
 #############
+
+# class baseSettings:
+#     # Create json controls config
+#     def __init__(self):
+#         # Set base config function
+#         def setBaseConfig():
+#             # Set a base configuration
+#             self.up = 'w'
+#             self.left = 'q'
+#             self.down = 's'
+#             self.right = 'd'
+#             self.action = 'e'
+#             self.select = 'space'
+#             self.back = 'escape'
+#         # Valid keys for config fle
+#         valids = ['up', 'left', 'down', 'right', 'action', 'select', 'back']
+#         # Config file name
+#         config = 'config.json'
+#         # Check file existence :
+#         exists = os.path.isfile(config)
+#         # Check json config file exists
+#         if not exists:
+#             # Set a base configuration
+#             setBaseConfig()
+#             # Create controls dictionary
+#             controls = {
+#                 "up": self.up,
+#                 "left": self.left,
+#                 "down": self.down,
+#                 "right": self.right,
+#                 "action": self.action,
+#                 "select": self.select,
+#                 "back": self.back,
+#             }
+#             # Create a json config file
+#             with open(config, "w") as outfile: 
+#                 json.dump(controls, outfile)
+#         else :
+#             # Flag to check json file validity
+#             isConfigValid = True
+#             # Read JSON file
+#             with open(config, "r") as configFile:
+#                 # Check if json is loadable
+#                 try:
+#                     # Create configuration dictionary
+#                     configuration = json.load(configFile)
+#                 except:
+#                     # Mark as invalid json file
+#                     isConfigValid = False
+#                 finally:
+#                     # Check numbner of expected keys
+#                     if len(configuration) == len(valids):
+#                         # Check keys validity
+#                         for key in configuration.keys():
+#                             if not(key in valids):
+#                                 isConfigValid = False
+#                         # If keys are valid, check values
+#                         if isConfigValid :
+#                             # Check values validity
+#                             configValues = list(configuration.values())
+#                             for value in configValues:
+#                                 # A value is valid if unique
+#                                 count = 0
+#                                 # Loop on each values
+#                                 for i in range(0, len(configValues)):
+#                                     if configValues[i] == value:
+#                                         count += 1
+#                                 # If value occured more than 1 time : mark as invalid then break loop
+#                                 if count > 1:
+#                                     isConfigValid = False
+#                                     break
+#                     else:
+#                         isConfigValid = False
+#             # if file is not valid
+#             if not isConfigValid :
+#                 # delete
+#                 os.remove(config)
+#                 # set base config
+#                 setBaseConfig()
+#                 # Create controls dictionary
+#                 controls = {
+#                     "up": self.up,
+#                     "left": self.left,
+#                     "down": self.down,
+#                     "right": self.right,
+#                     "action": self.action,
+#                     "select": self.select,
+#                     "back": self.back,
+#                 }
+#                 # Create a valid json config file
+#                 with open(config, "w") as outfile: 
+#                     json.dump(controls, outfile)
+#             # Else, if the file is valid => check mapping validity
+#             else:
+#                 print('valid file')
+
+#     def eventListener(run = True, left = False, right = False, up = False, down = False, interact = False, click = False):
+#         # Listen for each event in the game
+#         for event in pygame.event.get():
+#             # If quit is requested
+#             if event.type == pygame.QUIT:
+#                 run = False
+#                 general_use.close_the_game()
+#             # if mouse button is clicked
+#             if event.type == MOUSEBUTTONDOWN:
+#                 if event.button == 1:
+#                     click = True
+#             # For each keydown
+#             if event.type == KEYDOWN:
+
+#                 if event.key == K_ESCAPE:
+#                     run = False
+#                     general_use.close_the_game()
+#                 if event.key == K_SPACE:
+#                     click = True
+#                 if event.key == K_e:
+#                     interact = True
+#                 if event.key == K_q:
+#                     left = True
+#                 if event.key == K_d:
+#                     right = True
+#                 if event.key == K_z:
+#                     up = True
+#                 if event.key == K_s:
+#                     down = True
+
 
 class general_use_class:
     background_color = WHITE
@@ -1254,7 +1380,7 @@ class main_game_class:
         screen.blit(owner_speed_text, (WIDTH - owner_speed_text.get_width() - 10, 50))
 
         if interactible.isOn:
-            screen.blit(settings.E_KEY_IMG, (screen.get_width()//2 - settings.E_KEY_IMG.get_width()//2, screen.get_height()//3 * 2))
+            screen.blit(settings.ACTION_KEY_IMG, (screen.get_width()//2 - settings.ACTION_KEY_IMG.get_width()//2, screen.get_height()//3 * 2))
 
         if interactible.interact_timer != None:
             pygame.draw.rect(screen, WHITE, interactible.PROGRESS_BAR)
@@ -1745,15 +1871,19 @@ class menu_class:
 
             if click or interact:
                 if self.index == 0:
+                    # Go to Cat selection
                     cat_selection.main_loop()
                 if self.index == 1:
-                    video_path  = os.path.join(r'./assets/videos', 'test.mp4')
+                    # Go to Credits
+                    credits.main_loop()
                     # print("credits")
-                if self.index == 2: # QUIT GAME
+                if self.index == 2: 
+                    # QUIT GAME
                     run = False
                     self.exitedGameProperty = True
                     pass # Break loop iteration and goes to the next
                 if self.index == 3:
+                    # Go to settings
                     settings.main_loop()
 
             left = False
@@ -1794,6 +1924,8 @@ class settings_class:
     MAP_LEFT_BTN = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 80, 200, 50)
     MAP_DOWN_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 160, 200, 50)
     MAP_RIGHT_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 +  240, 200, 50)
+    ACTION_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
+    SELECT_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 420, 200, 50)
     BACK_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
 
     Z_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-not-pressed.png")))
@@ -1814,6 +1946,7 @@ class settings_class:
     button_list = [MAP_UP_BTN, MAP_LEFT_BTN, MAP_DOWN_BTN, MAP_RIGHT_BTN, BACK_BTN]
 
     def __init__(self):
+        # Index
         self.index = 0
 
     def draw_window(self):
@@ -1926,15 +2059,74 @@ class settings_class:
 
 # Class representing credits
 class credits_class:
+
+    # Ctor
+    def __init__(self):        
+        # People list
+        self.people = [ 'Fatality67', 'RedMorgane', 'Molalix', 'Nyaek', 'Noraxya', 'TotleEclipse' ]
+        self.index = 0
+    
     # List of buttons objects
-    BACK_BTN = pygame.Rect(WIDTH - 60, HEIGHT // 2 + 300, 50, 50)
+    BACK_BTN = pygame.Rect(WIDTH//2 - 100, HEIGHT // 2 + 380, 200, 50)
 
     button_list = [BACK_BTN]
-    index = 0
+
+    def draw_window(self):
+        screen.fill(WHITE)
+        
+        title_text = font.render("Crédits", 1, BLACK)
+        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
+
+        for listIndex in range(0, len(self.people)):
+            credit_area = font.render(self.people[listIndex], 1, BLACK)
+            screen.blit(credit_area, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 100 + 50 * listIndex - title_text.get_height()//2))        
+
+        if self.index == 0:
+            pygame.draw.rect(screen, RED, pygame.Rect(self.BACK_BTN.x - 1, self.BACK_BTN.y - 1, self.BACK_BTN.width + 2, self.BACK_BTN.height + 2))
+        pygame.draw.rect(screen, GRAY, self.BACK_BTN)
+        play_text = font.render("Retour", 1, BLACK)
+        screen.blit(play_text, (self.BACK_BTN.centerx - play_text.get_width()//2, self.BACK_BTN.centery - play_text.get_height()//2))
+
+        pygame.display.update()
+
+    def main_loop(self):
+        run = True
+        interact = False
+        click = False
+        while run:
+            clock.tick(60)
+            if click or interact:
+                match self.index:
+                    case _:
+                        run = False
+                        print('RETURN')
+                        # Reset navigation index
+                        self.index = 0
+                        break
+            
+            interact = False
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    general_use.close_the_game()
+                if event.type == MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        run = False
+                        general_use.close_the_game()
+                    if event.key == K_SPACE:
+                        click = True
+                    if event.key == K_e:
+                        interact = True
+            self.draw_window()
 
 # Property designed to quit the game
 exitedGameProperty = False
 
+# baseSettings() # Create the controls configuration file
 general_use = general_use_class()
 game_variable = game_variable_class()
 camera = camera_class()
@@ -1950,6 +2142,7 @@ main = main_game_class()
 cat_selection = cat_selection_class()
 owner_selection = owner_selection_class()
 menu = menu_class(exitedGameProperty)
+credits = credits_class()
 settings = settings_class()
 grid.maze = redefineMaze(grid.maze)
 pathfinder = Pathfinder(grid.maze)
