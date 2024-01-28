@@ -611,13 +611,6 @@ class interactible_class():
     type_plant = {"type" : "plant", "score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 20, "animation_type" : "jumping", "sprite" : PLANT_IMG, "sprite_broken" : PLANT_BROKEN_IMG}
     type_Rug = {"type" : "rug", "score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "pee", "sprite" : RUG_IMG, "sprite_broken" : RUG_PUKE_IMG}
 
-    # table = pygame.Rect(map.get_width()-SQUARE*14, SQUARE*9, SQUARE*6, SQUARE*5)
-    # shoeCaseHallway = pygame.Rect(SQUARE*2, map.get_height() - SQUARE*10, SQUARE*5, SQUARE)
-    # couchLivingRoom = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*11, SQUARE*6, SQUARE*2)
-    # desk = pygame.Rect(map.get_width()-SQUARE*10, SQUARE*23, SQUARE*5, SQUARE*2)
-    # libraryLivingRoom = pygame.Rect(SQUARE*17, SQUARE*4, SQUARE*5, SQUARE)
-    # plantHallway = pygame.Rect(SQUARE*14, map.get_height() - SQUARE*10, SQUARE, SQUARE)
-    # ovenAndStuff = pygame.Rect(map.get_width()-SQUARE*13, SQUARE*4, SQUARE*12, SQUARE)
     # Objects
     chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*15, SQUARE*8, SQUARE*8, SQUARE*7), "type" : type_chair.copy()}
     couch =  {"rect" : pygame.Rect(map.get_width()-SQUARE*23, map.get_height()-SQUARE*12, SQUARE*6, SQUARE*3), "type" : type_couch.copy()}
@@ -1051,14 +1044,28 @@ class main_game_class:
 
         # Interactibles
         for item in interactible.list:
+            item_type = item["type"]["type"]
+
             if item["type"]["sprite"]:
+                sprite_position = (item["rect"].x, item["rect"].y)
+
+                sprite_dict = {
+                    "plant": (item["rect"].x, item["rect"].y - SQUARE*2)
+                    # Ajoutez d'autres types avec leurs positions respectives ici
+                }
+                sprite_dict_broken = {
+                    "plant": (item["rect"].x- SQUARE*2, item["rect"].y)
+                    # Ajoutez d'autres types avec leurs positions respectives ici
+                }
+
                 if item["type"]["is_enabled"]:
-                    # pygame.draw.rect(map, YELLOW, item["rect"])
-                    map.blit(item["type"]["sprite"], (item["rect"].x, item["rect"].y))
+                    map.blit(item["type"]["sprite"], sprite_dict.get(item_type, sprite_position))
                 else:
-                    map.blit(item["type"]["sprite_broken"], (item["rect"].x, item["rect"].y))
+                    map.blit(item["type"]["sprite_broken"], sprite_dict_broken.get(item_type, sprite_position))
             else:
                 pygame.draw.rect(map, YELLOW, item["rect"])
+
+
 
         # Player (Cat)
         # pygame.draw.rect(map, BLACK, player.body)
