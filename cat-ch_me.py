@@ -31,8 +31,11 @@ clock = pygame.time.Clock()
 
 ### Font
 
-font = pygame.font.SysFont("sherif", 40)
-small_font = pygame.font.SysFont("sherif", 10)
+sys_font = pygame.font.SysFont("sherif", 40)
+small_sys_font = pygame.font.SysFont("sherif", 10)
+
+font = pygame.font.Font(os.path.join("assets", os.path.join("font", "PixelOperator-Bold.ttf")), 40)
+# bold_font = pygame.font.Font(os.path.join("assets", os.path.join("font", "PixelOperator-Bold.ttf")), 40)
 
 ### Colors
 
@@ -578,19 +581,36 @@ class obstacle_class:
 
 
 class interactible_class():
-    type_chair = {"score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "scratching"}
-    type_couch = {"score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "scratching"}
-    type_trashCan = {"score" : 400, "multiplier" : 0.4, "duration" : 4, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 15, "animation_type" : "jumping"}
-    type_library = {"score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 20, "animation_type" : "jumping"}
-    type_plug = {"score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 5, "animation_type" : "scratching"}
-    type_plugOffice = {"score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 30, "rage_amount" : 50, "animation_type" : "scratching"}
-    type_shoeCase = {"score" : 500, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 25, "animation_type" : "jumping"}
-    type_toilets = {"score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "pee"}
-    type_shower = {"score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "pee"}
-    type_plant = {"score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 20, "animation_type" : "jumping"}
-    type_Rug = {"score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "pee"}
+    # Sprites
+    RUG_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tapis-1.png")))
+    RUG_PUKE_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tapis-barf-1.png")))
 
+    PLANT_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "plante-1.png")))
+    PLANT_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "plante-2.png")))
 
+    LAMPE_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "lampe-1.png")))
+    LAMPE_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "lampe-2.png")))
+
+    SHOES_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "shoes-furniture-1.png")))
+    SHOES_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "shoes-furniture-2.png")))
+
+    DESK_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "desk-1.png")))
+    DESK_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "desk-2.png")))
+
+    # Types
+    type_chair = {"type" : "chair", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "scratching", "sprite" : None, "sprite_broken" : None}
+    type_couch = {"type" : "couch", "score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : None, "sprite_broken" : None}
+    type_trashCan = {"type" : "trash_can", "score" : 400, "multiplier" : 0.4, "duration" : 4, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 15, "animation_type" : "jumping", "sprite" : None, "sprite_broken" : None}
+    type_library = {"type" : "library", "score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 20, "animation_type" : "jumping", "sprite" : None, "sprite_broken" : None}
+    type_plug = {"type" : "plug", "score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 5, "animation_type" : "scratching", "sprite" : LAMPE_IMG, "sprite_broken" : LAMPE_BROKEN_IMG}
+    type_plugOffice = {"type" : "desk", "score" : 1000, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 30, "rage_amount" : 50, "animation_type" : "scratching", "sprite" : DESK_IMG, "sprite_broken" : DESK_BROKEN_IMG}
+    type_shoeCase = {"type" : "shoe_case", "score" : 500, "multiplier" : 0.5, "duration" : 5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 25, "animation_type" : "jumping", "sprite" : SHOES_IMG, "sprite_broken" : SHOES_BROKEN_IMG}
+    type_toilets = {"type" : "toilets", "score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "pee", "sprite" : None, "sprite_broken" : None}
+    type_shower = {"type" : "shower", "score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "pee", "sprite" : None, "sprite_broken" : None}
+    type_plant = {"type" : "plant", "score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 20, "animation_type" : "jumping", "sprite" : PLANT_IMG, "sprite_broken" : PLANT_BROKEN_IMG}
+    type_Rug = {"type" : "rug", "score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "pee", "sprite" : RUG_IMG, "sprite_broken" : RUG_PUKE_IMG}
+
+    # Objects
     chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*17, map.get_height()-SQUARE*22, SQUARE*2, SQUARE*3), "type" : type_chair.copy()}
     chair2 = {"rect" : pygame.Rect(map.get_width()-SQUARE*14, map.get_height()-SQUARE*19, SQUARE*3, SQUARE*2), "type" : type_chair.copy()}
     couch =  {"rect" : pygame.Rect(map.get_width()-SQUARE*23, map.get_height()-SQUARE*12, SQUARE*6, SQUARE*3), "type" : type_couch.copy()}
@@ -604,9 +624,6 @@ class interactible_class():
     officePlug = {"rect" : pygame.Rect(map.get_width()-SQUARE*4, map.get_height()-SQUARE*4, SQUARE*3, SQUARE*2), "type" : type_plugOffice.copy()}
     rug= {"rect" : pygame.Rect(map.get_width()-SQUARE*22, map.get_height()-SQUARE*8, SQUARE*4, SQUARE*4), "type" : type_Rug.copy()}
     nightStandPlug = {"rect" : pygame.Rect(SQUARE*10, SQUARE, SQUARE*5, SQUARE*2), "type" : type_plug.copy()}
-
-
-    
 
 
     list = [chair, chair2, couch, tvPlug, library, shoeCase, shower, officePlug, rug, nightStandPlug]
@@ -642,6 +659,10 @@ class interactible_class():
                 self.list[index]["type"]["disabled_timer"] = time.time()
                 self.interact_timer = None
                 owner.add_rage(self.list[index]["type"]["rage_amount"])
+                if self.isOn["type"]["type"] == "shoe_case":
+                    player.potte = True
+                elif self.isOn["type"]["type"] == "desk":
+                    player.nyan = True
 
             self.update_progress_bar()
 
@@ -901,10 +922,10 @@ class game_ui_class:
         screen.blit(self.LOWER_RIGHT_PANNEL_IMG, (self.LOWER_RIGHT_PANNEL_RECT.x, self.LOWER_RIGHT_PANNEL_RECT.y))
 
         score_text = font.render(f"{game_variable.score}", 1, BLACK)
-        screen.blit(score_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 165, self.LOWER_RIGHT_PANNEL_RECT.centery - score_text.get_height()//2 + 3))
+        screen.blit(score_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 165, self.LOWER_RIGHT_PANNEL_RECT.centery - score_text.get_height()//2))
 
-        multiplier_text = font.render(f"{game_variable.multiplier:.2f}", 1, BLACK)
-        screen.blit(multiplier_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 445, self.LOWER_RIGHT_PANNEL_RECT.centery - multiplier_text.get_height()//2 + 3))
+        multiplier_text = font.render(f"{game_variable.multiplier:.1f}", 1, BLACK)
+        screen.blit(multiplier_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 445, self.LOWER_RIGHT_PANNEL_RECT.centery - multiplier_text.get_height()//2))
 
 class button_smash_class:
     IMG_1 = pygame.image.load(os.path.join("assets", os.path.join("minigame", "ORA1.png")))
@@ -1022,7 +1043,13 @@ class main_game_class:
 
         # Interactibles
         for item in interactible.list:
-            if item["type"]["is_enabled"]:
+            if item["type"]["sprite"]:
+                if item["type"]["is_enabled"]:
+                    # pygame.draw.rect(map, YELLOW, item["rect"])
+                    map.blit(item["type"]["sprite"], (item["rect"].x, item["rect"].y))
+                else:
+                    map.blit(item["type"]["sprite_broken"], (item["rect"].x, item["rect"].y))
+            else:
                 pygame.draw.rect(map, YELLOW, item["rect"])
 
         # Player (Cat)
