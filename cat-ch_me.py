@@ -2027,32 +2027,23 @@ class settings_class:
                 self.index += 1
 
             if click or interact:
-                match self.index:
-                    case 0:
-                        print('UP')
-                        break
-                    case 1:
-                        print('LEFT')
-                        break
-                    case 2:
-                        print('DOWN')
-                        break
-                    case 3:
-                        print('RIGHT')
-                        break
-                    case 4:
-                        print('ACTION')
-                        break
-                    case 5:
-                        print('RUN')
-                        break
-                    case _:
-                        run = False
-                        print('RETURN')
-                        # Reset navigation index
-                        self.index = 0
-                        break
-            
+                if self.index == 0:
+                    print('UP')
+                elif self.index == 1:
+                    print('LEFT')
+                elif self.index == 2:
+                    print('DOWN')   
+                elif self.index == 3:
+                    print('RIGHT')
+                elif self.index == 4:
+                    print('ACTION')
+                elif self.index == 5:
+                    print('SELECT')
+                else:
+                    run = False
+                    print('RETURN')
+                    # Reset navigation index
+                    self.index = 0            
 
             # Events handler
             left = False
@@ -2061,6 +2052,7 @@ class settings_class:
             down = False
             interact = False
             click = False
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
@@ -2073,7 +2065,7 @@ class settings_class:
                         run = False
                         general_use.close_the_game()
                     if event.key == K_SPACE:
-                        click = True
+                        interact = True
                     if event.key == K_e:
                         interact = True
                     if event.key == K_q:
@@ -2119,13 +2111,11 @@ class credits_class:
         while run:
             clock.tick(60)
             if click or interact:
-                match self.index:
-                    case _:
-                        run = False
-                        print('RETURN')
-                        # Reset navigation index
-                        self.index = 0
-                        break
+                run = False
+                print('RETURN')
+                # Reset navigation index
+                self.index = 0
+                        
             
             interact = False
             click = False
