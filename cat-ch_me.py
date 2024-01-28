@@ -413,7 +413,7 @@ class owner_class:
     
 
     def update(self):
-        # self.move_toward_cat()
+        self.move_toward_cat()
 
         self.update_move_speed()
 
@@ -780,8 +780,8 @@ class game_over_class:
 
 
 class button_smash_class:
-    IMG_1 = pygame.image.load(os.path.join("assets", os.path.join("minigame", "ORA1.svg")))
-    IMG_2 = pygame.image.load(os.path.join("assets", os.path.join("minigame", "ORA2.svg")))
+    IMG_1 = pygame.image.load(os.path.join("assets", os.path.join("minigame", "ORA1.png")))
+    IMG_2 = pygame.image.load(os.path.join("assets", os.path.join("minigame", "ORA2.png")))
 
     LEFT_BUTTON = pygame.Rect(WIDTH//2 - 150, HEIGHT//2, 50, 50)
     RIGHT_BUTTON = pygame.Rect(WIDTH//2 + 100, HEIGHT//2, 50, 50)
@@ -789,9 +789,10 @@ class button_smash_class:
     TIMER_BAR = pygame.Rect(WIDTH//2 - 101, HEIGHT//4 - 1, 202, 52)
     TIMER_BAR_PROGRESS = pygame.Rect(WIDTH//2 - 100, HEIGHT//4, 200, 50)
 
-    break_free = 10
+    max_break_free = 25
+    break_free = 25
     timer = 0
-    max_timer = 2
+    max_timer = 3
     smash_right = True
     
     def update_progress_bar(self):
@@ -831,7 +832,7 @@ class button_smash_class:
         left = False
         right = False
         self.smash_right = True
-        self.break_free = 10
+        self.break_free = self.max_break_free
         self.timer = time.time()
         
         while run:
@@ -843,7 +844,7 @@ class button_smash_class:
             if self.smash_right and right:
                 self.smash_right = False
                 self.break_free -= 1
-            if not self.smash_right and left:
+            elif not self.smash_right and left:
                 self.smash_right = True
                 self.break_free -= 1
 
