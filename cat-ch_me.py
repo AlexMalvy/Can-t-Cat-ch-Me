@@ -270,6 +270,8 @@ class player_class:
     moving = False
     right = False
 
+    is_behind_wall = False
+
     i_frame = False
     i_frame_timer = 0
     i_frame_duration = 2
@@ -1196,6 +1198,9 @@ class main_game_class:
                     for obs in room:
                         if player.hitbox.colliderect(obs):
                             player.hitbox.x += player.speed
+                for wall in behind_wall_class.walls:
+                    if player.hitbox.colliderect(wall):
+                        player.is_behind_wall = True
             # Player Go Right
             if right and not interact:
                 player.hitbox.x += player.speed
@@ -1205,6 +1210,9 @@ class main_game_class:
                     for obs in room:
                         if player.hitbox.colliderect(obs):
                             player.hitbox.x -= player.speed
+                for wall in behind_wall_class.walls:
+                    if player.hitbox.colliderect(wall):
+                        player.is_behind_wall = True
             # Player Go Up
             if up and not interact:
                 player.hitbox.y -= player.speed
@@ -1213,6 +1221,9 @@ class main_game_class:
                     for obs in room:
                         if player.hitbox.colliderect(obs):
                             player.hitbox.y += player.speed
+                for wall in behind_wall_class.walls:
+                    if player.hitbox.colliderect(wall):
+                        player.is_behind_wall = True
             # Player Go Down
             if down and not interact:
                 player.hitbox.y += player.speed
@@ -1221,6 +1232,12 @@ class main_game_class:
                     for obs in room:
                         if player.hitbox.colliderect(obs):
                             player.hitbox.y -= player.speed
+                            print("behind wall")
+                 # Check if colliding with behind walls
+                for wall in behind_wall_class.walls:
+                    if player.hitbox.colliderect(wall):
+                        player.is_behind_wall = True
+                        print("behind wall")
                             
             if left or right or up or down:
                 player.moving = True
