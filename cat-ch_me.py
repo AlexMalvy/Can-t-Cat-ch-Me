@@ -742,6 +742,8 @@ class owner_class:
     max_bonus_speed = 5
     bonus_speed = 0
 
+    is_behind_wall = False
+
     moving = False
     right = False
 
@@ -774,6 +776,8 @@ class owner_class:
 
         self.update_frame()
         
+        self.apply_wall_filter()
+        
     def change_state(self):
         if self.moving and self.current_state != 1:
             self.current_state = 1
@@ -804,6 +808,13 @@ class owner_class:
     def align_body(self):
         self.body.centerx= self.body_hitbox.centerx
         self.body.bottom = self.body_hitbox.bottom
+
+    def apply_wall_filter(self):
+        if self.is_behind_wall:
+            self.img.set_alpha(50)
+        else:
+            # Si le joueur n'est pas derrière un mur, réinitialiser l'image sans filtre
+            self.img.set_alpha(255)
 
     def move_toward_cat(self):
         # print(self.path)
@@ -955,6 +966,10 @@ class interactible_class():
     LIBRARY_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "bibliotheque-2.png")))
 
     COUCH_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "canape-fauteuil-1.png")))
+    COUCH_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "canape-fauteuil-2.png")))
+
+    TOILET_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "PQ-1.png")))
+    TOILET_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "PQ-2.png")))
 
 
     # DESK_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "desk-1.png")))
@@ -964,9 +979,11 @@ class interactible_class():
     type_trashCan = {"type" : "trash_can", "score" : 400, "multiplier" : 0.4, "duration" : 4, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 15, "animation_type" : "jumping", "sprite" : None, "sprite_broken" : None}
     type_toilets = {"type" : "toilets", "score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "pee", "sprite" : None, "sprite_broken" : None}
     type_shower = {"type" : "shower", "score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "pee", "sprite" : None, "sprite_broken" : None}
-    type_couch = {"type" : "couch", "score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : COUCH_IMG, "sprite_broken" : COUCH_IMG}
+    type_couch = {"type" : "couch", "score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : COUCH_IMG, "sprite_broken" : COUCH_BROKEN_IMG}
+   
+    type_pq = {"type" : "toilet_paper", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "jumping", "sprite" : TOILET_IMG, "sprite_broken" : TOILET_BROKEN_IMG}
     
-    type_chair = {"type" : "chair", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "scratching", "sprite" : TABLE_IMG, "sprite_broken" : TABLE_BROKEN_IMG}
+    type_chair = {"type" : "chair", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "jumping", "sprite" : TABLE_IMG, "sprite_broken" : TABLE_BROKEN_IMG}
     type_big_library = {"type" : "library", "score" : 500, "multiplier" : 0.5, "duration" : 3.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 15, "animation_type" : "jumping", "sprite" : BIG_LIBRARY_IMG, "sprite_broken" : BIG_LIBRARY_BROKEN_IMG}
     type_library = {"type" : "library", "score" : 250, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : LIBRARY_IMG, "sprite_broken" : LIBRARY_BROKEN_IMG}
     type_plug = {"type" : "plug", "score" : 300, "multiplier" : 0.3, "duration" : 2.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 20, "animation_type" : "scratching", "sprite" : LAMPE_IMG, "sprite_broken" : LAMPE_BROKEN_IMG}
@@ -979,7 +996,8 @@ class interactible_class():
     # Objects
     rug= {"rect" : pygame.Rect(SQUARE*19, map.get_height()-SQUARE*13, SQUARE*10, SQUARE*7), "type" : type_Rug.copy()}
     chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*14, SQUARE*8, SQUARE*8, SQUARE*7), "type" : type_chair.copy()}
-    couch =  {"rect" : pygame.Rect(map.get_width()-SQUARE*21, map.get_height()-SQUARE*11, SQUARE*0, SQUARE*0), "type" : type_couch.copy()}
+    couch =  {"rect" : pygame.Rect(map.get_width()-SQUARE*22, map.get_height()-SQUARE*11, SQUARE*6.5, SQUARE*3), "type" : type_couch.copy()}
+     # couchLivingRoom = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*10, SQUARE*5.5, SQUARE)
     trash =  {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE, SQUARE*3, SQUARE*2), "type" : type_trashCan.copy()}
     tvPlug =  {"rect" : pygame.Rect(map.get_width()-SQUARE*3, map.get_height()-SQUARE*5, SQUARE*2, SQUARE*2), "type" : type_plug.copy()}
     library =  {"rect" : pygame.Rect(SQUARE*18, SQUARE*4, SQUARE*4, SQUARE*2), "type" : type_big_library.copy()}
@@ -993,9 +1011,10 @@ class interactible_class():
     
     nightStandPlug = {"rect" : pygame.Rect(SQUARE, SQUARE*4, SQUARE*2, SQUARE*2), "type" : type_plug.copy()}
     coffee = {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE*22, SQUARE*2, SQUARE*2), "type" : type_coffee.copy()}
+    pq = {"rect" : pygame.Rect(SQUARE*5, SQUARE*15, SQUARE*2, SQUARE*4), "type" : type_pq.copy()}
 
 
-    list = [chair ,couch, tvPlug, library, rug, shoeCase, nightStandPlug, plantHallway, plantKitchen, computer, coffee, couch, libraryOffice]
+    list = [chair ,couch, tvPlug, library, rug, shoeCase, nightStandPlug, plantHallway, plantKitchen, computer, coffee, couch, libraryOffice, pq]
     # list=[]
 
     isOn = None
@@ -1583,6 +1602,11 @@ class main_game_class:
                         player.is_behind_wall = True
                     else:
                         player.is_behind_wall = False
+                    wall_collision_owner = any(owner.body_hitbox.colliderect(wall) for wall in behind_wall_class.walls)
+                    if wall_collision_owner:
+                        owner.is_behind_wall = True
+                    else:
+                        owner.is_behind_wall = False
                        
                 # Player Go Right
                 if right and not interact:
@@ -1598,6 +1622,11 @@ class main_game_class:
                         player.is_behind_wall = True
                     else:
                         player.is_behind_wall = False
+                    wall_collision_owner = any(owner.body_hitbox.colliderect(wall) for wall in behind_wall_class.walls)
+                    if wall_collision_owner:
+                        owner.is_behind_wall = True
+                    else:
+                        owner.is_behind_wall = False
                         
                 # Player Go Up
                 if up and not interact:
@@ -1611,7 +1640,12 @@ class main_game_class:
                     if wall_collision:
                         player.is_behind_wall = True
                     else:
-                        player.is_behind_wall = False    
+                        player.is_behind_wall = False  
+                    wall_collision_owner = any(owner.body_hitbox.colliderect(wall) for wall in behind_wall_class.walls)
+                    if wall_collision_owner:
+                        owner.is_behind_wall = True
+                    else:
+                        owner.is_behind_wall = False  
                               
                       
                 # Player Go Down
@@ -1628,6 +1662,11 @@ class main_game_class:
                         player.is_behind_wall = True
                     else:
                         player.is_behind_wall = False
+                    wall_collision_owner = any(owner.body_hitbox.colliderect(wall) for wall in behind_wall_class.walls)
+                    if wall_collision_owner:
+                        owner.is_behind_wall = True
+                    else:
+                        owner.is_behind_wall = False
                         
                             
                                 
