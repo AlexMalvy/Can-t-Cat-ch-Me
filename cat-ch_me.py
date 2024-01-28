@@ -70,6 +70,8 @@ ORANGE_CAT_PUKE = img_load.image_loader.load(["assets", "orange-cat", "orange-ca
 
 ORANGE_CAT_LICKING = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-licking.png"], 3)
 ORANGE_CAT_LOAF_BREAD = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-loaf-bread.png"], 3)
+ORANGE_CAT_SLEEPING = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-sleeping-zz.png"], 3)
+ORANGE_CAT_TRANSFORM = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-transform-chaiyan.png"], 3)
 
 # Potte
 ORANGE_CAT_IDLE_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-idle-potte.png"], 3)
@@ -106,6 +108,8 @@ BLACK_CAT_PUKE = img_load.image_loader.load(["assets", "black-cat", "black-cat-p
 
 BLACK_CAT_LICKING = img_load.image_loader.load(["assets", "black-cat", "black-cat-licking.png"], 3)
 BLACK_CAT_LOAF_BREAD = img_load.image_loader.load(["assets", "black-cat", "black-cat-loaf-bread.png"], 3)
+BLACK_CAT_SLEEPING = img_load.image_loader.load(["assets", "black-cat", "black-cat-sleeping-zz.png"], 3)
+BLACK_CAT_TRANSFORM = img_load.image_loader.load(["assets", "black-cat", "black-cat-transform-chaiyan.png"], 3)
 
 # Potte
 BLACK_CAT_IDLE_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-idle-potte.png"], 3)
@@ -142,6 +146,8 @@ SIAMESE_CAT_PUKE = img_load.image_loader.load(["assets", "siamese-cat", "siamese
 
 SIAMESE_CAT_LICKING = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-licking.png"], 3)
 SIAMESE_CAT_LOAF_BREAD = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-loaf-bread.png"], 3)
+SIAMESE_CAT_SLEEPING = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-sleeping-zz.png"], 3)
+SIAMESE_CAT_TRANSFORM = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-transform-chaiyan.png"], 3)
 
 # Potte
 SIAMESE_CAT_IDLE_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-idle-potte.png"], 3)
@@ -231,6 +237,8 @@ class game_variable_class:
     score = 0
     multiplier = 1
 
+    started = False
+
     all_cats = ["orange", "black", "siamese"]
     selected_cat = "orange"
     
@@ -311,6 +319,9 @@ class player_class:
     in_selection = False
     state_selection = [ORANGE_CAT_LOAF_BREAD]
 
+    state_pregame = [ORANGE_CAT_SLEEPING]
+    state_chaiyan_transformation = [ORANGE_CAT_TRANSFORM]
+
     img = pygame.Surface((body.width, body.height))
 
     SPEECH_BUBBLE_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bubble-yes.png")))
@@ -336,57 +347,69 @@ class player_class:
 
 
     def change_state(self):
-        # if not self.moving and interactible.interact_timer and self.current_state != 6 and interactible.isOn["type"]["animation_type"] == "puke":
-        #     self.current_state = 6
-        #     self.frame = 0
-        #     self.frame_timer = pygame.time.get_ticks()
-        #     self.idle_bis = False
-        #     self.idle_bis_counter = 0
-        if not self.moving and interactible.interact_timer and self.current_state != 5 and interactible.isOn["type"]["animation_type"] == "pee":
-            self.current_state = 5
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-            self.idle_bis = False
-            self.idle_bis_counter = 0
-        elif not self.moving and interactible.interact_timer and self.current_state != 4 and interactible.isOn["type"]["animation_type"] == "jumping":
-            self.current_state = 4
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-            self.idle_bis = False
-            self.idle_bis_counter = 0
-        elif not self.moving and interactible.interact_timer and self.current_state != 3 and interactible.isOn["type"]["animation_type"] == "scratching":
-            self.current_state = 3
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-            self.idle_bis = False
-            self.idle_bis_counter = 0
-        elif self.moving and self.i_frame and self.current_state != 2:
-            self.current_state = 2
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-            self.idle_bis = False
-            self.idle_bis_counter = 0
-        elif self.moving and not self.i_frame and self.current_state != 1:
-            self.current_state = 1
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-            self.idle_bis = False
-            self.idle_bis_counter = 0
-        elif not self.moving and not interactible.interact_timer and self.current_state != 0:
+        if not game_variable.started and self.current_state != 0:
             self.current_state = 0
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
-        elif not self.moving and not interactible.interact_timer and self.current_state == 0 and self.idle_bis_counter == 3:
+            self.idle_bis = False
             self.idle_bis_counter = 0
-            self.idle_bis = True
-            # self.idle_bis_state = random.randint(0, 1)
-            self.idle_bis_state = 0
+        else:
+            # if not self.moving and interactible.interact_timer and self.current_state != 6 and interactible.isOn["type"]["animation_type"] == "puke":
+            #     self.current_state = 6
+            #     self.frame = 0
+            #     self.frame_timer = pygame.time.get_ticks()
+            #     self.idle_bis = False
+            #     self.idle_bis_counter = 0
+            if not self.moving and interactible.interact_timer and self.current_state != 5 and interactible.isOn["type"]["animation_type"] == "pee":
+                self.current_state = 5
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+                self.idle_bis = False
+                self.idle_bis_counter = 0
+            elif not self.moving and interactible.interact_timer and self.current_state != 4 and interactible.isOn["type"]["animation_type"] == "jumping":
+                self.current_state = 4
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+                self.idle_bis = False
+                self.idle_bis_counter = 0
+            elif not self.moving and interactible.interact_timer and self.current_state != 3 and interactible.isOn["type"]["animation_type"] == "scratching":
+                self.current_state = 3
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+                self.idle_bis = False
+                self.idle_bis_counter = 0
+            elif self.moving and self.i_frame and self.current_state != 2:
+                self.current_state = 2
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+                self.idle_bis = False
+                self.idle_bis_counter = 0
+            elif self.moving and not self.i_frame and self.current_state != 1:
+                self.current_state = 1
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+                self.idle_bis = False
+                self.idle_bis_counter = 0
+            elif not self.moving and not interactible.interact_timer and self.current_state != 0:
+                self.current_state = 0
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+            elif not self.moving and not interactible.interact_timer and self.current_state == 0 and self.idle_bis_counter == 3:
+                self.idle_bis_counter = 0
+                self.idle_bis = True
+                # self.idle_bis_state = random.randint(0, 1)
+                self.idle_bis_state = 0
 
     def update_frame(self):
+        frame_cd = self.frame_cd
         # Get the correct img slate
         if self.in_selection:
             state = self.state_selection
             current_state = 0
+        elif not game_variable.started:
+            state = self.state_pregame
+            current_state = 0
+            frame_cd = 300
         elif self.potte:
             if self.idle_bis:
                 state = self.state_potte_idle_bis
@@ -409,7 +432,7 @@ class player_class:
                 state = self.state
                 current_state = self.current_state
 
-        if pygame.time.get_ticks() - self.frame_timer >= self.frame_cd:
+        if pygame.time.get_ticks() - self.frame_timer >= frame_cd:
             self.frame += 1
             self.frame_timer = pygame.time.get_ticks()
         if self.frame >= state[current_state].get_width()/state[current_state].get_height():
@@ -456,6 +479,8 @@ class player_class:
             self.state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
             self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE_NYAN, ORANGE_CAT_PUKE_NYAN]
             self.state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
+            self.state_pregame = [ORANGE_CAT_SLEEPING]
+            self.state_chaiyan_transformation = [ORANGE_CAT_TRANSFORM]
         elif game_variable.selected_cat == "black":
             self.state = [BLACK_CAT_IDLE, BLACK_CAT_WALKING, BLACK_CAT_RUNNING, BLACK_CAT_SCRATCHING, BLACK_CAT_JUMPING, BLACK_CAT_PEE, BLACK_CAT_PUKE]
             self.idle_bis_list = [BLACK_CAT_LICKING]
@@ -463,6 +488,8 @@ class player_class:
             self.state_potte_idle_bis = [BLACK_CAT_LICKING_POTTE]
             self.state_nyan = [BLACK_CAT_IDLE_NYAN, BLACK_CAT_WALKING_NYAN, BLACK_CAT_RUNNING_NYAN, BLACK_CAT_SCRATCHING_NYAN, BLACK_CAT_JUMPING_NYAN, BLACK_CAT_PEE_NYAN, BLACK_CAT_PUKE_NYAN]
             self.state_nyan_idle_bis = [BLACK_CAT_LICKING_NYAN]
+            self.state_pregame = [BLACK_CAT_SLEEPING]
+            self.state_chaiyan_transformation = [BLACK_CAT_TRANSFORM]
         elif game_variable.selected_cat == "siamese":
             self.state = [SIAMESE_CAT_IDLE, SIAMESE_CAT_WALKING, SIAMESE_CAT_RUNNING, SIAMESE_CAT_SCRATCHING, SIAMESE_CAT_JUMPING, SIAMESE_CAT_PEE, SIAMESE_CAT_PUKE]
             self.idle_bis_list = [SIAMESE_CAT_LICKING]
@@ -470,6 +497,8 @@ class player_class:
             self.state_potte_idle_bis = [SIAMESE_CAT_LICKING_POTTE]
             self.state_nyan = [SIAMESE_CAT_IDLE_NYAN, SIAMESE_CAT_WALKING_NYAN, SIAMESE_CAT_RUNNING_NYAN, SIAMESE_CAT_SCRATCHING_NYAN, SIAMESE_CAT_JUMPING_NYAN, SIAMESE_CAT_PEE_NYAN, SIAMESE_CAT_PUKE_NYAN]
             self.state_nyan_idle_bis = [SIAMESE_CAT_LICKING_NYAN]
+            self.state_pregame = [SIAMESE_CAT_SLEEPING]
+            self.state_chaiyan_transformation = [SIAMESE_CAT_TRANSFORM]
         # Default Skin
         else:
             self.state = [ORANGE_CAT_IDLE, ORANGE_CAT_WALKING, ORANGE_CAT_RUNNING, ORANGE_CAT_SCRATCHING, ORANGE_CAT_JUMPING, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
@@ -478,6 +507,8 @@ class player_class:
             self.state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
             self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE_NYAN, ORANGE_CAT_PUKE_NYAN]
             self.state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
+            self.state_pregame = [ORANGE_CAT_SLEEPING]
+            self.state_chaiyan_transformation = [ORANGE_CAT_TRANSFORM]
 
 
 class owner_class:
@@ -513,7 +544,7 @@ class owner_class:
     
 
     def update(self):
-        # self.move_toward_cat()
+        self.move_toward_cat()
 
         self.update_move_speed()
 
@@ -1187,105 +1218,113 @@ class main_game_class:
             clock.tick(60)
             owner.remove_rage(1)
 
-            # Collision with cat
-            if grid.owner_position["rect"].colliderect(grid.cat_position["rect"]) and not player.i_frame:
-                player.i_frame = True
+            if game_variable.started:
 
-                # Start button smash to try to escape
-                result = button_smash.main_loop()
-                # result = True
-                game_variable.multiplier = 1
-                left = False
-                right = False
-                up = False
-                down = False
-                interact = False
-                miaou = False
-                puke = False
-                click = False
+                # Collision with cat
+                if grid.owner_position["rect"].colliderect(grid.cat_position["rect"]) and not player.i_frame:
+                    player.i_frame = True
 
-                player.i_frame_timer = time.time()
-                if not result:
-                    player.hp -= 1
-                    if player.hp <= 0:
-                        game_over.main_loop()
-                        run = False
+                    # Start button smash to try to escape
+                    result = button_smash.main_loop()
+                    # result = True
+                    game_variable.multiplier = 1
+                    left = False
+                    right = False
+                    up = False
+                    down = False
+                    interact = False
+                    miaou = False
+                    puke = False
+                    click = False
 
-            # i-frame logic
-            if player.i_frame:
-                if time.time() - player.i_frame_timer >= player.i_frame_duration:
-                    player.i_frame = False
+                    player.i_frame_timer = time.time()
+                    if not result:
+                        player.hp -= 1
+                        if player.hp <= 0:
+                            game_over.main_loop()
+                            run = False
+
+                # i-frame logic
+                if player.i_frame:
+                    if time.time() - player.i_frame_timer >= player.i_frame_duration:
+                        player.i_frame = False
+                
+                # Player Go Left
+                if left and not interact:
+                    player.hitbox.x -= player.speed
+                    player.right = False
+                    # Check if colliding with obstacle
+                    for room in obstacle.list:
+                        for obs in room:
+                            if player.hitbox.colliderect(obs):
+                                player.hitbox.x += player.speed
+                # Player Go Right
+                if right and not interact:
+                    player.hitbox.x += player.speed
+                    player.right = True
+                    # Check if colliding with obstacle
+                    for room in obstacle.list:
+                        for obs in room:
+                            if player.hitbox.colliderect(obs):
+                                player.hitbox.x -= player.speed
+                # Player Go Up
+                if up and not interact:
+                    player.hitbox.y -= player.speed
+                    # Check if colliding with obstacle
+                    for room in obstacle.list:
+                        for obs in room:
+                            if player.hitbox.colliderect(obs):
+                                player.hitbox.y += player.speed
+                # Player Go Down
+                if down and not interact:
+                    player.hitbox.y += player.speed
+                    # Check if colliding with obstacle
+                    for room in obstacle.list:
+                        for obs in room:
+                            if player.hitbox.colliderect(obs):
+                                player.hitbox.y -= player.speed
+                                
+                if left or right or up or down:
+                    player.moving = True
+                else:
+                    player.moving = False
+
+                interactible.update()
+
+                if interact:
+                    interactible.interact()
+                elif interactible.interact_timer != None:
+                    interactible.cancel_interact()
+
+                if miaou and time.time() - player.miaou_timer > player.miaou_cd and not player.miaou:
+                    player.miaou_timer = time.time()
+                    player.miaou = True
+                
+                if player.miaou and time.time() - player.miaou_timer > player.miaou_duration:
+                    player.miaou_timer = time.time()
+                    player.miaou = False
+
+                if puke and time.time() - player.puke_timer > player.puke_cd:
+                    player.puke_timer = time.time()
+                    print("puke")
+
+                owner.update()
+
+                player.update()
+
+                grid.update()
+                pathfinder.owner_pos, pathfinder.cat_pos = grid.owner_position, grid.cat_position
+                if random.randrange(0, 10) == 1:
+                    pathfinder.create_path()
+
+                if click:
+                    owner.rage += 10
             
-            # Player Go Left
-            if left and not interact:
-                player.hitbox.x -= player.speed
-                player.right = False
-                # Check if colliding with obstacle
-                for room in obstacle.list:
-                    for obs in room:
-                        if player.hitbox.colliderect(obs):
-                            player.hitbox.x += player.speed
-            # Player Go Right
-            if right and not interact:
-                player.hitbox.x += player.speed
-                player.right = True
-                # Check if colliding with obstacle
-                for room in obstacle.list:
-                    for obs in room:
-                        if player.hitbox.colliderect(obs):
-                            player.hitbox.x -= player.speed
-            # Player Go Up
-            if up and not interact:
-                player.hitbox.y -= player.speed
-                # Check if colliding with obstacle
-                for room in obstacle.list:
-                    for obs in room:
-                        if player.hitbox.colliderect(obs):
-                            player.hitbox.y += player.speed
-            # Player Go Down
-            if down and not interact:
-                player.hitbox.y += player.speed
-                # Check if colliding with obstacle
-                for room in obstacle.list:
-                    for obs in room:
-                        if player.hitbox.colliderect(obs):
-                            player.hitbox.y -= player.speed
-                            
-            if left or right or up or down:
-                player.moving = True
+            elif left or right or up or down:
+                game_variable.started = True
             else:
-                player.moving = False
-
-            interactible.update()
-
-            if interact:
-                interactible.interact()
-            elif interactible.interact_timer != None:
-                interactible.cancel_interact()
-
-            if miaou and time.time() - player.miaou_timer > player.miaou_cd and not player.miaou:
-                player.miaou_timer = time.time()
-                player.miaou = True
-            
-            if player.miaou and time.time() - player.miaou_timer > player.miaou_duration:
-                player.miaou_timer = time.time()
-                player.miaou = False
-
-            if puke and time.time() - player.puke_timer > player.puke_cd:
-                player.puke_timer = time.time()
-                print("puke")
-
-            owner.update()
-
-            player.update()
-
-            grid.update()
-            pathfinder.owner_pos, pathfinder.cat_pos = grid.owner_position, grid.cat_position
-            if random.randrange(0, 10) == 1:
-                pathfinder.create_path()
-
-            if click:
-                owner.rage += 10
+                player.update()
+                
 
             miaou = False
             puke = False
