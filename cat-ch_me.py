@@ -833,6 +833,78 @@ class game_over_class:
                         miaou = True
             self.draw_window()
 
+class game_ui_class:
+    ACHIEVEMENT_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "achievement-unlock.png")))
+
+    LOWER_LEFT_PANNEL_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "fond-gauche-jauges.png")))
+    LOWER_LEFT_PANNEL_RECT = pygame.Rect(25, HEIGHT - 25 - LOWER_LEFT_PANNEL_IMG.get_height(), LOWER_LEFT_PANNEL_IMG.get_width(), LOWER_LEFT_PANNEL_IMG.get_height())
+    LOWER_RIGHT_PANNEL_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "fond-droite-score-multiplier.png")))
+    LOWER_RIGHT_PANNEL_RECT = pygame.Rect(WIDTH - 25 - LOWER_RIGHT_PANNEL_IMG.get_width(), HEIGHT - 25 - LOWER_RIGHT_PANNEL_IMG.get_height(), LOWER_RIGHT_PANNEL_IMG.get_width(), LOWER_RIGHT_PANNEL_IMG.get_height())
+
+    HEART_0_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "heart-0-3.png")))
+    HEART_1_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "heart-1-3.png")))
+    HEART_2_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "heart-2-3.png")))
+    HEART_3_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "heart-3-3.png")))
+
+    CAT_HEAD_ORANGE_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "tete-chat-orange.png")))
+    CAT_HEAD_BLACK_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "tete-chat-noir.png")))
+    CAT_HEAD_SIAMESE_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "tete-chat-siamese.png")))
+
+    RAGE_BAR_0_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "jauge-niveau-1.png")))
+    RAGE_BAR_1_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "jauge-niveau-2.png")))
+    RAGE_BAR_2_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "jauge-niveau-3.png")))
+    RAGE_BAR_3_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "jauge-niveau-4.png")))
+    RAGE_BAR_4_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "jauge-niveau-5.png")))
+    RAGE_BAR_5_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "jauge-niveau-6.png")))
+    RAGE_BAR_6_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "jauge-niveau-7.png")))
+
+    spacer = 40
+
+    def draw_ui(self):
+        screen.blit(self.LOWER_LEFT_PANNEL_IMG, (self.LOWER_LEFT_PANNEL_RECT.x, self.LOWER_LEFT_PANNEL_RECT.y))
+        
+        if game_variable.selected_cat == "black":
+            screen.blit(self.CAT_HEAD_BLACK_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.spacer * 1, self.LOWER_LEFT_PANNEL_RECT.centery - self.CAT_HEAD_BLACK_IMG.get_height()//2))
+        elif game_variable.selected_cat == "siamese":
+            screen.blit(self.CAT_HEAD_SIAMESE_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.spacer * 1, self.LOWER_LEFT_PANNEL_RECT.centery - self.CAT_HEAD_SIAMESE_IMG.get_height()//2))
+        else:
+            screen.blit(self.CAT_HEAD_ORANGE_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.spacer * 1, self.LOWER_LEFT_PANNEL_RECT.centery - self.CAT_HEAD_ORANGE_IMG.get_height()//2))
+        
+        if player.hp > 2:
+            screen.blit(self.HEART_3_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.spacer * 2, self.LOWER_LEFT_PANNEL_RECT.centery - self.HEART_3_IMG.get_height()//2))
+        elif player.hp > 1:
+            screen.blit(self.HEART_2_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.spacer * 2, self.LOWER_LEFT_PANNEL_RECT.centery - self.HEART_2_IMG.get_height()//2))
+        elif player.hp > 0:
+            screen.blit(self.HEART_1_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.spacer * 2, self.LOWER_LEFT_PANNEL_RECT.centery - self.HEART_1_IMG.get_height()//2))
+        else:
+            screen.blit(self.HEART_0_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.spacer * 2, self.LOWER_LEFT_PANNEL_RECT.centery - self.HEART_0_IMG.get_height()//2))
+
+        rage_meter = owner.rage / owner.max_rage
+        if rage_meter >= 0.9:
+            screen.blit(self.RAGE_BAR_6_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.HEART_3_IMG.get_width() + self.spacer * 3, self.LOWER_LEFT_PANNEL_RECT.centery - self.RAGE_BAR_6_IMG.get_height()//2))
+        elif rage_meter < 0.9 and rage_meter >= 0.7:
+            screen.blit(self.RAGE_BAR_5_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.HEART_3_IMG.get_width() + self.spacer * 3, self.LOWER_LEFT_PANNEL_RECT.centery - self.RAGE_BAR_5_IMG.get_height()//2))
+        elif rage_meter < 0.7 and rage_meter >= 0.5:
+            screen.blit(self.RAGE_BAR_4_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.HEART_3_IMG.get_width() + self.spacer * 3, self.LOWER_LEFT_PANNEL_RECT.centery - self.RAGE_BAR_4_IMG.get_height()//2))
+        elif rage_meter < 0.5 and rage_meter >= 0.3:
+            screen.blit(self.RAGE_BAR_3_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.HEART_3_IMG.get_width() + self.spacer * 3, self.LOWER_LEFT_PANNEL_RECT.centery - self.RAGE_BAR_3_IMG.get_height()//2))
+        elif rage_meter < 0.3 and rage_meter >= 0.1:
+            screen.blit(self.RAGE_BAR_2_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.HEART_3_IMG.get_width() + self.spacer * 3, self.LOWER_LEFT_PANNEL_RECT.centery - self.RAGE_BAR_2_IMG.get_height()//2))
+        elif rage_meter < 0.1 and rage_meter > 0:
+            screen.blit(self.RAGE_BAR_1_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.HEART_3_IMG.get_width() + self.spacer * 3, self.LOWER_LEFT_PANNEL_RECT.centery - self.RAGE_BAR_1_IMG.get_height()//2))
+        else:
+            screen.blit(self.RAGE_BAR_0_IMG, (self.LOWER_LEFT_PANNEL_RECT.x + self.CAT_HEAD_ORANGE_IMG.get_width() + self.HEART_3_IMG.get_width() + self.spacer * 3, self.LOWER_LEFT_PANNEL_RECT.centery - self.RAGE_BAR_0_IMG.get_height()//2))
+
+
+
+
+        screen.blit(self.LOWER_RIGHT_PANNEL_IMG, (self.LOWER_RIGHT_PANNEL_RECT.x, self.LOWER_RIGHT_PANNEL_RECT.y))
+
+        score_text = font.render(f"{game_variable.score}", 1, BLACK)
+        screen.blit(score_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 165, self.LOWER_RIGHT_PANNEL_RECT.centery - score_text.get_height()//2 + 3))
+
+        multiplier_text = font.render(f"{game_variable.multiplier:.2f}", 1, BLACK)
+        screen.blit(multiplier_text, (self.LOWER_RIGHT_PANNEL_RECT.x + 445, self.LOWER_RIGHT_PANNEL_RECT.centery - multiplier_text.get_height()//2 + 3))
 
 class button_smash_class:
     IMG_1 = pygame.image.load(os.path.join("assets", os.path.join("minigame", "ORA1.png")))
@@ -1003,6 +1075,8 @@ class main_game_class:
         if interactible.interact_timer != None:
             pygame.draw.rect(screen, WHITE, interactible.PROGRESS_BAR)
             pygame.draw.rect(screen, YELLOW, interactible.PROGRESS_BAR_FILL)
+
+        game_ui.draw_ui()
 
         pygame.display.update()
 
@@ -1662,6 +1736,7 @@ menu = menu_class(exitedGameProperty)
 settings = settings_class()
 grid.maze = redefineMaze(grid.maze)
 pathfinder = Pathfinder(grid.maze)
+game_ui = game_ui_class()
 
 # for x in grid.maze:
 #     print(x)
