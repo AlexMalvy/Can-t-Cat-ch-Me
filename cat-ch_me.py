@@ -344,8 +344,34 @@ class general_use_class:
 
 
 class music_class:
+    
+    MEOW_1 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "cat-meow-1.mp3")))
+    MEOW_2 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "cat-meow-2.mp3")))
+    MEOW_3 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "cat-meow-3.mp3")))
+    MEOW_4 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "cat-meow-4.mp3")))
+    MEOW_5 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "cat-meow.mp3")))
+
+    MEOWS = [MEOW_1, MEOW_2, MEOW_3, MEOW_4, MEOW_5]
+
+    PURRING = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "cat-purring.mp3")))
+
+    GLASS_BREAKING_1 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "glass-breaking-1.mp3")))
+    GLASS_BREAKING_2 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "glass-breaking-2.mp3")))
+
+    NYAN_CAT_THEME = os.path.join('assets', os.path.join("music", "nyan-cat-theme.mp3"))
+
+    selected_sound = None
+
+    def play_sound(self, sound):
+        self.selected_sound = sound
+        self.selected_sound.play()
+        self.selected_sound.set_volume(0.5)
+
+    def stop_sound(self):
+        self.selected_sound.stop()
+
     def play_music():
-        pygame.mixer.music.load(os.path.join('Assets', os.path.join("music", "main_theme.mp3")))
+        pygame.mixer.music.load(os.path.join('assets', os.path.join("music", "main_theme.mp3")))
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play()
 
@@ -415,9 +441,9 @@ def redefineMaze(oldMaze):
 class player_class:
     body = pygame.Rect(SQUARE*18, SQUARE*18, 192, 192)
 
-    base_speed = 8
+    base_speed = 12
     bonus_speed = 0
-    speed = 8
+    speed = 12
     hp = 3
     hitbox = pygame.Rect(body.x, body.bottom, 60, 60)
 
@@ -1299,8 +1325,8 @@ class button_smash_class:
     LEFT_BUTTON = pygame.Rect(WIDTH//2 - 150, HEIGHT//4 * 3, 70, 70)
     RIGHT_BUTTON = pygame.Rect(WIDTH//2 + 100, HEIGHT//4 * 3, 70, 70)
 
-    TIMER_BAR = pygame.Rect(WIDTH//2 - 101, HEIGHT//4 - 1, 202, 52)
-    TIMER_BAR_PROGRESS = pygame.Rect(WIDTH//2 - 100, HEIGHT//4, 200, 50)
+    TIMER_BAR = pygame.Rect(WIDTH//2 - 101, HEIGHT//4 - 1, 202, 32)
+    TIMER_BAR_PROGRESS = pygame.Rect(WIDTH//2 - 100, HEIGHT//4, 200, 30)
 
     max_break_free = 40
     break_free = 40
@@ -1320,7 +1346,7 @@ class button_smash_class:
             screen.blit(self.IMG_2, (0,0))
         
         break_free_text = font.render(f"{self.break_free}", 1, BLACK)
-        screen.blit(break_free_text, (WIDTH//2 - break_free_text.get_width()//2 - 50, HEIGHT//2 - 300))
+        screen.blit(break_free_text, (WIDTH//2 - break_free_text.get_width()//2, 150))
         
         if not self.smash_right:
             screen.blit(settings.Q_KEY_IMG, (self.LEFT_BUTTON.centerx - settings.Q_KEY_IMG.get_width()//2, self.LEFT_BUTTON.centery - settings.Q_KEY_IMG.get_height()//2))
@@ -1342,7 +1368,7 @@ class button_smash_class:
         self.break_free = self.max_break_free
         self.timer = time.time()
         self.SOUND.play()
-        self.SOUND.set_volume(0.1)
+        self.SOUND.set_volume(0.5)
         
         while run:
             clock.tick(60)
@@ -1620,6 +1646,7 @@ class main_game_class:
                 if miaou and time.time() - player.miaou_timer > player.miaou_cd and not player.miaou:
                     player.miaou_timer = time.time()
                     player.miaou = True
+                    music.play_sound(random.choice(music.MEOWS))
                     if game_variable.multiplier >= player.chaiyan_transform_cap and not player.chaiyan:
                         player.transforming = True
                 
@@ -2278,6 +2305,7 @@ exitedGameProperty = False
 # baseSettings() # Create the controls configuration file
 general_use = general_use_class()
 game_variable = game_variable_class()
+music = music_class()
 camera = camera_class()
 player = player_class()
 owner = owner_class()
