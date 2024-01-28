@@ -274,6 +274,9 @@ class player_class:
     miaou_cd = 5
     miaou_timer = 0
 
+    puke_cd = 15
+    puke_timer = 0
+
     frame = 0
     frame_timer = pygame.time.get_ticks()
     frame_cd = 120
@@ -1012,6 +1015,7 @@ class main_game_class:
         down = False
         interact = False
         miaou = False
+        puke = False
         click = False
         
         while run:
@@ -1031,6 +1035,7 @@ class main_game_class:
                 down = False
                 interact = False
                 miaou = False
+                puke = False
                 click = False
 
                 player.i_frame_timer = time.time()
@@ -1093,7 +1098,12 @@ class main_game_class:
                 interactible.cancel_interact()
 
             if miaou and time.time() - player.miaou_timer > player.miaou_cd:
+                player.miaou_timer = time.time()
                 print("miaou")
+
+            if puke and time.time() - player.puke_timer > player.puke_cd:
+                player.puke_timer = time.time()
+                print("puke")
 
             owner.update()
 
@@ -1108,6 +1118,7 @@ class main_game_class:
                 owner.rage += 10
 
             miaou = False
+            puke = False
             click = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -1124,6 +1135,8 @@ class main_game_class:
                         interact = True
                     if event.key == K_SPACE:
                         miaou = True
+                    if event.key == K_LSHIFT:
+                        puke = True
                     if event.key == K_q:
                         left = True
                     if event.key == K_d:
