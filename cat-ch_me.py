@@ -77,8 +77,8 @@ ORANGE_CAT_WALKING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "
 ORANGE_CAT_RUNNING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-running-potte.png"], 3)
 ORANGE_CAT_SCRATCHING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-scratching-potte.png"], 3)
 ORANGE_CAT_JUMPING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-jumping-potte.png"], 3)
-# ORANGE_CAT_PEE_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-pee-potte.png"], 3)
-# ORANGE_CAT_PUKE_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-puke-potte.png"], 3)
+ORANGE_CAT_PEE_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-peeing-potte.png"], 3)
+ORANGE_CAT_PUKE_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-puking-potte.png"], 3)
 
 ORANGE_CAT_LICKING_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-licking-potte.png"], 3)
 ORANGE_CAT_LOAF_BREAD_POTTE = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-loaf-bread-potte.png"], 3)
@@ -89,8 +89,8 @@ ORANGE_CAT_WALKING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "o
 ORANGE_CAT_RUNNING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-running-nyan.png"], 3)
 ORANGE_CAT_SCRATCHING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-scratching-nyan.png"], 3)
 ORANGE_CAT_JUMPING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-jumping-nyan.png"], 3)
-# ORANGE_CAT_PEE_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-pee-nyan.png"], 3)
-# ORANGE_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-puke-nyan.png"], 3)
+ORANGE_CAT_PEE_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-peeing-nyan.png"], 3)
+ORANGE_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-puking-nyan.png"], 3)
 
 ORANGE_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "orange-cat", "orange-cat-licking-nyan.png"], 3)
 
@@ -113,8 +113,8 @@ BLACK_CAT_WALKING_POTTE = img_load.image_loader.load(["assets", "black-cat", "bl
 BLACK_CAT_RUNNING_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-running-potte.png"], 3)
 BLACK_CAT_SCRATCHING_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-scratching-potte.png"], 3)
 BLACK_CAT_JUMPING_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-jumping-potte.png"], 3)
-# BLACK_CAT_PEE_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-pee-potte.png"], 3)
-# BLACK_CAT_PUKE_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-puke-potte.png"], 3)
+BLACK_CAT_PEE_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-peeing-potte.png"], 3)
+BLACK_CAT_PUKE_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-puking-potte.png"], 3)
 
 BLACK_CAT_LICKING_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-licking-potte.png"], 3)
 BLACK_CAT_LOAF_BREAD_POTTE = img_load.image_loader.load(["assets", "black-cat", "black-cat-loaf-bread-potte.png"], 3)
@@ -125,12 +125,12 @@ BLACK_CAT_WALKING_NYAN = img_load.image_loader.load(["assets", "black-cat", "bla
 BLACK_CAT_RUNNING_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-running-nyan.png"], 3)
 BLACK_CAT_SCRATCHING_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-scratching-nyan.png"], 3)
 BLACK_CAT_JUMPING_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-jumping-nyan.png"], 3)
-# BLACK_CAT_PEE_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-pee-nyan.png"], 3)
-# # BLACK_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-puke-nyan.png"], 3)
+BLACK_CAT_PEE_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-peeing-nyan.png"], 3)
+BLACK_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-puking-nyan.png"], 3)
 
 BLACK_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "black-cat", "black-cat-licking-nyan.png"], 3)
 
-## Orange
+## SIAMESE
 # Normal
 SIAMESE_CAT_IDLE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-idle.png"], 3)
 SIAMESE_CAT_WALKING = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-walking.png"], 3)
@@ -149,8 +149,8 @@ SIAMESE_CAT_WALKING_POTTE = img_load.image_loader.load(["assets", "siamese-cat",
 SIAMESE_CAT_RUNNING_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-running-potte.png"], 3)
 SIAMESE_CAT_SCRATCHING_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-scratching-potte.png"], 3)
 SIAMESE_CAT_JUMPING_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-jumping-potte.png"], 3)
-# SIAMESE_CAT_PEE_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-pee-potte.png"], 3)
-# # SIAMESE_CAT_PUKE_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-puke-potte.png"], 3)
+SIAMESE_CAT_PEE_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-peeing-potte.png"], 3)
+SIAMESE_CAT_PUKE_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-puking-potte.png"], 3)
 
 SIAMESE_CAT_LICKING_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-licking-potte.png"], 3)
 SIAMESE_CAT_LOAF_BREAD_POTTE = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-loaf-bread-potte.png"], 3)
@@ -161,8 +161,8 @@ SIAMESE_CAT_WALKING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", 
 SIAMESE_CAT_RUNNING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-running-nyan.png"], 3)
 SIAMESE_CAT_SCRATCHING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-scratching-nyan.png"], 3)
 SIAMESE_CAT_JUMPING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-jumping-nyan.png"], 3)
-# SIAMESE_CAT_PEE_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-pee-nyan.png"], 3)
-# SIAMESE_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-puke-nyan.png"], 3)
+SIAMESE_CAT_PEE_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-peeing-nyan.png"], 3)
+SIAMESE_CAT_PUKE_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-puking-nyan.png"], 3)
 
 SIAMESE_CAT_LICKING_NYAN = img_load.image_loader.load(["assets", "siamese-cat", "siamese-cat-licking-nyan.png"], 3)
 
@@ -301,11 +301,11 @@ class player_class:
     idle_bis_list = [ORANGE_CAT_LICKING]
 
     potte = False
-    state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE, ORANGE_CAT_SCRATCHING_POTTE, ORANGE_CAT_JUMPING_POTTE, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
+    state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE, ORANGE_CAT_SCRATCHING_POTTE, ORANGE_CAT_JUMPING_POTTE, ORANGE_CAT_PEE_POTTE, ORANGE_CAT_PUKE_POTTE]
     state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
 
     nyan = False
-    state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
+    state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE_NYAN, ORANGE_CAT_PUKE_NYAN]
     state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
 
     in_selection = False
@@ -452,31 +452,31 @@ class player_class:
         if game_variable.selected_cat == "orange":
             self.state = [ORANGE_CAT_IDLE, ORANGE_CAT_WALKING, ORANGE_CAT_RUNNING, ORANGE_CAT_SCRATCHING, ORANGE_CAT_JUMPING, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
             self.idle_bis_list = [ORANGE_CAT_LICKING]
-            self.state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE, ORANGE_CAT_SCRATCHING_POTTE, ORANGE_CAT_JUMPING_POTTE, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
+            self.state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE, ORANGE_CAT_SCRATCHING_POTTE, ORANGE_CAT_JUMPING_POTTE, ORANGE_CAT_PEE_POTTE, ORANGE_CAT_PUKE_POTTE]
             self.state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
-            self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
+            self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE_NYAN, ORANGE_CAT_PUKE_NYAN]
             self.state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
         elif game_variable.selected_cat == "black":
             self.state = [BLACK_CAT_IDLE, BLACK_CAT_WALKING, BLACK_CAT_RUNNING, BLACK_CAT_SCRATCHING, BLACK_CAT_JUMPING, BLACK_CAT_PEE, BLACK_CAT_PUKE]
             self.idle_bis_list = [BLACK_CAT_LICKING]
-            self.state_potte = [BLACK_CAT_IDLE_POTTE, BLACK_CAT_WALKING_POTTE, BLACK_CAT_RUNNING_POTTE, BLACK_CAT_SCRATCHING_POTTE, BLACK_CAT_JUMPING_POTTE, BLACK_CAT_PEE, BLACK_CAT_PUKE]
+            self.state_potte = [BLACK_CAT_IDLE_POTTE, BLACK_CAT_WALKING_POTTE, BLACK_CAT_RUNNING_POTTE, BLACK_CAT_SCRATCHING_POTTE, BLACK_CAT_JUMPING_POTTE, BLACK_CAT_PEE_POTTE, BLACK_CAT_PUKE_POTTE]
             self.state_potte_idle_bis = [BLACK_CAT_LICKING_POTTE]
-            self.state_nyan = [BLACK_CAT_IDLE_NYAN, BLACK_CAT_WALKING_NYAN, BLACK_CAT_RUNNING_NYAN, BLACK_CAT_SCRATCHING_NYAN, BLACK_CAT_JUMPING_NYAN, BLACK_CAT_PEE, BLACK_CAT_PUKE]
+            self.state_nyan = [BLACK_CAT_IDLE_NYAN, BLACK_CAT_WALKING_NYAN, BLACK_CAT_RUNNING_NYAN, BLACK_CAT_SCRATCHING_NYAN, BLACK_CAT_JUMPING_NYAN, BLACK_CAT_PEE_NYAN, BLACK_CAT_PUKE_NYAN]
             self.state_nyan_idle_bis = [BLACK_CAT_LICKING_NYAN]
         elif game_variable.selected_cat == "siamese":
             self.state = [SIAMESE_CAT_IDLE, SIAMESE_CAT_WALKING, SIAMESE_CAT_RUNNING, SIAMESE_CAT_SCRATCHING, SIAMESE_CAT_JUMPING, SIAMESE_CAT_PEE, SIAMESE_CAT_PUKE]
             self.idle_bis_list = [SIAMESE_CAT_LICKING]
-            self.state_potte = [SIAMESE_CAT_IDLE_POTTE, SIAMESE_CAT_WALKING_POTTE, SIAMESE_CAT_RUNNING_POTTE, SIAMESE_CAT_SCRATCHING_POTTE, SIAMESE_CAT_JUMPING_POTTE, SIAMESE_CAT_PEE, SIAMESE_CAT_PUKE]
+            self.state_potte = [SIAMESE_CAT_IDLE_POTTE, SIAMESE_CAT_WALKING_POTTE, SIAMESE_CAT_RUNNING_POTTE, SIAMESE_CAT_SCRATCHING_POTTE, SIAMESE_CAT_JUMPING_POTTE, SIAMESE_CAT_PEE_POTTE, SIAMESE_CAT_PUKE_POTTE]
             self.state_potte_idle_bis = [SIAMESE_CAT_LICKING_POTTE]
-            self.state_nyan = [SIAMESE_CAT_IDLE_NYAN, SIAMESE_CAT_WALKING_NYAN, SIAMESE_CAT_RUNNING_NYAN, SIAMESE_CAT_SCRATCHING_NYAN, SIAMESE_CAT_JUMPING_NYAN, SIAMESE_CAT_PEE, SIAMESE_CAT_PUKE]
+            self.state_nyan = [SIAMESE_CAT_IDLE_NYAN, SIAMESE_CAT_WALKING_NYAN, SIAMESE_CAT_RUNNING_NYAN, SIAMESE_CAT_SCRATCHING_NYAN, SIAMESE_CAT_JUMPING_NYAN, SIAMESE_CAT_PEE_NYAN, SIAMESE_CAT_PUKE_NYAN]
             self.state_nyan_idle_bis = [SIAMESE_CAT_LICKING_NYAN]
         # Default Skin
         else:
             self.state = [ORANGE_CAT_IDLE, ORANGE_CAT_WALKING, ORANGE_CAT_RUNNING, ORANGE_CAT_SCRATCHING, ORANGE_CAT_JUMPING, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
             self.idle_bis_list = [ORANGE_CAT_LICKING]
-            self.state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE, ORANGE_CAT_SCRATCHING_POTTE, ORANGE_CAT_JUMPING_POTTE, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
+            self.state_potte = [ORANGE_CAT_IDLE_POTTE, ORANGE_CAT_WALKING_POTTE, ORANGE_CAT_RUNNING_POTTE, ORANGE_CAT_SCRATCHING_POTTE, ORANGE_CAT_JUMPING_POTTE, ORANGE_CAT_PEE_POTTE, ORANGE_CAT_PUKE_POTTE]
             self.state_potte_idle_bis = [ORANGE_CAT_LICKING_POTTE]
-            self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE, ORANGE_CAT_PUKE]
+            self.state_nyan = [ORANGE_CAT_IDLE_NYAN, ORANGE_CAT_WALKING_NYAN, ORANGE_CAT_RUNNING_NYAN, ORANGE_CAT_SCRATCHING_NYAN, ORANGE_CAT_JUMPING_NYAN, ORANGE_CAT_PEE_NYAN, ORANGE_CAT_PUKE_NYAN]
             self.state_nyan_idle_bis = [ORANGE_CAT_LICKING_NYAN]
 
 
