@@ -1050,12 +1050,14 @@ class main_game_class:
                 sprite_position = (item["rect"].x, item["rect"].y)
 
                 sprite_dict = {
-                    "plant": (item["rect"].x, item["rect"].y - SQUARE*2)
+                    "plant": (item["rect"].x, item["rect"].y - SQUARE*2),
+                    "plug": (item["rect"].x, item["rect"].y - SQUARE*2)
                     # Ajoutez d'autres types avec leurs positions respectives ici
                 }
                 sprite_dict_broken = {
-                    "plant": (item["rect"].x- SQUARE*2, item["rect"].y)
-                    # Ajoutez d'autres types avec leurs positions respectives ici
+                    "plant": (item["rect"].x- SQUARE*2, item["rect"].y),
+                    "plug": (item["rect"].x, item["rect"].y - SQUARE*2)
+
                 }
 
                 if item["type"]["is_enabled"]:
