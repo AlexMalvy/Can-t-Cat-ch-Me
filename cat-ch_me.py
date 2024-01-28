@@ -544,7 +544,8 @@ class owner_class:
     
 
     def update(self):
-        self.move_toward_cat()
+        if game_variable.score > 0:
+            self.move_toward_cat()
 
         self.update_move_speed()
 
