@@ -344,7 +344,8 @@ class general_use_class:
 
 
 class music_class:
-    
+    BUTTON = pygame.mixer.Sound(os.path.join("assets", os.path.join("music", "press-button.mp3")))
+
     MEOW_1 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "cat-meow-1.mp3")))
     MEOW_2 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "cat-meow-2.mp3")))
     MEOW_3 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "cat-meow-3.mp3")))
@@ -552,13 +553,13 @@ class player_class:
             self.idle_bis = False
             self.idle_bis_counter = 0
         else:
-            # if not self.moving and interactible.interact_timer and self.current_state != 6 and interactible.isOn["type"]["animation_type"] == "puke":
-            #     self.current_state = 6
-            #     self.frame = 0
-            #     self.frame_timer = pygame.time.get_ticks()
-            #     self.idle_bis = False
-            #     self.idle_bis_counter = 0
-            if not self.moving and interactible.interact_timer and self.current_state != 5 and interactible.isOn["type"]["animation_type"] == "pee":
+            if not self.moving and interactible.interact_timer and self.current_state != 6 and interactible.isOn["type"]["animation_type"] == "puke":
+                self.current_state = 6
+                self.frame = 0
+                self.frame_timer = pygame.time.get_ticks()
+                self.idle_bis = False
+                self.idle_bis_counter = 0
+            elif not self.moving and interactible.interact_timer and self.current_state != 5 and interactible.isOn["type"]["animation_type"] == "pee":
                 self.current_state = 5
                 self.frame = 0
                 self.frame_timer = pygame.time.get_ticks()
@@ -613,6 +614,7 @@ class player_class:
         elif self.transforming:
             state = self.state_chaiyan_transformation
             current_state = 0
+            frame_cd = 240
         # Chaiyan
         elif self.chaiyan:
             if self.idle_bis:
@@ -690,7 +692,8 @@ class player_class:
             self.img.set_alpha(255)
 
     def apply_wall_filter(self):
-        if self.is_behind_wall:
+        wall_collision = any(player.hitbox.colliderect(wall) for wall in behind_wall_class.walls)
+        if wall_collision:
             self.img.set_alpha(50)
         elif not self.i_frame:
             # Si le joueur n'est pas derrière un mur, réinitialiser l'image sans filtre
@@ -749,8 +752,6 @@ class owner_class:
     max_bonus_speed = 5
     bonus_speed = 0
 
-    is_behind_wall = False
-
     moving = False
     right = False
 
@@ -771,7 +772,7 @@ class owner_class:
     
 
     def update(self):
-        if game_variable.score > 0 and not player.transforming:
+        if (game_variable.score > 0 or game_variable.enraged) and not player.transforming:
             self.move_toward_cat()
 
         self.update_move_speed()
@@ -817,10 +818,10 @@ class owner_class:
         self.body.bottom = self.body_hitbox.bottom
 
     def apply_wall_filter(self):
-        if self.is_behind_wall:
+        wall_collision_owner = any(owner.body_hitbox.colliderect(wall) for wall in behind_wall_class.walls)
+        if wall_collision_owner:
             self.img.set_alpha(50)
         else:
-            # Si le joueur n'est pas derrière un mur, réinitialiser l'image sans filtre
             self.img.set_alpha(255)
 
     def move_toward_cat(self):
@@ -998,7 +999,7 @@ class interactible_class():
     type_coffee = {"type" : "coffee", "score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 20, "animation_type" : "jumping", "sprite" : COFFEE_IMG, "sprite_broken" : COFFEE_BROKEN_IMG}
     type_shoeCase = {"type" : "shoe_case", "score" : 500, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 10, "animation_type" : "jumping", "sprite" : SHOES_IMG, "sprite_broken" : SHOES_BROKEN_IMG}
     type_plant = {"type" : "plant", "score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 15, "animation_type" : "jumping", "sprite" : PLANT_IMG, "sprite_broken" : PLANT_BROKEN_IMG}
-    type_Rug = {"type" : "rug", "score" : 100, "multiplier" : 0.2, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 10, "animation_type" : "pee", "sprite" : RUG_IMG, "sprite_broken" : RUG_PUKE_IMG}
+    type_Rug = {"type" : "rug", "score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 10, "animation_type" : "puke", "sprite" : RUG_IMG, "sprite_broken" : RUG_PUKE_IMG}
 
     # Objects
     rug= {"rect" : pygame.Rect(SQUARE*19, map.get_height()-SQUARE*13, SQUARE*10, SQUARE*7), "type" : type_Rug.copy()}
@@ -1057,11 +1058,47 @@ class interactible_class():
                 if self.isOn["type"]["type"] == "shoe_case":
                     player.potte = True
                     player.nyan = False
+                    # music.play_sound(music.SHOE_CASE)
                     music.play_music(music.POTTE_CAT_THEME)
+                    animation.transformation_cloud_animation()
                 elif self.isOn["type"]["type"] == "desk":
                     player.nyan = True
                     player.potte = False
+                    # music.play_sound(music.desk)
                     music.play_music(music.NYAN_CAT_THEME)
+                    animation.transformation_cloud_animation()
+                elif self.isOn["type"]["type"] == "trash_can":
+                    pass
+                    # music.play_sound(music.desk)
+                elif self.isOn["type"]["type"] == "toilets":
+                    pass
+                    # music.play_sound(music.desk)
+                elif self.isOn["type"]["type"] == "couch":
+                    pass
+                    # music.play_sound(music.desk)
+                elif self.isOn["type"]["type"] == "toilet_paper":
+                    pass
+                    # music.play_sound(music.desk)
+                elif self.isOn["type"]["type"] == "chair":
+                    pass
+                    # music.play_sound(music.desk)
+                elif self.isOn["type"]["type"] == "library":
+                    pass
+                    # music.play_sound(music.desk)
+                elif self.isOn["type"]["type"] == "plug":
+                    pass
+                    # music.play_sound(music.desk)
+                elif self.isOn["type"]["type"] == "shower":
+                    pass
+                    # music.play_sound(music.desk)
+                elif self.isOn["type"]["type"] == "coffee":
+                    music.play_sound(music.GLASS_BREAKING)
+                elif self.isOn["type"]["type"] == "plant":
+                    pass
+                    # music.play_sound(music.desk)
+                elif self.isOn["type"]["type"] == "rug":
+                    pass
+                    # music.play_sound(music.desk)
 
 
             self.update_progress_bar()
@@ -1082,24 +1119,36 @@ class interactible_class():
 
 
 class animation_class:
+    cloud_img = img_load.image_loader.load(["assets", "effects", "interaction-effect-potte.png"], 2)
+
     list = []
 
-    def note_hit_animation(self, note):
-        anim = {"type" : "note hit", "rect" : note["rect"], "frame" : 0, "max_frame" : 12}
+    def transformation_cloud_animation(self):
+        anim = {"type" : "cloud", "positions" : player.hitbox, "img" : self.cloud_img, "surface" : pygame.Surface((self.cloud_img.get_width(), self.cloud_img.get_height())), "frame" : 0, "frame_timer" : pygame.time.get_ticks(), "frame_cd" : 60}
         animation.list.append(anim)
+
+    def update_animation(self, anim):
+        if pygame.time.get_ticks() - anim["frame_timer"] >= anim["frame_cd"]:
+            anim["frame"] += 1
+            anim["frame_timer"] = pygame.time.get_ticks()
+        if anim["frame"] >= anim["img"].get_width()/anim["img"].get_height():
+            anim["frame"] = -1
+
+        anim["surface"].fill(ALMOST_BLACK)
+        anim["surface"].set_colorkey(ALMOST_BLACK)
+        anim["surface"].blit(anim["img"], (0,0), (anim["img"].get_height() * anim["frame"], 0, anim["img"].get_height(), anim["img"].get_height()))
+        map.blit(anim["surface"], (anim["positions"].centerx - anim["img"].get_height()//2, anim["positions"].centery - anim["img"].get_height()//2))
 
     def play_animations(self):
         to_be_removed = []
-        for item in self.list:
-            if item["type"] == "note hit":
-                pygame.draw.circle(screen, DARK_RED, item["rect"].center, 15 + int(5 * (item["frame"] / item["max_frame"])))
+        for anim in self.list:
+            self.update_animation(anim)
             
-            item["frame"] += 1
-            if item["frame"] >= item["max_frame"]:
-                to_be_removed.append(item)
+            if anim["frame"] == -1:
+                to_be_removed.append(anim)
 
-        for item in to_be_removed:
-            self.list.remove(item)
+        for anim in to_be_removed:
+            self.list.remove(anim)
 
 
 class grid_class:
@@ -1113,14 +1162,16 @@ class grid_class:
     cat_position = None
     owner_position = None
 
-    
+    solver_cd = 1
+    solver_timer = 0
 
     def update(self):
         self.get_cat_position()
         self.get_owner_position()
 
-        # if time.time() - self.solver_timer > self.solver_cd:
-        #     pathfinder.create_path()
+        if time.time() - self.solver_timer > self.solver_cd:
+            pathfinder.create_path()
+            self.solver_timer = time.time()
 
     def initialGrid(self):
         blockSize = SQUARE #Set the size of the grid block
@@ -1183,7 +1234,7 @@ class Pathfinder:
     
 
     def create_path(self):
-
+        pathfinder.owner_pos, pathfinder.cat_pos = grid.owner_position, grid.cat_position
         #start
         start_x, start_y = self.owner_pos['pos_x'], self.owner_pos['pos_y']
         start = self.grid.node(start_x, start_y)
@@ -1237,6 +1288,7 @@ class game_over_class:
             player.update()
 
             if click or interact:
+                music.play_sound(music.BUTTON)
                 run = False
 
             miaou = False
@@ -1251,6 +1303,7 @@ class game_over_class:
                         click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
+                        music.play_sound(music.BUTTON)
                         run = False
                     if event.key == K_e:
                         interact = True
@@ -1330,7 +1383,10 @@ class game_ui_class:
         # Middle Pannel
         screen.blit(self.LOWER_MIDDLE_PANNEL_IMG, (self.LOWER_MIDDLE_PANNEL_RECT.x, self.LOWER_MIDDLE_PANNEL_RECT.y))
         if game_variable.started:
-            time_text = font.render(f"{game_variable.max_timer - (time.time() - game_variable.timer):.2f} s", 1, BLACK)
+            if game_variable.max_timer - (time.time() - game_variable.timer) < 0:
+                time_text = font.render(f"RUN !", 1, BLACK)
+            else:
+                time_text = font.render(f"{game_variable.max_timer - (time.time() - game_variable.timer):.2f} s", 1, BLACK)
         else:
             time_text = font.render(f"{game_variable.max_timer} s", 1, BLACK)
         screen.blit(time_text, (self.LOWER_MIDDLE_PANNEL_RECT.right - time_text.get_width() - self.spacer * 1, self.LOWER_MIDDLE_PANNEL_RECT.centery - time_text.get_height()//2))
@@ -1434,6 +1490,60 @@ class button_smash_class:
                         right = True
             self.draw_window()
 
+class super_chaiyan_class:
+    IMG_1 = pygame.image.load(os.path.join("assets", os.path.join("chaiyan", os.path.join("transformation", "superChaiyan1.png"))))
+    IMG_2 = pygame.image.load(os.path.join("assets", os.path.join("chaiyan", os.path.join("transformation", "superChaiyan2.png"))))
+    IMG_3 = pygame.image.load(os.path.join("assets", os.path.join("chaiyan", os.path.join("transformation", "superChaiyan3.png"))))
+
+    SOUND = pygame.mixer.Sound(os.path.join('assets', os.path.join("chaiyan", os.path.join("transformation", "saiyan.mp3"))))
+
+    frame = 0
+    frame_timer = 0
+    frame_cd = 120
+
+    def draw_window(self):
+        screen.fill(WHITE)
+        
+        if self.frame == 0:
+            screen.blit(self.IMG_1, (0,0))
+        if self.frame == 1:
+            screen.blit(self.IMG_2, (0,0))
+        else:
+            screen.blit(self.IMG_3, (0,0))
+
+        player_img = pygame.transform.scale(player.img, (600, 600))
+        screen.blit(player_img, (WIDTH//2 - player_img.get_width()//2, HEIGHT//2))
+
+        pygame.display.update()
+
+    def main_loop(self):
+        self.frame_timer = pygame.time.get_ticks()
+        self.SOUND.play()
+        self.SOUND.set_volume(0.5)
+        
+        while player.transforming:
+            clock.tick(60)
+
+            player.update()
+
+            if pygame.time.get_ticks() - self.frame_timer > self.frame_cd:
+                self.frame += 1
+                self.frame_timer = pygame.time.get_ticks()
+                if self.frame > 2:
+                    self.frame = 0
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.SOUND.stop()
+                    run = False
+                    general_use.close_the_game()
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        self.SOUND.stop()
+                        return False
+            self.draw_window()
+        self.SOUND.stop()
+
 
 class main_game_class:
 
@@ -1447,8 +1557,6 @@ class main_game_class:
         #             pygame.draw.rect(map, RED, case["rect"], 1)
         #         else:
         #             pygame.draw.rect(map, WHITE, case["rect"], 1)
-
-        # animation.play_animations()
 
         # Obstacles
         # pygame.draw.rect(map, BLACK, player.body)
@@ -1475,7 +1583,7 @@ class main_game_class:
                     "plant": (item["rect"].x, item["rect"].y - SQUARE*2),
                     "plug": (item["rect"].x, item["rect"].y - SQUARE*2),
                     "library": (item["rect"].x, item["rect"].y - SQUARE*2),
-                     "chair": (item["rect"].x, item["rect"].y)
+                    "chair": (item["rect"].x, item["rect"].y)
                     # Ajoutez d'autres types avec leurs positions respectives ici
                 }
                 sprite_dict_broken = {
@@ -1520,6 +1628,7 @@ class main_game_class:
         
         # Grid position
         # pygame.draw.rect(map, GREEN, grid.owner_position["rect"])
+        animation.play_animations()
 
 
         camera.update()
@@ -1567,13 +1676,14 @@ class main_game_class:
 
                 # Collision with cat
                 if grid.owner_position["rect"].colliderect(grid.cat_position["rect"]) and not player.i_frame:
+                    if game_variable.enraged:
+                        game_over.main_loop()
+                        run = False
+
                     player.i_frame = True
 
                     # Start button smash to try to escape
-                    if game_variable.enraged:
-                        result = False
-                    else:
-                        result = button_smash.main_loop()
+                    result = button_smash.main_loop()
                     game_variable.multiplier = 1
                     left = False
                     right = False
@@ -1585,14 +1695,14 @@ class main_game_class:
                     click = False
 
                     player.i_frame_timer = time.time()
-                    if not result:
-                        if game_variable.enraged:
-                            player.hp = 0
-                        else:
-                            player.hp -= 3
-                        if player.hp <= 0:
-                            game_over.main_loop()
-                            run = False
+                    if result:
+                        player.hp -= 1
+                    else:
+                        player.hp = 0
+
+                    if player.hp <= 0:
+                        game_over.main_loop()
+                        run = False
 
                 # i-frame logic
                 if player.i_frame:
@@ -1608,16 +1718,6 @@ class main_game_class:
                         for obs in room:
                             if player.hitbox.colliderect(obs):
                                 player.hitbox.x += player.speed
-                    wall_collision = any(player.hitbox.colliderect(wall) for wall in behind_wall_class.walls)
-                    if wall_collision:
-                        player.is_behind_wall = True
-                    else:
-                        player.is_behind_wall = False
-                    wall_collision_owner = any(owner.body_hitbox.colliderect(wall) for wall in behind_wall_class.walls)
-                    if wall_collision_owner:
-                        owner.is_behind_wall = True
-                    else:
-                        owner.is_behind_wall = False
                        
                 # Player Go Right
                 if right and not interact:
@@ -1628,16 +1728,6 @@ class main_game_class:
                         for obs in room:
                             if player.hitbox.colliderect(obs):
                                 player.hitbox.x -= player.speed
-                    wall_collision = any(player.hitbox.colliderect(wall) for wall in behind_wall_class.walls)
-                    if wall_collision:
-                        player.is_behind_wall = True
-                    else:
-                        player.is_behind_wall = False
-                    wall_collision_owner = any(owner.body_hitbox.colliderect(wall) for wall in behind_wall_class.walls)
-                    if wall_collision_owner:
-                        owner.is_behind_wall = True
-                    else:
-                        owner.is_behind_wall = False
                         
                 # Player Go Up
                 if up and not interact:
@@ -1647,17 +1737,6 @@ class main_game_class:
                         for obs in room:
                             if player.hitbox.colliderect(obs):
                                 player.hitbox.y += player.speed
-                    wall_collision = any(player.hitbox.colliderect(wall) for wall in behind_wall_class.walls)
-                    if wall_collision:
-                        player.is_behind_wall = True
-                    else:
-                        player.is_behind_wall = False  
-                    wall_collision_owner = any(owner.body_hitbox.colliderect(wall) for wall in behind_wall_class.walls)
-                    if wall_collision_owner:
-                        owner.is_behind_wall = True
-                    else:
-                        owner.is_behind_wall = False  
-                              
                       
                 # Player Go Down
                 if down and not interact:
@@ -1667,20 +1746,8 @@ class main_game_class:
                         for obs in room:
                             if player.hitbox.colliderect(obs):
                                 player.hitbox.y -= player.speed
-                        # Check if colliding with behind walls
-                    wall_collision = any(player.hitbox.colliderect(wall) for wall in behind_wall_class.walls)
-                    if wall_collision:
-                        player.is_behind_wall = True
-                    else:
-                        player.is_behind_wall = False
-                    wall_collision_owner = any(owner.body_hitbox.colliderect(wall) for wall in behind_wall_class.walls)
-                    if wall_collision_owner:
-                        owner.is_behind_wall = True
-                    else:
-                        owner.is_behind_wall = False
                         
-                            
-                                
+
                 if left or right or up or down:
                     player.moving = True
                 else:
@@ -1699,7 +1766,7 @@ class main_game_class:
                     music.play_sound(random.choice(music.MEOWS))
                     if game_variable.multiplier >= player.chaiyan_transform_cap and not player.chaiyan:
                         player.transforming = True
-                        music.play_sound(music.CHAIYAN)
+                        super_chaiyan.main_loop()
                 
                 if player.miaou and time.time() - player.miaou_timer > player.miaou_duration:
                     player.miaou_timer = time.time()
@@ -1714,9 +1781,6 @@ class main_game_class:
                 player.update()
 
                 grid.update()
-                pathfinder.owner_pos, pathfinder.cat_pos = grid.owner_position, grid.cat_position
-                if random.randrange(0, 10) == 1:
-                    pathfinder.create_path()
 
                 if click:
                     owner.rage += 10
@@ -1742,8 +1806,8 @@ class main_game_class:
                         click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
+                        music.play_sound(music.BUTTON)
                         run = False
-                        # general_use.close_the_game()
                     if event.key == K_e:
                         interact = True
                     if event.key == K_SPACE:
@@ -1821,6 +1885,7 @@ class owner_selection_class:
                 self.index += 1
 
             if click or interact:
+                music.play_sound(music.BUTTON)
                 if self.index == 0:
                     run = False
                 if self.index == 1:
@@ -1845,8 +1910,8 @@ class owner_selection_class:
                         click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
+                        music.play_sound(music.BUTTON)
                         run = False
-                        pass
                     if event.key == K_SPACE:
                         click = True
                     if event.key == K_e:
@@ -1945,6 +2010,7 @@ class cat_selection_class:
                 self.index += 1
 
             if click or interact:
+                music.play_sound(music.BUTTON)
                 if self.index == 0:
                     run = False
                 if self.index == 1:
@@ -1980,6 +2046,7 @@ class cat_selection_class:
                         click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
+                        music.play_sound(music.BUTTON)
                         run = False
                     if event.key == K_SPACE:
                         click = True
@@ -2086,13 +2153,13 @@ class menu_class:
                 self.index += 1
 
             if click or interact:
+                music.play_sound(music.BUTTON)
                 if self.index == 0:
                     # Go to Cat selection
                     cat_selection.main_loop()
                 if self.index == 1:
                     # Go to Credits
                     credits.main_loop()
-                    # print("credits")
                 if self.index == 2: 
                     # QUIT GAME
                     run = False
@@ -2242,6 +2309,7 @@ class settings_class:
                 self.index += 1
 
             if click or interact:
+                music.play_sound(music.BUTTON)
                 if self.index == 0:
                     print('UP')
                 elif self.index == 1:
@@ -2277,8 +2345,8 @@ class settings_class:
                         click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
+                        music.play_sound(music.BUTTON)
                         run = False
-                        general_use.close_the_game()
                     if event.key == K_SPACE:
                         interact = True
                     if event.key == K_e:
@@ -2326,6 +2394,7 @@ class credits_class:
         while run:
             clock.tick(60)
             if click or interact:
+                music.play_sound(music.BUTTON)
                 run = False
                 print('RETURN')
                 # Reset navigation index
@@ -2343,8 +2412,8 @@ class credits_class:
                         click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
+                        music.play_sound(music.BUTTON)
                         run = False
-                        general_use.close_the_game()
                     if event.key == K_SPACE:
                         click = True
                     if event.key == K_e:
@@ -2358,6 +2427,7 @@ exitedGameProperty = False
 general_use = general_use_class()
 game_variable = game_variable_class()
 music = music_class()
+super_chaiyan = super_chaiyan_class()
 camera = camera_class()
 player = player_class()
 owner = owner_class()
