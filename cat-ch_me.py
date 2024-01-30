@@ -359,6 +359,8 @@ class music_class:
     GLASS_BREAKING_1 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "glass-breaking-1.mp3")))
     GLASS_BREAKING_2 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "glass-breaking-2.mp3")))
     
+    TOILET_PAPER = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "toilet-paper.mp3")))
+    
     CHAIYAN = pygame.mixer.Sound(os.path.join('assets', os.path.join("chaiyan", os.path.join("transformation", "saiyan.mp3"))))
 
     NYAN_CAT_THEME = os.path.join('assets', os.path.join("music", "nyan-cat-theme.mp3"))
@@ -371,10 +373,10 @@ class music_class:
 
     selected_sound = None
 
-    def play_sound(self, sound):
+    def play_sound(self, sound, volume = 0.5):
         self.selected_sound = sound
         self.selected_sound.play()
-        self.selected_sound.set_volume(0.5)
+        self.selected_sound.set_volume(volume)
 
     def stop_sound(self, sound):
         sound.stop()
@@ -503,7 +505,7 @@ class player_class:
     transforming = False
     transforming_timer = 0
     state_chaiyan_transformation = [ORANGE_CAT_TRANSFORM]
-    chaiyan_transform_cap = 1
+    chaiyan_transform_cap = 2
     chaiyan_state = [CHAIYAN_CAT_IDLE, CHAIYAN_CAT_WALKING, CHAIYAN_CAT_RUNNING, CHAIYAN_CAT_SCRATCHING, CHAIYAN_CAT_JUMPING, CHAIYAN_CAT_PEE, CHAIYAN_CAT_PUKE]
     chaiyan_state_idle_bis = [CHAIYAN_CAT_LICKING]
 
@@ -868,7 +870,7 @@ class owner_class:
     def update_move_speed(self):
         self.bonus_speed = self.max_bonus_speed * (self.rage / self.max_rage)
         if game_variable.enraged:
-            self.bonus_speed += 7
+            self.bonus_speed += 7 + (time.time() - game_variable.timer - game_variable.max_timer)
 
 
 class obstacle_class:
@@ -992,7 +994,7 @@ class interactible_class():
     type_pq = {"type" : "toilet_paper", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "jumping", "sprite" : TOILET_IMG, "sprite_broken" : TOILET_BROKEN_IMG}
     
     type_chair = {"type" : "chair", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "jumping", "sprite" : TABLE_IMG, "sprite_broken" : TABLE_BROKEN_IMG}
-    type_big_library = {"type" : "library", "score" : 500, "multiplier" : 0.5, "duration" : 3.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 15, "animation_type" : "jumping", "sprite" : BIG_LIBRARY_IMG, "sprite_broken" : BIG_LIBRARY_BROKEN_IMG}
+    type_big_library = {"type" : "big_library", "score" : 500, "multiplier" : 0.5, "duration" : 3.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 15, "animation_type" : "jumping", "sprite" : BIG_LIBRARY_IMG, "sprite_broken" : BIG_LIBRARY_BROKEN_IMG}
     type_library = {"type" : "library", "score" : 250, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : LIBRARY_IMG, "sprite_broken" : LIBRARY_BROKEN_IMG}
     type_plug = {"type" : "plug", "score" : 300, "multiplier" : 0.3, "duration" : 2.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 20, "animation_type" : "scratching", "sprite" : LAMPE_IMG, "sprite_broken" : LAMPE_BROKEN_IMG}
     type_plugOffice = {"type" : "desk", "score" : 500, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 30, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : COMPUTER_IMG, "sprite_broken" : COMPUTER_BROKEN_IMG}
@@ -1033,7 +1035,7 @@ class interactible_class():
 
     def update(self):
         self.isOnInteractible()
-        self.restore_interactibles()
+        # self.restore_interactibles()
 
     def isOnInteractible(self):
         for item in self.list:
@@ -1047,6 +1049,9 @@ class interactible_class():
         if self.isOn:
             if self.interact_timer == None:
                 self.interact_timer = time.time()
+                if self.isOn["type"]["type"] == "toilet_paper":
+                    music.play_sound(music.TOILET_PAPER, 1)
+
             elif time.time() - self.interact_timer > self.isOn["type"]["duration"]:
                 game_variable.score += int(self.isOn["type"]["score"] * game_variable.multiplier)
                 game_variable.multiplier += self.isOn["type"]["multiplier"]
@@ -1077,14 +1082,15 @@ class interactible_class():
                     pass
                     # music.play_sound(music.desk)
                 elif self.isOn["type"]["type"] == "toilet_paper":
-                    pass
-                    # music.play_sound(music.desk)
+                    music.stop_sound(music.TOILET_PAPER)
                 elif self.isOn["type"]["type"] == "chair":
                     pass
                     # music.play_sound(music.desk)
                 elif self.isOn["type"]["type"] == "library":
                     pass
                     # music.play_sound(music.desk)
+                elif self.isOn["type"]["type"] == "big_library":
+                    music.play_sound(music.GLASS_BREAKING_1)
                 elif self.isOn["type"]["type"] == "plug":
                     pass
                     # music.play_sound(music.desk)
@@ -1092,10 +1098,9 @@ class interactible_class():
                     pass
                     # music.play_sound(music.desk)
                 elif self.isOn["type"]["type"] == "coffee":
-                    music.play_sound(music.GLASS_BREAKING)
+                    music.play_sound(music.GLASS_BREAKING_2)
                 elif self.isOn["type"]["type"] == "plant":
-                    pass
-                    # music.play_sound(music.desk)
+                    music.play_sound(music.GLASS_BREAKING_1)
                 elif self.isOn["type"]["type"] == "rug":
                     pass
                     # music.play_sound(music.desk)
@@ -1105,6 +1110,8 @@ class interactible_class():
 
     def cancel_interact(self):
         self.interact_timer = None
+        if self.isOn["type"]["type"] == "toilet_paper":
+            music.stop_sound(music.TOILET_PAPER)
 
     def update_progress_bar(self):
         if self.interact_timer:
@@ -1518,6 +1525,8 @@ class super_chaiyan_class:
 
     def main_loop(self):
         self.frame_timer = pygame.time.get_ticks()
+        player.moving = False
+        player.current_state = 0
         self.SOUND.play()
         self.SOUND.set_volume(0.5)
         
@@ -1583,6 +1592,7 @@ class main_game_class:
                     "plant": (item["rect"].x, item["rect"].y - SQUARE*2),
                     "plug": (item["rect"].x, item["rect"].y - SQUARE*2),
                     "library": (item["rect"].x, item["rect"].y - SQUARE*2),
+                    "big_library": (item["rect"].x, item["rect"].y - SQUARE*2),
                     "chair": (item["rect"].x, item["rect"].y)
                     # Ajoutez d'autres types avec leurs positions respectives ici
                 }
@@ -1590,6 +1600,7 @@ class main_game_class:
                     "plant": (item["rect"].x- SQUARE*2, item["rect"].y),
                     "plug": (item["rect"].x-20, item["rect"].y - SQUARE*2),
                     "library": (item["rect"].x, item["rect"].y - SQUARE*2),
+                    "big_library": (item["rect"].x, item["rect"].y - SQUARE*2),
                     "chair": (item["rect"].x - SQUARE, item["rect"].y)
 
                 }
@@ -1774,7 +1785,6 @@ class main_game_class:
 
                 if puke and time.time() - player.puke_timer > player.puke_cd:
                     player.puke_timer = time.time()
-                    print("puke")
 
                 owner.update()
 
