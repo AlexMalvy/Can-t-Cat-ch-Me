@@ -616,7 +616,6 @@ class player_class:
         elif self.transforming:
             state = self.state_chaiyan_transformation
             current_state = 0
-            frame_cd = 240
         # Chaiyan
         elif self.chaiyan:
             if self.idle_bis:
@@ -1778,6 +1777,14 @@ class main_game_class:
                     if game_variable.multiplier >= player.chaiyan_transform_cap and not player.chaiyan:
                         player.transforming = True
                         super_chaiyan.main_loop()
+                        left = False
+                        right = False
+                        up = False
+                        down = False
+                        interact = False
+                        miaou = False
+                        puke = False
+                        click = False
                 
                 if player.miaou and time.time() - player.miaou_timer > player.miaou_duration:
                     player.miaou_timer = time.time()
