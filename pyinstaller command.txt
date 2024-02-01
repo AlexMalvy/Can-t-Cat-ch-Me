@@ -1,0 +1,1 @@
+pyinstaller --hidden-import pathfinding --hidden-import Grid --hidden-import AStarFinder --hidden-import DiagonalMovement --onefile -w cat-ch_me.py

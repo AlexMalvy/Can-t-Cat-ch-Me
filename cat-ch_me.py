@@ -7,9 +7,9 @@ import sys
 import math
 import img_load
 from copy import deepcopy
+from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
-from pathfinding.core.diagonal_movement import DiagonalMovement
 from pygame.locals import *
 
 pygame.init()
@@ -412,7 +412,7 @@ class game_variable_class:
     multiplier = 1
 
     timer = 0
-    max_timer = 10
+    max_timer = 100
     enraged = False
 
     win_timer = 2
@@ -482,8 +482,6 @@ class player_class:
 
     moving = False
     right = True
-
-    is_behind_wall = False
 
     i_frame = False
     i_frame_timer = 0
@@ -1393,7 +1391,6 @@ class end_game_class:
     ALIEN_SOUND_2 = pygame.mixer.Sound(os.path.join("assets", os.path.join("music", "alien-spaceship-2.mp3")))
     ALIEN_SOUND_3 = pygame.mixer.Sound(os.path.join("assets", os.path.join("music", "alien-spaceship-3.mp3")))
 
-    moving = True
     opened = False
     cat_caught = False
     in_position = False
@@ -1401,11 +1398,12 @@ class end_game_class:
 
     img = pygame.Surface((SPACESHIP_CLOSED.get_height(), SPACESHIP_CLOSED.get_height()))
 
-    alien_body = pygame.Rect(WIDTH + img.get_width() + 50, 0, SPACESHIP_CLOSED.get_height(), SPACESHIP_CLOSED.get_height())
+    alien_body = pygame.Rect(map.get_width() + img.get_width() + 50, 0, SPACESHIP_CLOSED.get_height(), SPACESHIP_CLOSED.get_height())
+    alien_hitbox = pygame.Rect(map.get_width() + img.get_width() + 50, 0, 100, 100)
 
     frame = 0
     frame_timer = pygame.time.get_ticks()
-    frame_cd = 200
+    frame_cd = 300
     state = [SPACESHIP_CLOSED, SPACESHIP_OPENING, SPACESHIP_OPEN, SPACESHIP_OPEN_LASER, SPACESHIP_STEAL_CAT, SPACESHIP_END_LASER, SPACESHIP_CLOSING]
     current_state = 0
 
@@ -1415,59 +1413,70 @@ class end_game_class:
         if game_variable.win:
             self.move()
 
-        self.change_state
+        self.change_state()
 
         self.update_frame()
 
     def align_body(self):
-        self.alien_body.centerx = player.hitbox.centerx
-        self.alien_body.y = player.hitbox.y - 200
+        self.alien_body.centerx = self.alien_hitbox.centerx
+        if not game_variable.win:
+            self.alien_hitbox.y = player.hitbox.y - 200
+        self.alien_body.y = self.alien_hitbox.y
 
     def move(self):
         if not self.in_position and not self.cat_caught:
-            if self.alien_body.centerx > player.hitbox.centerx:
-                self.alien_body.centerx -= 5
-                if self.alien_body.centerx > player.hitbox.centerx:
-                    self.alien_body.centerx = player.hitbox.centerx
+            if self.alien_hitbox.centerx > player.hitbox.centerx:
+                self.alien_hitbox.centerx -= 50
+                if self.alien_hitbox.centerx < player.hitbox.centerx:
+                    self.alien_hitbox.centerx = player.hitbox.centerx
                     self.in_position = True
-        else:
-            self.alien_body.centery -= 5
-            if self.alien_body.centery <= self.alien_body.height - 100:
+                    print("in position : ", self.in_position)
+
+        elif self.cat_caught and not self.laser_on and self.opened:
+            self.alien_hitbox.centery -= 5
+            if self.alien_hitbox.centery <= self.alien_hitbox.height - 100:
                 game_variable.end_win_cinematic = True
 
     def change_state(self):
         # Closing
-        if not self.moving and self.opened and self.in_position and not self.laser_on and self.cat_caught and self.current_state != 6:
+        if self.opened and self.in_position and not self.laser_on and self.cat_caught and self.current_state != 6:
+            print("Closing")
             self.current_state = 6
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # End Laser
-        elif not self.moving and self.opened and self.in_position and self.laser_on and self.cat_caught and self.current_state != 5:
+        elif self.opened and self.in_position and self.laser_on and self.cat_caught and self.current_state != 5:
+            print("End Laser")
             self.current_state = 5
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # Stealing cat
-        elif not self.moving and self.opened and self.in_position and self.laser_on and self.current_state != 4:
+        elif self.opened and self.in_position and self.laser_on and not self.cat_caught and self.current_state != 4:
+            print("Stealing cat")
             self.current_state = 4
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # Open Laser
-        elif not self.moving and self.opened and self.in_position and self.current_state != 3:
+        elif self.opened and self.in_position and not self.laser_on and self.current_state != 3:
+            print("Open Laser")
             self.current_state = 3
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # Open
-        elif self.moving and self.opened and self.in_position and self.current_state != 2:
-            self.current_state = 2
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
+        # elif self.opened and self.in_position and self.current_state != 2:
+        #     print("Open")
+        #     self.current_state = 2
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
         # Opening
-        elif not self.moving and not self.opened and self.in_position and self.current_state != 1:
+        elif not self.opened and self.in_position and self.current_state != 1:
+        # elif self.in_position and self.current_state != 1:
+            print("opening")
             self.current_state = 1
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # Closed
-        elif self.moving and self.current_state != 0:
+        elif not self.in_position and self.current_state != 0:
             self.current_state = 0
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
@@ -1482,6 +1491,18 @@ class end_game_class:
             self.frame_timer = pygame.time.get_ticks()
         if self.frame >= state[current_state].get_width()/state[current_state].get_height():
             self.frame = 0
+
+            if current_state == 1:
+                self.opened = True
+            elif current_state == 3:
+                self.laser_on = True
+            elif current_state == 4:
+                self.cat_caught = True
+            elif current_state == 5:
+                self.laser_on = False
+            elif current_state == 6:
+                self.opened = False
+
 
         self.img.fill(ALMOST_BLACK)
         self.img.set_colorkey(ALMOST_BLACK)
@@ -1889,6 +1910,13 @@ class main_game_class:
         # pygame.draw.rect(map, GREEN, grid.owner_position["rect"])
         animation.play_animations()
 
+        # if game_variable.win:
+        # map.blit(end_game.img, (player.hitbox.x, player.hitbox.y))
+        map.blit(end_game.img, (end_game.alien_body.x, end_game.alien_body.y))
+        # pygame.draw.rect(map, BLACK, player.hitbox)
+        # pygame.draw.rect(map, BLACK, end_game.alien_hitbox)
+        # print(player.hitbox)
+        # print(end_game.alien_hitbox)
 
         camera.update()
 
@@ -1907,8 +1935,6 @@ class main_game_class:
             else:
                 screen.blit(settings.E_KEY_IMG, (screen.get_width()//2 - settings.E_KEY_IMG.get_width()//2, screen.get_height()//3 * 2))
 
-        if game_variable.win:
-            screen.blit(end_game.img, (end_game.alien_body.x, end_game.alien_body.y))
 
         game_ui.draw_ui()
 
@@ -2050,6 +2076,8 @@ class main_game_class:
 
                 player.update()
 
+                end_game.update()
+
                 grid.update()
 
             
@@ -2061,6 +2089,7 @@ class main_game_class:
                 player.update()
                 owner.update()
                 interactible.update()
+                end_game.update()
                 
 
             miaou = False
