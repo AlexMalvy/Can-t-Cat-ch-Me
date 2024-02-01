@@ -843,28 +843,33 @@ class owner_class:
         self.apply_wall_filter()
         
     def change_state(self):
+        total_rage = self.rage / self.max_rage
         # Rage
-        if self.moving and self.rage / self.max_rage >= 1 and self.current_state != 4:
+        if self.moving and total_rage >= 1 and self.current_state != 4:
+            print("Rage")
             self.current_state = 4
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # Angry
-        if self.moving and self.rage / self.max_rage < 1 and self.rage / self.max_rage >= 0.6 and self.current_state != 3:
+        elif self.moving and total_rage < 1 and total_rage >= 0.6 and self.current_state != 3:
+            print("Angry")
             self.current_state = 3
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # Meh
-        if self.moving and self.rage / self.max_rage < 0.6 and self.rage / self.max_rage >= 0.3 and self.current_state != 2:
+        elif self.moving and total_rage < 0.6 and total_rage >= 0.3 and self.current_state != 2:
+            print("Meh")
             self.current_state = 2
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # Happy
-        if self.moving and self.current_state != 1:
+        elif self.moving and total_rage < 0.3 and self.current_state != 1:
+            print("Happy")
             self.current_state = 1
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # Idle
-        if not self.moving and self.current_state != 0:
+        elif not self.moving and self.current_state != 0:
             self.current_state = 0
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
@@ -1554,7 +1559,7 @@ class end_game_class:
         if game_variable.win:
             self.move()
 
-        self.change_state()
+        # self.change_state()
 
         self.update_frame()
 
@@ -1579,30 +1584,31 @@ class end_game_class:
                 game_variable.end_win_cinematic = True
 
     def change_state(self):
-        # Closing
-        if self.opened and self.in_position and not self.laser_on and self.cat_caught and self.current_state != 6:
-            print("Closing")
-            self.current_state = 6
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-        # End Laser
-        elif self.opened and self.in_position and self.laser_on and self.cat_caught and self.current_state != 5:
-            print("End Laser")
-            self.current_state = 5
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-        # Stealing cat
-        elif self.opened and self.in_position and self.laser_on and not self.cat_caught and self.current_state != 4:
-            print("Stealing cat")
-            self.current_state = 4
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-        # Open Laser
-        elif self.opened and self.in_position and not self.laser_on and self.current_state != 3:
-            print("Open Laser")
-            self.current_state = 3
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
+        pass
+        # # Closing
+        # if self.opened and self.in_position and not self.laser_on and self.cat_caught and self.current_state != 6:
+        #     print("Closing")
+        #     self.current_state = 6
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
+        # # End Laser
+        # elif self.opened and self.in_position and self.laser_on and self.cat_caught and self.current_state != 5:
+        #     print("End Laser")
+        #     self.current_state = 5
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
+        # # Stealing cat
+        # elif self.opened and self.in_position and self.laser_on and not self.cat_caught and self.current_state != 4:
+        #     print("Stealing cat")
+        #     self.current_state = 4
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
+        # # Open Laser
+        # elif self.opened and self.in_position and not self.laser_on and not self.cat_caught and self.current_state != 3:
+        #     print("Open Laser")
+        #     self.current_state = 3
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
         # Open
         # elif self.opened and self.in_position and self.current_state != 2:
         #     print("Open")
@@ -1610,17 +1616,17 @@ class end_game_class:
         #     self.frame = 0
         #     self.frame_timer = pygame.time.get_ticks()
         # Opening
-        elif not self.opened and self.in_position and self.current_state != 1:
-        # elif self.in_position and self.current_state != 1:
-            print("opening")
-            self.current_state = 1
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-        # Closed
-        elif not self.in_position and self.current_state != 0:
-            self.current_state = 0
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
+        # elif not self.opened and self.in_position and not self.cat_caught and self.current_state != 1:
+        # # elif self.in_position and self.current_state != 1:
+        #     print("opening")
+        #     self.current_state = 1
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
+        # # Closed
+        # elif not self.in_position and self.current_state != 0:
+        #     self.current_state = 0
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
 
     def update_frame(self):
         frame_cd = self.frame_cd
@@ -1633,16 +1639,18 @@ class end_game_class:
         if self.frame >= state[current_state].get_width()/state[current_state].get_height():
             self.frame = 0
 
-            if current_state == 1:
-                self.opened = True
-            elif current_state == 3:
-                self.laser_on = True
-            elif current_state == 4:
-                self.cat_caught = True
-            elif current_state == 5:
-                self.laser_on = False
-            elif current_state == 6:
-                self.opened = False
+            # if current_state == 1:
+            #     self.opened = True
+            # elif current_state == 3:
+            #     self.laser_on = True
+            # elif current_state == 4:
+            #     self.cat_caught = True
+            # elif current_state == 5:
+            #     self.laser_on = False
+            # elif current_state == 6:
+            #     self.opened = False
+            if current_state:
+                self.current_state += 1
 
 
         self.img.fill(ALMOST_BLACK)
@@ -2239,6 +2247,9 @@ class main_game_class:
 
                 grid.update()
 
+                if click:
+                    owner.add_rage(25)
+
             
             elif (left or right or up or down) and not game_variable.win:
                 game_variable.started = True
@@ -2258,6 +2269,9 @@ class main_game_class:
                 if event.type == pygame.QUIT:
                     run = False
                     general_use.close_the_game()
+                if event.type == MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         game_over.main_loop()
