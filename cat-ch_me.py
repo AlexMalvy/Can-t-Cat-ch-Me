@@ -181,8 +181,17 @@ CHAIYAN_CAT_LICKING = img_load.image_loader.load(["assets", "chaiyan", "cat-lick
 
 ## Owner
 
-OWNER_IDLE = img_load.image_loader.load(["assets", "owner", "homme", "owner-idle.png"], 1.5)
-OWNER_WALKING = img_load.image_loader.load(["assets", "owner", "homme", "owner-walking.png"], 1.5)
+OWNER_MALE_IDLE = img_load.image_loader.load(["assets", "owner", "owner-male-idle.png"], 1.5)
+OWNER_MALE_WALKING_HAPPY = img_load.image_loader.load(["assets", "owner", "owner-male-walking-happy.png"], 1.5)
+OWNER_MALE_WALKING_MEH = img_load.image_loader.load(["assets", "owner", "owner-male-walking-meh.png"], 1.5)
+OWNER_MALE_WALKING_ANGRY = img_load.image_loader.load(["assets", "owner", "owner-male-walking-angry.png"], 1.5)
+OWNER_MALE_WALKING_RAGE = img_load.image_loader.load(["assets", "owner", "owner-male-walking-rage.png"], 1.5)
+
+OWNER_FEMALE_IDLE = img_load.image_loader.load(["assets", "owner", "owner-female-idle.png"], 1.5)
+OWNER_FEMALE_WALKING_HAPPY = img_load.image_loader.load(["assets", "owner", "owner-female-walking-happy.png"], 1.5)
+OWNER_FEMALE_WALKING_MEH = img_load.image_loader.load(["assets", "owner", "owner-female-walking-meh.png"], 1.5)
+OWNER_FEMALE_WALKING_ANGRY = img_load.image_loader.load(["assets", "owner", "owner-female-walking-angry.png"], 1.5)
+OWNER_FEMALE_WALKING_RAGE = img_load.image_loader.load(["assets", "owner", "owner-female-walking-rage.png"], 1.5)
 
 ## Buttons
 
@@ -190,6 +199,14 @@ BACK_BUTTON_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui
 BACK_BUTTON_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-back-focus-hover.png")))
 
 BACK_BUTTON = pygame.Rect(10, HEIGHT - 10 - BACK_BUTTON_IMG.get_height(), BACK_BUTTON_IMG.get_width(), BACK_BUTTON_IMG.get_height())
+
+PLAY_BUTTON_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-play.png")))
+PLAY_BUTTON_HOVER_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "bouton-play-focus-hover.png")))
+
+PLAY_BUTTON = pygame.Rect(WIDTH - 10 - PLAY_BUTTON_IMG.get_width(), HEIGHT - 10 - PLAY_BUTTON_IMG.get_height(), PLAY_BUTTON_IMG.get_width(), PLAY_BUTTON_IMG.get_height())
+
+BLACK_FRAME = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "black-frame.png")))
+ORANGE_FRAME = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "orange-hover-frame.png")))
 
 #############
 
@@ -425,8 +442,8 @@ class game_variable_class:
     all_cats = ["orange", "black", "siamese"]
     selected_cat = "orange"
     
-    all_owners = ["owner M", "owner F"]
-    selected_owner = "owner M"
+    all_owners = ["male", "female"]
+    selected_owner = "male"
 
     def reset_all_variable(self):
         self.score = 0
@@ -796,7 +813,7 @@ class owner_class:
     frame = 0
     frame_timer = pygame.time.get_ticks()
     frame_cd = 300
-    state = [OWNER_IDLE, OWNER_WALKING]
+    state = [OWNER_MALE_IDLE, OWNER_MALE_WALKING_HAPPY, OWNER_MALE_WALKING_MEH, OWNER_MALE_WALKING_ANGRY, OWNER_MALE_WALKING_RAGE]
     current_state = 0
     
     img = pygame.Surface((body.width, body.height))
@@ -823,10 +840,27 @@ class owner_class:
         self.apply_wall_filter()
         
     def change_state(self):
+        # Rage
+        if self.moving and self.rage / self.max_rage >= 1 and self.current_state != 4:
+            self.current_state = 4
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+        # Angry
+        if self.moving and self.rage / self.max_rage < 1 and self.rage / self.max_rage >= 0.6 and self.current_state != 3:
+            self.current_state = 3
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+        # Meh
+        if self.moving and self.rage / self.max_rage < 0.6 and self.rage / self.max_rage >= 0.3 and self.current_state != 2:
+            self.current_state = 2
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+        # Happy
         if self.moving and self.current_state != 1:
             self.current_state = 1
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
+        # Idle
         if not self.moving and self.current_state != 0:
             self.current_state = 0
             self.frame = 0
@@ -917,6 +951,16 @@ class owner_class:
             self.bonus_speed += 7 + (time.time() - game_variable.timer - game_variable.max_timer)
             if self.bonus_speed > 15:
                 self.bonus_speed = 15
+
+    def change_skin(self):
+        if game_variable.selected_owner == "male":
+            self.state = [OWNER_MALE_IDLE, OWNER_MALE_WALKING_HAPPY, OWNER_MALE_WALKING_MEH, OWNER_MALE_WALKING_ANGRY, OWNER_MALE_WALKING_RAGE]
+        elif game_variable.selected_owner == "female":
+            self.state = [OWNER_FEMALE_IDLE, OWNER_FEMALE_WALKING_HAPPY, OWNER_FEMALE_WALKING_MEH, OWNER_FEMALE_WALKING_ANGRY, OWNER_FEMALE_WALKING_RAGE]
+        # Default Skin
+        else:
+            self.state = [OWNER_MALE_IDLE, OWNER_MALE_WALKING_HAPPY, OWNER_MALE_WALKING_MEH, OWNER_MALE_WALKING_ANGRY, OWNER_MALE_WALKING_RAGE]
+
 
 # OBSTACLES
 
@@ -2134,79 +2178,45 @@ class main_game_class:
             
 class settings_before_play_class:
     # Title
-    title_text = big_font.render("Controls", 1, BLACK)
+    TITLE_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "title-how-to-play.png")))
+    
+    # How to play
+    HOW_TO_PLAY_1_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "how-to-play-1.png")))
+    HOW_TO_PLAY_2_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "how-to-play-2.png")))
+    HOW_TO_PLAY_PANNEL = pygame.Rect(WIDTH//2 - HOW_TO_PLAY_1_IMG.get_width()//2 + 50, HEIGHT//3, HOW_TO_PLAY_1_IMG.get_width(), HOW_TO_PLAY_1_IMG.get_height())
 
-    # Button
-    Z_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 200, 240, 50)
-    Q_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 120, 240, 50)
-    S_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 40, 240, 50)
-    D_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 40, 240, 50)
-    E_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 120, 200, 50)
-    SPACE_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 200, 200, 50)
-    PLAY_HOVER_BUTTON = pygame.Rect(WIDTH - 253, HEIGHT - 103, 206, 56)
-    PLAY_BUTTON = pygame.Rect(WIDTH - 250, HEIGHT - 100, 200, 50)
-
-    # Descriptions
-    Z_DESC = font.render("UP", 1, BLACK)
-    Q_DESC = font.render("LEFT", 1, BLACK)
-    S_DESC = font.render("DOWN", 1, BLACK)
-    D_DESC = font.render("RIGHT", 1, BLACK)
-    E_DESC = font.render("ACTION", 1, BLACK)
-    SPACE_DESC = font.render("SELECT", 1, BLACK)
-    PLAY_DESC = font.render("PLAY", 1, BLACK)
+    CUSTOM_PLAY_BUTTON_IMG = pygame.transform.scale(PLAY_BUTTON_IMG, (BACK_BUTTON_IMG.get_width(), BACK_BUTTON_IMG.get_height()))
+    CUSTOM_PLAY_BUTTON_HOVER_IMG = pygame.transform.scale(PLAY_BUTTON_HOVER_IMG, (BACK_BUTTON_IMG.get_width(), BACK_BUTTON_IMG.get_height()))
 
     # Buttons list
     button_list = [BACK_BUTTON, PLAY_BUTTON]
-
-    # List of buttons objects
-    Z_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-not-pressed.png")))
-    Z_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-pressed.png")))
-    Q_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-not-pressed.png")))
-    Q_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-pressed.png")))
-    S_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s-not-pressed.png")))
-    S_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s-pressed.png")))
-    D_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d-not-pressed.png")))
-    D_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d-pressed.png")))
-    E_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e-not-pressed.png")))
-    E_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e-pressed.png")))
-    SPACE_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "space-bar.png")))
-    SPACE_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "space-pressed.png")))
+    
+    in_animation = False
+    animation_timer = 0
+    animation_duration = 0.7
+    animation_cooldown = 0.7
 
     index = 1
 
     def draw_window(self):
         screen.blit(BG_GAME_UI, (0,0))
         
-        screen.blit(self.title_text, (WIDTH//2 - self.title_text.get_width()//2, HEIGHT//2 - 320 - self.title_text.get_height()//2))
-        screen.blit(self.Z_DESC, (WIDTH//2 - self.Z_BUTTON.x//2, self.Z_BUTTON.y))
-        screen.blit(self.Q_DESC, (WIDTH//2 - self.Q_BUTTON.x//2, self.Q_BUTTON.y))
-        screen.blit(self.S_DESC, (WIDTH//2 - self.S_BUTTON.x//2, self.S_BUTTON.y))
-        screen.blit(self.D_DESC, (WIDTH//2 - self.D_BUTTON.x//2, self.D_BUTTON.y))
-        screen.blit(self.E_DESC, (WIDTH//2 - self.E_BUTTON.x//2, self.E_BUTTON.y))
+        screen.blit(self.TITLE_IMG, (WIDTH//2 - self.TITLE_IMG.get_width()//2, 160))
+
+        if self.in_animation:
+            screen.blit(self.HOW_TO_PLAY_1_IMG, (self.HOW_TO_PLAY_PANNEL))
+        else:
+            screen.blit(self.HOW_TO_PLAY_2_IMG, (self.HOW_TO_PLAY_PANNEL))
 
         if self.index == 0:
             screen.blit(BACK_BUTTON_HOVER_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
         else:
             screen.blit(BACK_BUTTON_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
 
-        screen.blit(self.Z_KEY_IMG, (self.Z_BUTTON.x, self.Z_BUTTON.y))
-
-        screen.blit(self.Q_KEY_IMG, (self.Q_BUTTON.x, self.Q_BUTTON.y))
-        
-        screen.blit(self.S_KEY_IMG, (self.S_BUTTON.x, self.S_BUTTON.y))
-        
-        screen.blit(self.D_KEY_IMG, (self.D_BUTTON.x, self.D_BUTTON.y))
-        
-        screen.blit(self.E_KEY_IMG, (self.E_BUTTON.x, self.E_BUTTON.y))
-
         if self.index == 1:
-            pygame.draw.rect(screen, RED, self.PLAY_HOVER_BUTTON)
+            screen.blit(self.CUSTOM_PLAY_BUTTON_HOVER_IMG, (WIDTH - self.CUSTOM_PLAY_BUTTON_IMG.get_width() - 10, HEIGHT - self.CUSTOM_PLAY_BUTTON_IMG.get_height() - 10))
         else:
-            pygame.draw.rect(screen, BLACK, self.PLAY_HOVER_BUTTON)
-
-        pygame.draw.rect(screen, GRAY, self.PLAY_BUTTON)
-        screen.blit(self.PLAY_DESC, (self.PLAY_BUTTON.centerx - self.PLAY_DESC.get_width()//2, self.PLAY_BUTTON.centerx - self.PLAY_DESC.get_height()//2))
-
+            screen.blit(self.CUSTOM_PLAY_BUTTON_IMG, (WIDTH - self.CUSTOM_PLAY_BUTTON_IMG.get_width() - 10, HEIGHT - self.CUSTOM_PLAY_BUTTON_IMG.get_height() - 10))
 
         pygame.display.update()
 
@@ -2225,6 +2235,15 @@ class settings_before_play_class:
 
             if not pygame.mixer.music.get_busy():
                 music.play_music()
+
+            if self.in_animation:
+                if time.time() - self.animation_timer > self.animation_duration:
+                    self.in_animation = False
+                    self.animation_timer = time.time()
+            else:
+                if time.time() - self.animation_timer > self.animation_cooldown:
+                    self.in_animation = True
+                    self.animation_timer = time.time()
 
             if (up or left) and self.index > 0:
                 music.play_sound(music.BUTTON_SWITCH, 0.15)
@@ -2273,8 +2292,21 @@ class settings_before_play_class:
             self.draw_window()
 
 class owner_selection_class:
-    OWNER_1_CARD = pygame.Rect(WIDTH//2 - 500, HEIGHT//2 - 100, 400, 400)
-    OWNER_2_CARD = pygame.Rect(WIDTH//2 + 100, HEIGHT//2 - 100, 400, 400)
+    OWNER_1_CARD = pygame.Rect(WIDTH//2 - BLACK_FRAME.get_width() - 100, HEIGHT//3, BLACK_FRAME.get_width(), BLACK_FRAME.get_height())
+    OWNER_2_CARD = pygame.Rect(WIDTH//2 + 100, HEIGHT//3, 400, 400)
+    
+    OWNER_MALE_CHOICE_1 = pygame.transform.scale(pygame.image.load(os.path.join("assets", os.path.join("owner", "owner-male-choice-screen-1.png"))), (BLACK_FRAME.get_width(), BLACK_FRAME.get_width()))
+    OWNER_MALE_CHOICE_2 = pygame.transform.scale(pygame.image.load(os.path.join("assets", os.path.join("owner", "owner-male-choice-screen-2.png"))), (BLACK_FRAME.get_width(), BLACK_FRAME.get_width()))
+    
+    OWNER_FEMALE_CHOICE_1 = pygame.transform.scale(pygame.image.load(os.path.join("assets", os.path.join("owner", "owner-female-choice-screen-1.png"))), (BLACK_FRAME.get_width(), BLACK_FRAME.get_width()))
+    OWNER_FEMALE_CHOICE_2 = pygame.transform.scale(pygame.image.load(os.path.join("assets", os.path.join("owner", "owner-female-choice-screen-2.png"))), (BLACK_FRAME.get_width(), BLACK_FRAME.get_width()))
+
+    TITLE_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "title-choose-owner.png")))
+    
+    in_animation = False
+    animation_timer = 0
+    animation_duration = 0.15
+    animation_cooldown = 2
 
     button_list = [BACK_BUTTON, OWNER_1_CARD, OWNER_2_CARD]
     index = 1
@@ -2282,25 +2314,33 @@ class owner_selection_class:
     def draw_window(self):
         screen.blit(BG_GAME_UI, (0,0))
         
-        title_text = font.render("Title", 1, BLACK)
-        screen.blit(title_text, (WIDTH//2 - title_text.get_width()//2, HEIGHT//2 - 200 - title_text.get_height()//2))
+        screen.blit(self.TITLE_IMG, (WIDTH//2 - self.TITLE_IMG.get_width()//2, 160))
 
         if self.index == 0:
             screen.blit(BACK_BUTTON_HOVER_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
         else:
             screen.blit(BACK_BUTTON_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
 
+        # Male Owner
         if self.index == 1:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.OWNER_1_CARD.x - 1, self.OWNER_1_CARD.y - 1, self.OWNER_1_CARD.width + 2, self.OWNER_1_CARD.height + 2))
-        pygame.draw.rect(screen, GRAY, self.OWNER_1_CARD)
-        owner_1_text = font.render("Owner 1", 1, BLACK)
-        screen.blit(owner_1_text, (self.OWNER_1_CARD.centerx - owner_1_text.get_width()//2, self.OWNER_1_CARD.centery - owner_1_text.get_height()//2))
+            screen.blit(ORANGE_FRAME, (self.OWNER_1_CARD.x, self.OWNER_1_CARD.y))
+        else:
+            screen.blit(BLACK_FRAME, (self.OWNER_1_CARD.x, self.OWNER_1_CARD.y))
+        
+        if self.in_animation:
+            screen.blit(self.OWNER_MALE_CHOICE_1, (self.OWNER_1_CARD.x, self.OWNER_1_CARD.bottom - self.OWNER_MALE_CHOICE_1.get_height() - 8))
+        else:
+            screen.blit(self.OWNER_MALE_CHOICE_2, (self.OWNER_1_CARD.x, self.OWNER_1_CARD.bottom - self.OWNER_MALE_CHOICE_1.get_height() - 8))
 
+        # Female Owner
         if self.index == 2:
-            pygame.draw.rect(screen, RED, pygame.Rect(self.OWNER_2_CARD.x - 1, self.OWNER_2_CARD.y - 1, self.OWNER_2_CARD.width + 2, self.OWNER_2_CARD.height + 2))
-        pygame.draw.rect(screen, GRAY, self.OWNER_2_CARD)
-        owner_2_text = font.render("Owner 2", 1, BLACK)
-        screen.blit(owner_2_text, (self.OWNER_2_CARD.centerx - owner_2_text.get_width()//2, self.OWNER_2_CARD.centery - owner_2_text.get_height()//2))
+            screen.blit(ORANGE_FRAME, (self.OWNER_2_CARD.x, self.OWNER_2_CARD.y))
+        else:
+            screen.blit(BLACK_FRAME, (self.OWNER_2_CARD.x, self.OWNER_2_CARD.y))
+        if self.in_animation:
+            screen.blit(self.OWNER_FEMALE_CHOICE_2, (self.OWNER_2_CARD.x, self.OWNER_2_CARD.bottom - self.OWNER_FEMALE_CHOICE_1.get_height() + 157))
+        else:
+            screen.blit(self.OWNER_FEMALE_CHOICE_1, (self.OWNER_2_CARD.x, self.OWNER_2_CARD.bottom - self.OWNER_FEMALE_CHOICE_1.get_height() + 157))
 
         pygame.display.update()
 
@@ -2319,6 +2359,15 @@ class owner_selection_class:
             if not pygame.mixer.music.get_busy():
                 music.play_music()
 
+            if self.in_animation:
+                if time.time() - self.animation_timer > self.animation_duration:
+                    self.in_animation = False
+                    self.animation_timer = time.time()
+            else:
+                if time.time() - self.animation_timer > self.animation_cooldown:
+                    self.in_animation = True
+                    self.animation_timer = time.time()
+
             if (up or left) and self.index > 0:
                 music.play_sound(music.BUTTON_SWITCH, 0.15)
                 self.index -= 1
@@ -2332,10 +2381,14 @@ class owner_selection_class:
                     run = False
                 if self.index == 1:
                     game_variable.selected_owner = game_variable.all_owners[0]
-                    main.main_loop()
+                    owner.change_skin()
+                    before_game.main_loop()
+                    run = False
                 if self.index == 2:
                     game_variable.selected_owner = game_variable.all_owners[1]
-                    main.main_loop()
+                    owner.change_skin()
+                    before_game.main_loop()
+                    run = False
 
             left = False
             right = False
@@ -2462,17 +2515,17 @@ class cat_selection_class:
                     game_variable.selected_cat = game_variable.all_cats[0]
                     player.change_cat_skin()
                     player.in_selection = False
-                    before_game.main_loop()
+                    owner_selection.main_loop()
                 elif self.index == 2:
                     game_variable.selected_cat = game_variable.all_cats[1]
                     player.change_cat_skin()
                     player.in_selection = False
-                    before_game.main_loop()
+                    owner_selection.main_loop()
                 elif self.index == 3:
                     game_variable.selected_cat = game_variable.all_cats[2]
                     player.change_cat_skin()
                     player.in_selection = False
-                    before_game.main_loop()
+                    owner_selection.main_loop()
 
             player.update_frame()
 
