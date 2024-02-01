@@ -382,6 +382,7 @@ class music_class:
 
     NYAN_CAT_THEME = os.path.join('assets', os.path.join("music", "nyan-cat-theme.mp3"))
     POTTE_CAT_THEME = os.path.join('assets', os.path.join("music", "potte-cat-theme.mp3"))
+    SUPER_CHAIYAN_THEME = os.path.join('assets', os.path.join("chaiyan", "super-chaiyan.mp3"))
     MAIN_THEME = os.path.join('assets', os.path.join("music", "main_theme.mp3"))
 
     LOSE = os.path.join('assets', os.path.join("music", "you-lose.mp3"))
@@ -544,7 +545,9 @@ class player_class:
     transforming = False
     transforming_timer = 0
     state_chaiyan_transformation = [ORANGE_CAT_TRANSFORM]
-    chaiyan_transform_cap = 2
+    chaiyan_timer = 0
+    chaiyan_duration = 10
+    chaiyan_transform_cap = 1
     chaiyan_state = [CHAIYAN_CAT_IDLE, CHAIYAN_CAT_WALKING, CHAIYAN_CAT_RUNNING, CHAIYAN_CAT_SCRATCHING, CHAIYAN_CAT_JUMPING, CHAIYAN_CAT_PEE, CHAIYAN_CAT_PUKE]
     chaiyan_state_idle_bis = [CHAIYAN_CAT_LICKING]
 
@@ -791,7 +794,7 @@ class owner_class:
     
     range = 20
     rage = 0
-    max_rage = 1
+    max_rage = 100
     rage_timer = 0
     body = pygame.Rect(1200, 600, 170 * 1.5, 170 * 1.5)
     body_hitbox = pygame.Rect(body.x, body.y, SQUARE, SQUARE)
@@ -840,28 +843,33 @@ class owner_class:
         self.apply_wall_filter()
         
     def change_state(self):
+        total_rage = self.rage / self.max_rage
         # Rage
-        if self.moving and self.rage / self.max_rage >= 1 and self.current_state != 4:
+        if self.moving and total_rage >= 1 and self.current_state != 4:
+            print("Rage")
             self.current_state = 4
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # Angry
-        if self.moving and self.rage / self.max_rage < 1 and self.rage / self.max_rage >= 0.6 and self.current_state != 3:
+        elif self.moving and total_rage < 1 and total_rage >= 0.6 and self.current_state != 3:
+            print("Angry")
             self.current_state = 3
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # Meh
-        if self.moving and self.rage / self.max_rage < 0.6 and self.rage / self.max_rage >= 0.3 and self.current_state != 2:
+        elif self.moving and total_rage < 0.6 and total_rage >= 0.3 and self.current_state != 2:
+            print("Meh")
             self.current_state = 2
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # Happy
-        if self.moving and self.current_state != 1:
+        elif self.moving and total_rage < 0.3 and self.current_state != 1:
+            print("Happy")
             self.current_state = 1
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
         # Idle
-        if not self.moving and self.current_state != 0:
+        elif not self.moving and self.current_state != 0:
             self.current_state = 0
             self.frame = 0
             self.frame_timer = pygame.time.get_ticks()
@@ -1036,13 +1044,34 @@ class behind_wall_class:
 
 class interactible_class:
     # Sprites glowing
-    BED_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "bed-glowing.png")))
+    # BED_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "bed-glowing.png")))
+    BED_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "bed-glowing-static.png")))
+    
+    LIBRARY_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "library-glowing.png")))
+    
+    COUCH_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "couch-glowing.png")))
     
     CURTAINS_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "curtains-glowing.png")))
+    
+    BIG_LIBRARY_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "etagere-glowing.png")))
+    
+    LAMPE_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "lamp-glowing.png")))
+    
+    COMPUTER_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "computer-glowing.png")))
+    
+    PLANT_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "plant-glowing.png")))
     
     PQ_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "pq-glowing.png")))
     
     TOWEL_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "towel-glowing.png")))
+    
+    SHOES_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "shoes-furniture-glowing.png")))
+    
+    TABLE_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "table-glowing.png")))
+    
+    RUG_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "carpet-glowing.png")))
+    
+    COFFEE_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "cup-glowing.png")))
     
     TV_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tv-glowing.png")))
 
@@ -1098,13 +1127,13 @@ class interactible_class:
 
 
     # Types
-    type_bed = {"type" : "bed", "score" : 500, "multiplier" : 0.5, "duration" : 3.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 30, "animation_type" : "pee", "sprite_glowing" : BED_GLOWING, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : BED_IMG, "sprite_broken" : BED_BROKEN_IMG}
+    type_bed = {"type" : "bed", "score" : 500, "multiplier" : 0.5, "duration" : 3.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 30, "animation_type" : "pee", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : BED_IMG, "sprite_broken" : BED_BROKEN_IMG}
 
     type_library = {"type" : "library", "score" : 250, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 10, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : LIBRARY_IMG, "sprite_broken" : LIBRARY_BROKEN_IMG}
 
     type_couch = {"type" : "couch", "score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "scratching", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : COUCH_IMG, "sprite_broken" : COUCH_BROKEN_IMG}
 
-    type_curtains = {"type" : "curtains", "score" : 100, "multiplier" : 0.1, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 10, "animation_type" : "scratching", "sprite_glowing" : CURTAINS_GLOWING, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : CURTAINS_IMG, "sprite_broken" : CURTAINS_BROKEN_IMG}
+    type_curtains = {"type" : "curtains", "score" : 100, "multiplier" : 0.1, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 10, "animation_type" : "scratching", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : CURTAINS_IMG, "sprite_broken" : CURTAINS_BROKEN_IMG}
 
     type_big_library = {"type" : "big_library", "score" : 500, "multiplier" : 0.5, "duration" : 3.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 15, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : BIG_LIBRARY_IMG, "sprite_broken" : BIG_LIBRARY_BROKEN_IMG}
 
@@ -1114,9 +1143,9 @@ class interactible_class:
 
     type_plant = {"type" : "plant", "score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 15, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : PLANT_IMG, "sprite_broken" : PLANT_BROKEN_IMG}
    
-    type_pq = {"type" : "toilet_paper", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "jumping", "sprite_glowing" : PQ_GLOWING, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : TOILET_IMG, "sprite_broken" : TOILET_BROKEN_IMG}
+    type_pq = {"type" : "toilet_paper", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : TOILET_IMG, "sprite_broken" : TOILET_BROKEN_IMG}
    
-    type_towel = {"type" : "towel", "score" : 300, "multiplier" : 0.3, "duration" : 2.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "scratching", "sprite_glowing" : TOWEL_GLOWING, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : TOWEL_IMG, "sprite_broken" : TOWEL_BROKEN_IMG}
+    type_towel = {"type" : "towel", "score" : 300, "multiplier" : 0.3, "duration" : 2.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "scratching", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : TOWEL_IMG, "sprite_broken" : TOWEL_BROKEN_IMG}
 
     type_shoeCase = {"type" : "shoe_case", "score" : 500, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 10, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : SHOES_IMG, "sprite_broken" : SHOES_BROKEN_IMG}
     
@@ -1126,7 +1155,7 @@ class interactible_class:
 
     type_coffee = {"type" : "coffee", "score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 20, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : COFFEE_IMG, "sprite_broken" : COFFEE_BROKEN_IMG}
 
-    type_tv = {"type" : "tv", "score" : 1000, "multiplier" : 0.5, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 30, "animation_type" : "jumping", "sprite_glowing" : TV_GLOWING, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : TV_IMG, "sprite_broken" : TV_BROKEN_IMG}
+    type_tv = {"type" : "tv", "score" : 1000, "multiplier" : 0.5, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 30, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : TV_IMG, "sprite_broken" : TV_BROKEN_IMG}
 
     # type_trashCan = {"type" : "trash_can", "score" : 400, "multiplier" : 0.4, "duration" : 4, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 15, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : None, "sprite_broken" : None}
 
@@ -1148,7 +1177,7 @@ class interactible_class:
     shoeCase =  {"rect" : pygame.Rect(SQUARE, map.get_height()- SQUARE*12, SQUARE*7, SQUARE*4), "type" : type_shoeCase.copy()}
     kitchen_table =  {"rect" : pygame.Rect(map.get_width()-SQUARE*15, SQUARE*8, SQUARE*8, SQUARE*7), "type" : type_chair.copy()}
     coffee = {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE*22, SQUARE*2, SQUARE*2), "type" : type_coffee.copy()}
-    tv = {"rect" : pygame.Rect(map.get_width()-SQUARE*19, map.get_height() - SQUARE*6, SQUARE*5, SQUARE*3), "type" : type_tv.copy()}
+    tv = {"rect" : pygame.Rect(map.get_width()-SQUARE*19, map.get_height() - SQUARE*5, SQUARE*6, SQUARE*2), "type" : type_tv.copy()}
     # trash =  {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE, SQUARE*3, SQUARE*2), "type" : type_trashCan.copy()}
     
 
@@ -1277,6 +1306,79 @@ class interactible_class:
                 if time.time() - item["type"]["disabled_timer"] > item["type"]["disabled_duration"]:
                     item["type"]["disabled_timer"] = None
                     item["type"]["is_enabled"] = True
+
+    def display_interactibles(self):
+        for item in interactible.list:
+            item_type = item["type"]["type"]
+
+            if item["type"]["sprite"]:
+                sprite_position = (item["rect"].x, item["rect"].y)
+
+                sprite = item["type"]["sprite"]
+
+                if interactible.isOn == item:
+                    if item["type"]["type"] == "bed":
+                        sprite = interactible.BED_GLOWING
+                    elif item["type"]["type"] == "library":
+                        sprite = interactible.LIBRARY_GLOWING
+                    elif item["type"]["type"] == "couch":
+                        sprite = interactible.COUCH_GLOWING
+                    elif item["type"]["type"] == "curtains":
+                        sprite = interactible.CURTAINS_GLOWING
+                    elif item["type"]["type"] == "big_library":
+                        sprite = interactible.BIG_LIBRARY_GLOWING
+                    elif item["type"]["type"] == "plug":
+                        sprite = interactible.LAMPE_GLOWING
+                    elif item["type"]["type"] == "computer":
+                        sprite = interactible.COMPUTER_GLOWING
+                    elif item["type"]["type"] == "plant":
+                        sprite = interactible.PLANT_GLOWING
+                    elif item["type"]["type"] == "toilet_paper":
+                        sprite = interactible.PQ_GLOWING
+                    elif item["type"]["type"] == "towel":
+                        sprite = interactible.TOWEL_GLOWING
+                    elif item["type"]["type"] == "shoe_case":
+                        sprite = interactible.SHOES_GLOWING
+                    elif item["type"]["type"] == "chair":
+                        sprite = interactible.TABLE_GLOWING
+                    elif item["type"]["type"] == "rug":
+                        sprite = interactible.RUG_GLOWING
+                    elif item["type"]["type"] == "coffee":
+                        sprite = interactible.COFFEE_GLOWING
+                    elif item["type"]["type"] == "tv":
+                        sprite = interactible.TV_GLOWING
+
+                sprite_dict = {
+                    "bed": (item["rect"].x - 10, item["rect"].y - SQUARE),
+                    "curtains": (item["rect"].x - 22, item["rect"].y - SQUARE + 15),
+                    "toilet_paper": (item["rect"].x - 25, item["rect"].y - 15),
+                    "plant": (item["rect"].x, item["rect"].y - SQUARE*2),
+                    "plug": (item["rect"].x, item["rect"].y - SQUARE*2),
+                    "library": (item["rect"].x - SQUARE*2, item["rect"].y - SQUARE*2),
+                    "big_library": (item["rect"].x, item["rect"].y - SQUARE*2),
+                    "chair": (item["rect"].x + SQUARE, item["rect"].y),
+                    "shoe_case": (item["rect"].x + SQUARE, item["rect"].y),
+                    "tv": (item["rect"].x + 30, item["rect"].y - SQUARE - 45)
+                    # Ajoutez d'autres types avec leurs positions respectives ici
+                }
+                sprite_dict_broken = {
+                    "bed": (item["rect"].x - 9, item["rect"].y - 14),
+                    "toilet_paper": (item["rect"].x + 8, item["rect"].y + 22),
+                    "towel": (item["rect"].x + 11, item["rect"].y + 33),
+                    "plant": (item["rect"].x- SQUARE*2, item["rect"].y),
+                    "plug": (item["rect"].x-20, item["rect"].y - SQUARE*2),
+                    "library": (item["rect"].x - SQUARE*2, item["rect"].y - SQUARE*2),
+                    "big_library": (item["rect"].x, item["rect"].y - SQUARE*2),
+                    "chair": (item["rect"].x + 17, item["rect"].y - 24),
+                    "shoe_case": (item["rect"].x + SQUARE, item["rect"].y),
+                    "tv": (item["rect"].x + 50, item["rect"].y - SQUARE - 40)
+
+                }
+
+                if item["type"]["is_enabled"]:
+                    map.blit(sprite, sprite_dict.get(item_type, sprite_position))
+                else:
+                    map.blit(item["type"]["sprite_broken"], sprite_dict_broken.get(item_type, sprite_position))
 
 # TOOLS
 
@@ -1457,7 +1559,7 @@ class end_game_class:
         if game_variable.win:
             self.move()
 
-        self.change_state()
+        # self.change_state()
 
         self.update_frame()
 
@@ -1482,30 +1584,31 @@ class end_game_class:
                 game_variable.end_win_cinematic = True
 
     def change_state(self):
-        # Closing
-        if self.opened and self.in_position and not self.laser_on and self.cat_caught and self.current_state != 6:
-            print("Closing")
-            self.current_state = 6
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-        # End Laser
-        elif self.opened and self.in_position and self.laser_on and self.cat_caught and self.current_state != 5:
-            print("End Laser")
-            self.current_state = 5
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-        # Stealing cat
-        elif self.opened and self.in_position and self.laser_on and not self.cat_caught and self.current_state != 4:
-            print("Stealing cat")
-            self.current_state = 4
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-        # Open Laser
-        elif self.opened and self.in_position and not self.laser_on and self.current_state != 3:
-            print("Open Laser")
-            self.current_state = 3
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
+        pass
+        # # Closing
+        # if self.opened and self.in_position and not self.laser_on and self.cat_caught and self.current_state != 6:
+        #     print("Closing")
+        #     self.current_state = 6
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
+        # # End Laser
+        # elif self.opened and self.in_position and self.laser_on and self.cat_caught and self.current_state != 5:
+        #     print("End Laser")
+        #     self.current_state = 5
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
+        # # Stealing cat
+        # elif self.opened and self.in_position and self.laser_on and not self.cat_caught and self.current_state != 4:
+        #     print("Stealing cat")
+        #     self.current_state = 4
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
+        # # Open Laser
+        # elif self.opened and self.in_position and not self.laser_on and not self.cat_caught and self.current_state != 3:
+        #     print("Open Laser")
+        #     self.current_state = 3
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
         # Open
         # elif self.opened and self.in_position and self.current_state != 2:
         #     print("Open")
@@ -1513,17 +1616,17 @@ class end_game_class:
         #     self.frame = 0
         #     self.frame_timer = pygame.time.get_ticks()
         # Opening
-        elif not self.opened and self.in_position and self.current_state != 1:
-        # elif self.in_position and self.current_state != 1:
-            print("opening")
-            self.current_state = 1
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
-        # Closed
-        elif not self.in_position and self.current_state != 0:
-            self.current_state = 0
-            self.frame = 0
-            self.frame_timer = pygame.time.get_ticks()
+        # elif not self.opened and self.in_position and not self.cat_caught and self.current_state != 1:
+        # # elif self.in_position and self.current_state != 1:
+        #     print("opening")
+        #     self.current_state = 1
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
+        # # Closed
+        # elif not self.in_position and self.current_state != 0:
+        #     self.current_state = 0
+        #     self.frame = 0
+        #     self.frame_timer = pygame.time.get_ticks()
 
     def update_frame(self):
         frame_cd = self.frame_cd
@@ -1536,22 +1639,74 @@ class end_game_class:
         if self.frame >= state[current_state].get_width()/state[current_state].get_height():
             self.frame = 0
 
-            if current_state == 1:
-                self.opened = True
-            elif current_state == 3:
-                self.laser_on = True
-            elif current_state == 4:
-                self.cat_caught = True
-            elif current_state == 5:
-                self.laser_on = False
-            elif current_state == 6:
-                self.opened = False
+            # if current_state == 1:
+            #     self.opened = True
+            # elif current_state == 3:
+            #     self.laser_on = True
+            # elif current_state == 4:
+            #     self.cat_caught = True
+            # elif current_state == 5:
+            #     self.laser_on = False
+            # elif current_state == 6:
+            #     self.opened = False
+            if current_state:
+                self.current_state += 1
 
 
         self.img.fill(ALMOST_BLACK)
         self.img.set_colorkey(ALMOST_BLACK)
         self.img.blit(state[current_state], (0,0), (state[current_state].get_height() * self.frame, 0, state[current_state].get_height(), state[current_state].get_height()))
 
+class game_win_class:
+    GAME_WIN_BG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "you-win.jpg")))
+
+    def draw_window(self):
+        screen.blit(self.GAME_WIN_BG, (0,0))
+        
+        score_text = font.render(f"{game_variable.score}", 1, BLACK)
+        screen.blit(score_text, (1000, 727))
+
+        pygame.display.update()
+
+    def main_loop(self):
+        run = True
+        left = False
+        right = False
+        up = False
+        down = False
+        interact = False
+        miaou = False
+        click = False
+        music.play_music(music.WIN)
+        
+        # grid.solver()
+        while run:
+            clock.tick(60)
+
+            player.update()
+
+            if click or interact:
+                music.play_sound(music.BUTTON)
+                run = False
+
+            miaou = False
+            interact = False
+            click = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    general_use.close_the_game()
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        music.play_sound(music.BUTTON)
+                        run = False
+                    if event.key == K_e:
+                        interact = True
+                    if event.key == K_SPACE:
+                        miaou = True
+            self.draw_window()
+            
+        music.play_music(music.MAIN_THEME)
 
 class game_over_class:
     GAME_OVER_BG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "game-over-screen.jpg")))
@@ -1573,10 +1728,7 @@ class game_over_class:
         interact = False
         miaou = False
         click = False
-        if game_variable.enraged:
-            music.play_music(music.WIN)
-        else:
-            music.play_music(music.LOSE)
+        music.play_music(music.LOSE)
         
         # grid.solver()
         while run:
@@ -1876,46 +2028,7 @@ class main_game_class:
     
         
         # Interactibles
-        for item in interactible.list:
-            item_type = item["type"]["type"]
-
-            if item["type"]["sprite"]:
-                sprite_position = (item["rect"].x, item["rect"].y)
-
-                sprite_dict = {
-                    "bed": (item["rect"].x - 10, item["rect"].y - SQUARE),
-                    "curtains": (item["rect"].x - 30, item["rect"].y - SQUARE + 5),
-                    "toilet_paper": (item["rect"].x - 10, item["rect"].y + 15),
-                    "plant": (item["rect"].x, item["rect"].y - SQUARE*2),
-                    "plug": (item["rect"].x, item["rect"].y - SQUARE*2),
-                    "library": (item["rect"].x - SQUARE*2, item["rect"].y - SQUARE*2),
-                    "big_library": (item["rect"].x, item["rect"].y - SQUARE*2),
-                    "chair": (item["rect"].x + SQUARE, item["rect"].y),
-                    "shoe_case": (item["rect"].x + SQUARE, item["rect"].y),
-                    "tv": (item["rect"].x + 30, item["rect"].y - 25)
-                    # Ajoutez d'autres types avec leurs positions respectives ici
-                }
-                sprite_dict_broken = {
-                    "bed": (item["rect"].x - 9, item["rect"].y - 14),
-                    "toilet_paper": (item["rect"].x + 3, item["rect"].y + 32),
-                    "towel": (item["rect"].x + 11, item["rect"].y + 33),
-                    "plant": (item["rect"].x- SQUARE*2, item["rect"].y),
-                    "plug": (item["rect"].x-20, item["rect"].y - SQUARE*2),
-                    "library": (item["rect"].x - SQUARE*2, item["rect"].y - SQUARE*2),
-                    "big_library": (item["rect"].x, item["rect"].y - SQUARE*2),
-                    "chair": (item["rect"].x + 17, item["rect"].y - 24),
-                    "shoe_case": (item["rect"].x + SQUARE, item["rect"].y),
-                    "tv": (item["rect"].x + 50, item["rect"].y - 40)
-
-                }
-
-                if item["type"]["is_enabled"]:
-                    if item["type"]["sprite_glowing"]:
-                        map.blit(item["type"]["img"], sprite_dict.get(item_type, sprite_position))
-                    else:
-                        map.blit(item["type"]["sprite"], sprite_dict.get(item_type, sprite_position))
-                else:
-                    map.blit(item["type"]["sprite_broken"], sprite_dict_broken.get(item_type, sprite_position))
+        interactible.display_interactibles()
 
         for row in grid.grid:
             for case in row:
@@ -2000,6 +2113,9 @@ class main_game_class:
         while run:
             clock.tick(60)
             # owner.remove_rage(1)
+
+            if not pygame.mixer.music.get_busy():
+                music.play_music(music.MAIN_THEME)
 
             if game_variable.started and not game_variable.win:
 
@@ -2100,6 +2216,8 @@ class main_game_class:
                     if game_variable.multiplier >= player.chaiyan_transform_cap and not player.chaiyan:
                         player.transforming = True
                         super_chaiyan.main_loop()
+                        player.chaiyan_timer = time.time()
+                        music.play_music(music.SUPER_CHAIYAN_THEME)
                         left = False
                         right = False
                         up = False
@@ -2109,6 +2227,11 @@ class main_game_class:
                         puke = False
                         click = False
                 
+                if player.chaiyan:
+                    if time.time() - player.chaiyan_timer > player.chaiyan_duration:
+                        player.chaiyan = False
+                        pygame.mixer.music.fadeout(1000)
+
                 if player.miaou and time.time() - player.miaou_timer > player.miaou_duration:
                     player.miaou_timer = time.time()
                     player.miaou = False
@@ -2123,6 +2246,9 @@ class main_game_class:
                 end_game.update()
 
                 grid.update()
+
+                if click:
+                    owner.add_rage(25)
 
             
             elif (left or right or up or down) and not game_variable.win:
@@ -2143,6 +2269,9 @@ class main_game_class:
                 if event.type == pygame.QUIT:
                     run = False
                     general_use.close_the_game()
+                if event.type == MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         game_over.main_loop()
@@ -2234,7 +2363,7 @@ class settings_before_play_class:
             clock.tick(60)
 
             if not pygame.mixer.music.get_busy():
-                music.play_music()
+                music.play_music(music.MAIN_THEME)
 
             if self.in_animation:
                 if time.time() - self.animation_timer > self.animation_duration:
@@ -2357,7 +2486,7 @@ class owner_selection_class:
             clock.tick(60)
 
             if not pygame.mixer.music.get_busy():
-                music.play_music()
+                music.play_music(music.MAIN_THEME)
 
             if self.in_animation:
                 if time.time() - self.animation_timer > self.animation_duration:
@@ -2495,7 +2624,7 @@ class cat_selection_class:
             clock.tick(60)
 
             if not pygame.mixer.music.get_busy():
-                music.play_music()
+                music.play_music(music.MAIN_THEME)
 
             player.in_selection = True
 
@@ -2635,7 +2764,7 @@ class menu_class:
             clock.tick(60)
 
             if not pygame.mixer.music.get_busy():
-                music.play_music()
+                music.play_music(music.MAIN_THEME)
 
             if self.in_animation:
                 if time.time() - self.animation_timer > self.animation_duration:
@@ -2800,7 +2929,7 @@ class settings_class:
             clock.tick(60)
 
             if not pygame.mixer.music.get_busy():
-                music.play_music()
+                music.play_music(music.MAIN_THEME)
 
             if (up or left) and self.index > 0:
                 music.play_sound(music.BUTTON_SWITCH, 0.15)
@@ -2893,7 +3022,7 @@ class credits_class:
             clock.tick(60)
 
             if not pygame.mixer.music.get_busy():
-                music.play_music()
+                music.play_music(music.MAIN_THEME)
 
             if click or interact:
                 music.play_sound(music.BUTTON_CANCEL, 0.2)
