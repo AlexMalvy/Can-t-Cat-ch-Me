@@ -1,16 +1,11 @@
-import json
 import pygame
 import sys
 import time
 import random
 import os
 import sys
-import pickle
 import math
 import img_load
-import maze_solver
-import threading
-import video
 from copy import deepcopy
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
@@ -54,7 +49,7 @@ ALMOST_BLACK = (1, 1, 1)
 
 ### Background
 
-BG_GRAY_WALL = pygame.image.load(os.path.join("assets", "map-empty.jpg"))
+BG_MAP = pygame.image.load(os.path.join("assets", "new-map.jpg"))
 BG_GAME_UI = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "background-game-ui-1920x1080.jpg")))
 
 ### Cats Sprites
@@ -300,10 +295,6 @@ BACK_BUTTON = pygame.Rect(10, HEIGHT - 10 - BACK_BUTTON_IMG.get_height(), BACK_B
 #             if event.type == pygame.QUIT:
 #                 run = False
 #                 general_use.close_the_game()
-#             # if mouse button is clicked
-#             if event.type == MOUSEBUTTONDOWN:
-#                 if event.button == 1:
-#                     click = True
 #             # For each keydown
 #             if event.type == KEYDOWN:
 
@@ -323,6 +314,7 @@ BACK_BUTTON = pygame.Rect(10, HEIGHT - 10 - BACK_BUTTON_IMG.get_height(), BACK_B
 #                 if event.key == K_s:
 #                     down = True
 
+# SETTINGS
 
 class general_use_class:
     background_color = WHITE
@@ -345,6 +337,8 @@ class general_use_class:
 
 class music_class:
     BUTTON = pygame.mixer.Sound(os.path.join("assets", os.path.join("music", "press-button.mp3")))
+    BUTTON_SWITCH = pygame.mixer.Sound(os.path.join("assets", os.path.join("music", "bloop-sound.mp3")))
+    BUTTON_CANCEL = pygame.mixer.Sound(os.path.join("assets", os.path.join("music", "bip-sound.mp3")))
 
     MEOW_1 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "cat-meow-1.mp3")))
     MEOW_2 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "cat-meow-2.mp3")))
@@ -358,6 +352,12 @@ class music_class:
 
     GLASS_BREAKING_1 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "glass-breaking-1.mp3")))
     GLASS_BREAKING_2 = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "glass-breaking-2.mp3")))
+
+    SCRATCH = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "scratch-couch.mp3")))
+
+    ELECTRIC = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "electric-sound.mp3")))
+
+    FALLING_OBJECT = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "falling-can.mp3")))
     
     TOILET_PAPER = pygame.mixer.Sound(os.path.join('assets', os.path.join("music", "toilet-paper.mp3")))
     
@@ -384,11 +384,11 @@ class music_class:
     def play_music(self, music):
         pygame.mixer.music.load(music)
         pygame.mixer.music.set_volume(0.5)
-        pygame.mixer.music.play()
+        pygame.mixer.music.play(-1)
 
 
 class camera_class:
-    bg = pygame.transform.scale(BG_GRAY_WALL, (map.get_width(), map.get_height()))
+    bg = pygame.transform.scale(BG_MAP, (map.get_width(), map.get_height()))
     def bg_blit(self):
         map.blit(self.bg, (0,0))
 
@@ -412,10 +412,15 @@ class game_variable_class:
     multiplier = 1
 
     timer = 0
-    max_timer = 60
+    max_timer = 10
     enraged = False
 
+    win_timer = 2
+
     started = False
+
+    win = False
+    end_win_cinematic = False
 
     all_cats = ["orange", "black", "siamese"]
     selected_cat = "orange"
@@ -426,11 +431,16 @@ class game_variable_class:
     def reset_all_variable(self):
         self.score = 0
         self.multiplier = 1
-        player.hp = 3
-        player.hitbox.x = SQUARE*18
-        player.hitbox.y = SQUARE*18
-        owner.body_hitbox.x = 1200
-        owner.body_hitbox.y = 600
+        self.started = False
+        self.timer = 0
+        self.enraged = False
+        self.win = False
+
+        player.reset()
+        owner.reset()
+        interactible.reset()
+        animation.reset()
+        grid.update()
 
 def redefineMaze(oldMaze):
     oldMazeLen = len(oldMaze)
@@ -447,7 +457,21 @@ def redefineMaze(oldMaze):
                 row = []
     return newMaze
 
+# CHARACTERS
+
 class player_class:
+    def reset(self):
+        self.body = pygame.Rect(SQUARE*18, SQUARE*18, 192, 192)
+        self.hitbox = pygame.Rect(self.body.x, self.body.bottom, 60, 60)
+        self.hp = 3
+        self.right = True
+        self.potte = False
+        self.nyan = False
+        self.chaiyan = False
+        self.transforming = False
+        self.i_frame = False
+        self.i_frame_timer = 0
+
     body = pygame.Rect(SQUARE*18, SQUARE*18, 192, 192)
 
     base_speed = 12
@@ -741,10 +765,19 @@ class player_class:
 
 
 class owner_class:
+    def reset(self):
+        self.rage = 0
+        self.rage_timer = 0
+        self.body = pygame.Rect(1200, 600, 170 * 1.5, 170 * 1.5)
+        self.body_hitbox = pygame.Rect(self.body.x, self.body.y, SQUARE, SQUARE)
+        self.right = False
+        self.target = None
+        self.path = []
     
     range = 20
     rage = 0
-    max_rage = 100
+    max_rage = 1
+    rage_timer = 0
     body = pygame.Rect(1200, 600, 170 * 1.5, 170 * 1.5)
     body_hitbox = pygame.Rect(body.x, body.y, SQUARE, SQUARE)
     
@@ -773,8 +806,12 @@ class owner_class:
     
 
     def update(self):
-        if (game_variable.score > 0 or game_variable.enraged) and not player.transforming:
+        self.check_rage()
+
+        if (game_variable.score > 0 or game_variable.enraged) and not player.transforming and not game_variable.win:
             self.move_toward_cat()
+        else:
+            self.moving = False
 
         self.update_move_speed()
 
@@ -866,11 +903,24 @@ class owner_class:
             self.rage -= amount
             self.last_rage_deduction_time = current_time
 
+    def check_rage(self):
+        if self.rage >= self.max_rage:
+            game_variable.enraged = True
+            if not self.rage_timer:
+                self.rage_timer = time.time()
+            elif time.time() - self.rage_timer > game_variable.win_timer:
+                player.current_state = 0
+                player.moving = False
+                game_variable.win = True
+
     def update_move_speed(self):
         self.bonus_speed = self.max_bonus_speed * (self.rage / self.max_rage)
         if game_variable.enraged:
             self.bonus_speed += 7 + (time.time() - game_variable.timer - game_variable.max_timer)
+            if self.bonus_speed > 15:
+                self.bonus_speed = 15
 
+# OBSTACLES
 
 class obstacle_class:
 
@@ -901,8 +951,8 @@ class obstacle_class:
     shoeCaseHallway = pygame.Rect(SQUARE*2, map.get_height() - SQUARE*10, SQUARE*5, SQUARE)
     plantHallway = pygame.Rect(SQUARE*13, map.get_height() - SQUARE*10, SQUARE*2, SQUARE)
     #Living Room
-    couchLivingRoom = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*10, SQUARE*5.5, SQUARE)
-    chairLivingRoom = pygame.Rect(SQUARE*28, map.get_height()-SQUARE*8, SQUARE*2, SQUARE)
+    couchLivingRoom = pygame.Rect(SQUARE*23, map.get_height()-SQUARE*10, SQUARE*5.5, SQUARE)
+    chairLivingRoom = pygame.Rect(SQUARE*30, map.get_height()-SQUARE*8, SQUARE*2, SQUARE)
     tvLivingRoomAndPlant = pygame.Rect(SQUARE*23, map.get_height()-SQUARE*4, SQUARE*7, SQUARE*1)
     libraryLivingRoom = pygame.Rect(SQUARE*17, SQUARE*4, SQUARE*5, SQUARE)
     plantLivingRoom = pygame.Rect(SQUARE*15, map.get_height()-SQUARE*3, SQUARE, SQUARE)
@@ -925,7 +975,7 @@ class obstacle_class:
     fullMap = [topWall, bottomWall, leftWall, rightWall]
     list = [fullMap, bedRoom, office, kitchen, bathRoom, hallWay, livingRoom]
 
-class behind_wall_class():
+class behind_wall_class:
 
     #Walls
     wallBathroomUpLeft = pygame.Rect(SQUARE, SQUARE*12, SQUARE*7, SQUARE*4)
@@ -934,42 +984,32 @@ class behind_wall_class():
     wallBathroomBottomRight = pygame.Rect(SQUARE*12, SQUARE*24, SQUARE*5, SQUARE*3)
     wallBathroomBottomLeft = pygame.Rect(SQUARE*4, SQUARE*24, SQUARE*4, SQUARE*3)
     wallTV = pygame.Rect(SQUARE*24, map.get_height()-SQUARE*5.5, SQUARE*4, SQUARE*2)
-    wallCouch = pygame.Rect(SQUARE*21.2, map.get_height()-SQUARE*11, SQUARE*5.8, SQUARE)
-    wallChairCouch = pygame.Rect(SQUARE*28, map.get_height()-SQUARE*9, SQUARE*2, SQUARE*2)
+    wallCouch = pygame.Rect(SQUARE*23.2, map.get_height()-SQUARE*11, SQUARE*5.8, SQUARE)
+    wallChairCouch = pygame.Rect(SQUARE*30, map.get_height()-SQUARE*9, SQUARE*2, SQUARE*2)
     wallTable = pygame.Rect(map.get_width()-SQUARE*14, SQUARE*8, SQUARE*6, SQUARE*5)
 
-
-    
   
     walls= [wallBathroomUpLeft, wallBathroomUpRight, wallKitchenBottom, wallBathroomBottomRight, wallBathroomBottomLeft, wallTV, wallCouch, wallChairCouch, wallTable]
     list = [walls]
 
+class interactible_class:
+    # Sprites glowing
+    BED_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "bed-glowing.png")))
+    
+    CURTAINS_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "curtains-glowing.png")))
+    
+    PQ_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "pq-glowing.png")))
+    
+    TOWEL_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "towel-glowing.png")))
+    
+    TV_GLOWING = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tv-glowing.png")))
 
-class interactible_class():
-    # Sprites
-    RUG_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tapis-1.png")))
-    RUG_PUKE_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tapis-barf-1.png")))
 
-    PLANT_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "plante-1.png")))
-    PLANT_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "plante-2.png")))
+    # Sprites fixed
+    BARF_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "barf.png")))
 
-    LAMPE_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "lampe-1.png")))
-    LAMPE_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "lampe-2.png")))
-
-    SHOES_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "shoes-furniture-1.png")))
-    SHOES_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "shoes-furniture-2.png")))
-
-    COFFEE_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tasse-1.png")))
-    COFFEE_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tasse-2.png")))
-
-    COMPUTER_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "ordinateur-1.png")))
-    COMPUTER_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "ordinateur-2.png")))
-
-    BIG_LIBRARY_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "etagere-1.png")))
-    BIG_LIBRARY_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "etagere-2.png")))
-
-    TABLE_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "table-1.png")))
-    TABLE_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "table-2.png")))
+    BED_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "lit-1.png")))
+    BED_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "lit-2.png")))
 
     LIBRARY_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "bibliotheque-1.png")))
     LIBRARY_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "bibliotheque-2.png")))
@@ -977,54 +1017,101 @@ class interactible_class():
     COUCH_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "canape-fauteuil-1.png")))
     COUCH_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "canape-fauteuil-2.png")))
 
+    CURTAINS_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "rideau-1.png")))
+    CURTAINS_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "rideau-2.png")))
+
+    BIG_LIBRARY_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "etagere-1.png")))
+    BIG_LIBRARY_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "etagere-2.png")))
+
+    LAMPE_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "lampe-1.png")))
+    LAMPE_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "lampe-2.png")))
+
+    COMPUTER_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "ordinateur-1.png")))
+    COMPUTER_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "ordinateur-2.png")))
+
+    PLANT_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "plante-1.png")))
+    PLANT_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "plante-2.png")))
+
     TOILET_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "PQ-1.png")))
     TOILET_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "PQ-2.png")))
 
+    TOWEL_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "serviette-1.png")))
+    TOWEL_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "serviette-2.png")))
 
-    # DESK_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "desk-1.png")))
-    # DESK_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "desk-2.png")))
+    SHOES_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "shoes-furniture-1.png")))
+    SHOES_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "shoes-furniture-2.png")))
+
+    TABLE_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "table-1.png")))
+    TABLE_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "table-2.png")))
+    
+    RUG_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tapis-1.png")))
+    RUG_PUKE_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tapis-barf-1.png")))
+
+    COFFEE_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tasse-1.png")))
+    COFFEE_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tasse-2.png")))
+
+    TV_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tv-1.png")))
+    TV_BROKEN_IMG = pygame.image.load(os.path.join("assets", os.path.join("interactive-assets", "tv-2.png")))
+
+
 
     # Types
-    type_trashCan = {"type" : "trash_can", "score" : 400, "multiplier" : 0.4, "duration" : 4, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 15, "animation_type" : "jumping", "sprite" : None, "sprite_broken" : None}
-    type_toilets = {"type" : "toilets", "score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "pee", "sprite" : None, "sprite_broken" : None}
-    type_shower = {"type" : "shower", "score" : 300, "multiplier" : 0.3, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "pee", "sprite" : None, "sprite_broken" : None}
-    type_couch = {"type" : "couch", "score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : COUCH_IMG, "sprite_broken" : COUCH_BROKEN_IMG}
+    type_bed = {"type" : "bed", "score" : 500, "multiplier" : 0.5, "duration" : 3.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 30, "animation_type" : "pee", "sprite_glowing" : BED_GLOWING, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : BED_IMG, "sprite_broken" : BED_BROKEN_IMG}
+
+    type_library = {"type" : "library", "score" : 250, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 10, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : LIBRARY_IMG, "sprite_broken" : LIBRARY_BROKEN_IMG}
+
+    type_couch = {"type" : "couch", "score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 10, "animation_type" : "scratching", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : COUCH_IMG, "sprite_broken" : COUCH_BROKEN_IMG}
+
+    type_curtains = {"type" : "curtains", "score" : 100, "multiplier" : 0.1, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 10, "animation_type" : "scratching", "sprite_glowing" : CURTAINS_GLOWING, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : CURTAINS_IMG, "sprite_broken" : CURTAINS_BROKEN_IMG}
+
+    type_big_library = {"type" : "big_library", "score" : 500, "multiplier" : 0.5, "duration" : 3.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 15, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : BIG_LIBRARY_IMG, "sprite_broken" : BIG_LIBRARY_BROKEN_IMG}
+
+    type_plug = {"type" : "plug", "score" : 300, "multiplier" : 0.3, "duration" : 2.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 20, "animation_type" : "scratching", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : LAMPE_IMG, "sprite_broken" : LAMPE_BROKEN_IMG}
+
+    type_plugOffice = {"type" : "computer", "score" : 500, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 30, "rage_amount" : 10, "animation_type" : "scratching", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : COMPUTER_IMG, "sprite_broken" : COMPUTER_BROKEN_IMG}
+
+    type_plant = {"type" : "plant", "score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 15, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : PLANT_IMG, "sprite_broken" : PLANT_BROKEN_IMG}
    
-    type_pq = {"type" : "toilet_paper", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "jumping", "sprite" : TOILET_IMG, "sprite_broken" : TOILET_BROKEN_IMG}
+    type_pq = {"type" : "toilet_paper", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "jumping", "sprite_glowing" : PQ_GLOWING, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : TOILET_IMG, "sprite_broken" : TOILET_BROKEN_IMG}
+   
+    type_towel = {"type" : "towel", "score" : 300, "multiplier" : 0.3, "duration" : 2.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 5, "animation_type" : "scratching", "sprite_glowing" : TOWEL_GLOWING, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : TOWEL_IMG, "sprite_broken" : TOWEL_BROKEN_IMG}
+
+    type_shoeCase = {"type" : "shoe_case", "score" : 500, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 10, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : SHOES_IMG, "sprite_broken" : SHOES_BROKEN_IMG}
     
-    type_chair = {"type" : "chair", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "jumping", "sprite" : TABLE_IMG, "sprite_broken" : TABLE_BROKEN_IMG}
-    type_big_library = {"type" : "big_library", "score" : 500, "multiplier" : 0.5, "duration" : 3.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 15, "animation_type" : "jumping", "sprite" : BIG_LIBRARY_IMG, "sprite_broken" : BIG_LIBRARY_BROKEN_IMG}
-    type_library = {"type" : "library", "score" : 250, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 20, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : LIBRARY_IMG, "sprite_broken" : LIBRARY_BROKEN_IMG}
-    type_plug = {"type" : "plug", "score" : 300, "multiplier" : 0.3, "duration" : 2.5, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 20, "animation_type" : "scratching", "sprite" : LAMPE_IMG, "sprite_broken" : LAMPE_BROKEN_IMG}
-    type_plugOffice = {"type" : "desk", "score" : 500, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 30, "rage_amount" : 10, "animation_type" : "scratching", "sprite" : COMPUTER_IMG, "sprite_broken" : COMPUTER_BROKEN_IMG}
-    type_coffee = {"type" : "coffee", "score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 20, "animation_type" : "jumping", "sprite" : COFFEE_IMG, "sprite_broken" : COFFEE_BROKEN_IMG}
-    type_shoeCase = {"type" : "shoe_case", "score" : 500, "multiplier" : 0.5, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 10, "animation_type" : "jumping", "sprite" : SHOES_IMG, "sprite_broken" : SHOES_BROKEN_IMG}
-    type_plant = {"type" : "plant", "score" : 1000, "multiplier" : 0.5, "duration" : 1, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 10, "rage_amount" : 15, "animation_type" : "jumping", "sprite" : PLANT_IMG, "sprite_broken" : PLANT_BROKEN_IMG}
-    type_Rug = {"type" : "rug", "score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 10, "animation_type" : "puke", "sprite" : RUG_IMG, "sprite_broken" : RUG_PUKE_IMG}
+    type_chair = {"type" : "chair", "score" : 100, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 5, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : TABLE_IMG, "sprite_broken" : TABLE_BROKEN_IMG}
+
+    type_Rug = {"type" : "rug", "score" : 200, "multiplier" : 0.3, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 3, "rage_amount" : 10, "animation_type" : "puke", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : RUG_IMG, "sprite_broken" : RUG_PUKE_IMG}
+
+    type_coffee = {"type" : "coffee", "score" : 200, "multiplier" : 0.2, "duration" : 2, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 20, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : COFFEE_IMG, "sprite_broken" : COFFEE_BROKEN_IMG}
+
+    type_tv = {"type" : "tv", "score" : 1000, "multiplier" : 0.5, "duration" : 3, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 5, "rage_amount" : 30, "animation_type" : "jumping", "sprite_glowing" : TV_GLOWING, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : TV_IMG, "sprite_broken" : TV_BROKEN_IMG}
+
+    # type_trashCan = {"type" : "trash_can", "score" : 400, "multiplier" : 0.4, "duration" : 4, "is_enabled" : True, "disabled_timer" : None, "disabled_duration" : 15, "rage_amount" : 15, "animation_type" : "jumping", "sprite_glowing" : None, "frame" : 0, "frame_timer" : 0, "frame_cd" : 120, "frame_max" : 0, "img" : pygame.Surface((10,10)), "sprite" : None, "sprite_broken" : None}
 
     # Objects
-    rug= {"rect" : pygame.Rect(SQUARE*19, map.get_height()-SQUARE*13, SQUARE*10, SQUARE*7), "type" : type_Rug.copy()}
-    chair =  {"rect" : pygame.Rect(map.get_width()-SQUARE*14, SQUARE*8, SQUARE*8, SQUARE*7), "type" : type_chair.copy()}
-    couch =  {"rect" : pygame.Rect(map.get_width()-SQUARE*22, map.get_height()-SQUARE*11, SQUARE*6.5, SQUARE*3), "type" : type_couch.copy()}
-     # couchLivingRoom = pygame.Rect(SQUARE*21, map.get_height()-SQUARE*10, SQUARE*5.5, SQUARE)
-    trash =  {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE, SQUARE*3, SQUARE*2), "type" : type_trashCan.copy()}
-    tvPlug =  {"rect" : pygame.Rect(map.get_width()-SQUARE*3, map.get_height()-SQUARE*5, SQUARE*2, SQUARE*2), "type" : type_plug.copy()}
-    library =  {"rect" : pygame.Rect(SQUARE*18, SQUARE*4, SQUARE*4, SQUARE*2), "type" : type_big_library.copy()}
-    shoeCase =  {"rect" : pygame.Rect(SQUARE*2, map.get_height()- SQUARE*12, SQUARE*6, SQUARE*4), "type" : type_shoeCase.copy()}
-    shower = {"rect" : pygame.Rect(SQUARE*11, SQUARE*8, SQUARE*3, SQUARE*3), "type" : type_shower.copy()}
-    toilets= {"rect" : pygame.Rect(SQUARE, SQUARE*10, SQUARE*2, SQUARE*3), "type" : type_toilets.copy()}
+    rug= {"rect" : pygame.Rect(SQUARE*21, map.get_height()-SQUARE*12, SQUARE*10, SQUARE*7), "type" : type_Rug.copy()}
+    bed = {"rect" : pygame.Rect(SQUARE*6, SQUARE*3, SQUARE*6, SQUARE*5), "type" : type_bed.copy()}
+    libraryOffice = {"rect" : pygame.Rect(map.get_width()-SQUARE*4, SQUARE*22, SQUARE*3, SQUARE*3), "type" : type_library.copy()}
+    couch =  {"rect" : pygame.Rect(map.get_width()-SQUARE*19, map.get_height()-SQUARE*11, SQUARE*6.5, SQUARE*3), "type" : type_couch.copy()}
+    curtains_bedroom = {"rect" : pygame.Rect(SQUARE*12, SQUARE*1, SQUARE*4, SQUARE*5), "type" : type_curtains.copy()}
+    curtains_living_room = {"rect" : pygame.Rect(SQUARE*24, SQUARE*1, SQUARE*4, SQUARE*5), "type" : type_curtains.copy()}
+    shelf =  {"rect" : pygame.Rect(SQUARE*18, SQUARE*4, SQUARE*5, SQUARE*2), "type" : type_big_library.copy()}
+    living_room_lamp =  {"rect" : pygame.Rect(map.get_width()-SQUARE*3, map.get_height()-SQUARE*5, SQUARE*2, SQUARE*2), "type" : type_plug.copy()}
+    nightStandPlug = {"rect" : pygame.Rect(SQUARE, SQUARE*4, SQUARE*2, SQUARE*2), "type" : type_plug.copy()}
+    computer = {"rect" : pygame.Rect(map.get_width()-SQUARE*9, SQUARE*21, SQUARE*2, SQUARE*3), "type" : type_plugOffice.copy()}
     plantHallway= {"rect" : pygame.Rect(SQUARE*13, map.get_height()-SQUARE*10, SQUARE*3, SQUARE*2), "type" : type_plant.copy()}
     plantKitchen= {"rect" : pygame.Rect(map.get_width()-SQUARE*3, SQUARE*5, SQUARE*2, SQUARE*2), "type" : type_plant.copy()}
-    computer = {"rect" : pygame.Rect(map.get_width()-SQUARE*9, SQUARE*21, SQUARE*2, SQUARE*3), "type" : type_plugOffice.copy()}
-    libraryOffice = {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE*22, SQUARE*6, SQUARE*2), "type" : type_library.copy()}
-    
-    nightStandPlug = {"rect" : pygame.Rect(SQUARE, SQUARE*4, SQUARE*2, SQUARE*2), "type" : type_plug.copy()}
+    pq = {"rect" : pygame.Rect(SQUARE*5, SQUARE*15, SQUARE*2, SQUARE*3), "type" : type_pq.copy()}
+    towel = {"rect" : pygame.Rect(SQUARE*12, SQUARE*15, SQUARE*2, SQUARE*3), "type" : type_towel.copy()}
+    shoeCase =  {"rect" : pygame.Rect(SQUARE, map.get_height()- SQUARE*12, SQUARE*7, SQUARE*4), "type" : type_shoeCase.copy()}
+    kitchen_table =  {"rect" : pygame.Rect(map.get_width()-SQUARE*15, SQUARE*8, SQUARE*8, SQUARE*7), "type" : type_chair.copy()}
     coffee = {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE*22, SQUARE*2, SQUARE*2), "type" : type_coffee.copy()}
-    pq = {"rect" : pygame.Rect(SQUARE*5, SQUARE*15, SQUARE*2, SQUARE*4), "type" : type_pq.copy()}
+    tv = {"rect" : pygame.Rect(map.get_width()-SQUARE*19, map.get_height() - SQUARE*6, SQUARE*5, SQUARE*3), "type" : type_tv.copy()}
+    # trash =  {"rect" : pygame.Rect(map.get_width()-SQUARE*6, SQUARE, SQUARE*3, SQUARE*2), "type" : type_trashCan.copy()}
+    
 
-
-    list = [chair ,couch, tvPlug, library, rug, shoeCase, nightStandPlug, plantHallway, plantKitchen, computer, coffee, couch, libraryOffice, pq]
-    # list=[]
+    list = [rug, bed, libraryOffice, couch, curtains_bedroom, curtains_living_room, shelf, living_room_lamp, nightStandPlug, computer, plantHallway, plantKitchen, pq, towel, shoeCase, kitchen_table,  coffee, tv]
+    # list = [kitchen_table, living_room_lamp, shelf, rug, shoeCase, nightStandPlug, plantHallway, plantKitchen, computer, coffee, couch, libraryOffice, pq, bed, curtains_bedroom, curtains_living_room]
 
     isOn = None
     interact_timer = None
@@ -1036,6 +1123,15 @@ class interactible_class():
         self.isOnInteractible()
         # self.restore_interactibles()
 
+        for item in self.list:
+            if item["type"]["sprite_glowing"]:
+                self.animate_interactibles(item)
+
+    def reset(self):
+        for item in self.list:
+            item["type"]["is_enabled"] = True
+            item["type"]["disabled_timer"] = None
+
     def isOnInteractible(self):
         for item in self.list:
             if item["rect"].collidepoint(player.hitbox.center) and item["type"]["is_enabled"]:
@@ -1043,6 +1139,27 @@ class interactible_class():
                 return
         
         self.isOn = None
+        
+    def animate_interactibles(self, item):
+        if pygame.time.get_ticks() - item["type"]["frame_timer"] >= item["type"]["frame_cd"]:
+            item["type"]["frame"] += 1
+            item["type"]["frame_timer"] = pygame.time.get_ticks()
+        if item["type"]["frame_max"]:
+            if item["type"]["frame"] >= item["type"]["frame_max"] - 1:
+                item["type"]["frame"] = 0
+        elif item["type"]["frame"] >= item["type"]["sprite_glowing"].get_width()/item["type"]["sprite_glowing"].get_height():
+            item["type"]["frame"] = 0
+
+
+        if item["type"]["frame_max"]:
+            frame_width = item["type"]["sprite_glowing"].get_width()/item["type"]["frame_max"]
+        else:
+            frame_width = item["type"]["sprite_glowing"].get_height()
+
+        item["type"]["img"] = pygame.Surface((frame_width, item["type"]["sprite_glowing"].get_height()))
+        item["type"]["img"].fill(ALMOST_BLACK)
+        item["type"]["img"].set_colorkey(ALMOST_BLACK)
+        item["type"]["img"].blit(item["type"]["sprite_glowing"], (0,0), (frame_width * item["type"]["frame"], 0, frame_width, item["type"]["sprite_glowing"].get_height()))
 
     def interact(self):
         if self.isOn:
@@ -1059,50 +1176,46 @@ class interactible_class():
                 self.list[index]["type"]["disabled_timer"] = time.time()
                 self.interact_timer = None
                 owner.add_rage(self.list[index]["type"]["rage_amount"])
-                if self.isOn["type"]["type"] == "shoe_case":
-                    player.potte = True
-                    player.nyan = False
-                    # music.play_sound(music.SHOE_CASE)
-                    music.play_music(music.POTTE_CAT_THEME)
-                    animation.transformation_cloud_animation()
-                elif self.isOn["type"]["type"] == "desk":
-                    player.nyan = True
-                    player.potte = False
-                    # music.play_sound(music.desk)
-                    music.play_music(music.NYAN_CAT_THEME)
-                    animation.transformation_cloud_animation()
-                elif self.isOn["type"]["type"] == "trash_can":
-                    pass
-                    # music.play_sound(music.desk)
-                elif self.isOn["type"]["type"] == "toilets":
-                    pass
-                    # music.play_sound(music.desk)
-                elif self.isOn["type"]["type"] == "couch":
-                    pass
-                    # music.play_sound(music.desk)
-                elif self.isOn["type"]["type"] == "toilet_paper":
-                    music.stop_sound(music.TOILET_PAPER)
-                elif self.isOn["type"]["type"] == "chair":
-                    pass
-                    # music.play_sound(music.desk)
+                if self.isOn["type"]["type"] == "bed":
+                    music.play_sound(music.MEOW_1)
                 elif self.isOn["type"]["type"] == "library":
-                    pass
-                    # music.play_sound(music.desk)
+                    music.play_sound(music.FALLING_OBJECT)
+                elif self.isOn["type"]["type"] == "couch":
+                    music.play_sound(music.SCRATCH)
+                elif self.isOn["type"]["type"] == "curtains":
+                    music.play_sound(music.SCRATCH)
                 elif self.isOn["type"]["type"] == "big_library":
                     music.play_sound(music.GLASS_BREAKING_1)
                 elif self.isOn["type"]["type"] == "plug":
-                    pass
-                    # music.play_sound(music.desk)
-                elif self.isOn["type"]["type"] == "shower":
-                    pass
-                    # music.play_sound(music.desk)
-                elif self.isOn["type"]["type"] == "coffee":
-                    music.play_sound(music.GLASS_BREAKING_2)
+                    music.play_sound(music.ELECTRIC)
+                elif self.isOn["type"]["type"] == "computer":
+                    player.nyan = True
+                    player.potte = False
+                    music.play_sound(music.MEOW_1)
+                    music.play_music(music.NYAN_CAT_THEME)
+                    animation.transformation_cloud_animation()
                 elif self.isOn["type"]["type"] == "plant":
                     music.play_sound(music.GLASS_BREAKING_1)
+                elif self.isOn["type"]["type"] == "toilet_paper":
+                    music.stop_sound(music.TOILET_PAPER)
+                elif self.isOn["type"]["type"] == "towel":
+                    music.play_sound(music.TOILET_PAPER)
+                elif self.isOn["type"]["type"] == "shoe_case":
+                    player.potte = True
+                    player.nyan = False
+                    music.play_sound(music.MEOW_2)
+                    music.play_music(music.POTTE_CAT_THEME)
+                    animation.transformation_cloud_animation()
+                elif self.isOn["type"]["type"] == "chair":
+                    music.play_sound(music.FALLING_OBJECT)
                 elif self.isOn["type"]["type"] == "rug":
-                    pass
-                    # music.play_sound(music.desk)
+                    music.play_sound(music.MEOW_3)
+                elif self.isOn["type"]["type"] == "coffee":
+                    music.play_sound(music.GLASS_BREAKING_2)
+                elif self.isOn["type"]["type"] == "tv":
+                    music.play_sound(music.GLASS_BREAKING_1)
+                # elif self.isOn["type"]["type"] == "trash_can":
+                #     pass
 
 
             self.update_progress_bar()
@@ -1123,8 +1236,12 @@ class interactible_class():
                     item["type"]["disabled_timer"] = None
                     item["type"]["is_enabled"] = True
 
+# TOOLS
 
 class animation_class:
+    def reset(self):
+        self.list = []
+
     cloud_img = img_load.image_loader.load(["assets", "effects", "interaction-effect-potte.png"], 2)
 
     list = []
@@ -1260,7 +1377,116 @@ class Pathfinder:
   
         owner.path = path
         owner.target = path[0]
+
+# MAIN GAME
         
+class end_game_class:
+    SPACESHIP_CLOSED = img_load.image_loader.load(["assets", "alien", "space-ship-closed.png"], 1)
+    SPACESHIP_OPENING = img_load.image_loader.load(["assets", "alien", "space-ship-opening.png"], 1)
+    SPACESHIP_OPEN = img_load.image_loader.load(["assets", "alien", "space-ship-open.png"], 1)
+    SPACESHIP_OPEN_LASER = img_load.image_loader.load(["assets", "alien", "space-ship-open-laser.png"], 1)
+    SPACESHIP_STEAL_CAT = img_load.image_loader.load(["assets", "alien", "space-ship-steal-cat.png"], 1)
+    SPACESHIP_END_LASER = img_load.image_loader.load(["assets", "alien", "space-ship-end-laser.png"], 1)
+    SPACESHIP_CLOSING = img_load.image_loader.load(["assets", "alien", "space-ship-closing.png"], 1)
+    
+    ALIEN_SOUND_1 = pygame.mixer.Sound(os.path.join("assets", os.path.join("music", "alien-spaceship-1.mp3")))
+    ALIEN_SOUND_2 = pygame.mixer.Sound(os.path.join("assets", os.path.join("music", "alien-spaceship-2.mp3")))
+    ALIEN_SOUND_3 = pygame.mixer.Sound(os.path.join("assets", os.path.join("music", "alien-spaceship-3.mp3")))
+
+    moving = True
+    opened = False
+    cat_caught = False
+    in_position = False
+    laser_on = False
+
+    img = pygame.Surface((SPACESHIP_CLOSED.get_height(), SPACESHIP_CLOSED.get_height()))
+
+    alien_body = pygame.Rect(WIDTH + img.get_width() + 50, 0, SPACESHIP_CLOSED.get_height(), SPACESHIP_CLOSED.get_height())
+
+    frame = 0
+    frame_timer = pygame.time.get_ticks()
+    frame_cd = 200
+    state = [SPACESHIP_CLOSED, SPACESHIP_OPENING, SPACESHIP_OPEN, SPACESHIP_OPEN_LASER, SPACESHIP_STEAL_CAT, SPACESHIP_END_LASER, SPACESHIP_CLOSING]
+    current_state = 0
+
+    def update(self):
+        self.align_body()
+
+        if game_variable.win:
+            self.move()
+
+        self.change_state
+
+        self.update_frame()
+
+    def align_body(self):
+        self.alien_body.centerx = player.hitbox.centerx
+        self.alien_body.y = player.hitbox.y - 200
+
+    def move(self):
+        if not self.in_position and not self.cat_caught:
+            if self.alien_body.centerx > player.hitbox.centerx:
+                self.alien_body.centerx -= 5
+                if self.alien_body.centerx > player.hitbox.centerx:
+                    self.alien_body.centerx = player.hitbox.centerx
+                    self.in_position = True
+        else:
+            self.alien_body.centery -= 5
+            if self.alien_body.centery <= self.alien_body.height - 100:
+                game_variable.end_win_cinematic = True
+
+    def change_state(self):
+        # Closing
+        if not self.moving and self.opened and self.in_position and not self.laser_on and self.cat_caught and self.current_state != 6:
+            self.current_state = 6
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+        # End Laser
+        elif not self.moving and self.opened and self.in_position and self.laser_on and self.cat_caught and self.current_state != 5:
+            self.current_state = 5
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+        # Stealing cat
+        elif not self.moving and self.opened and self.in_position and self.laser_on and self.current_state != 4:
+            self.current_state = 4
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+        # Open Laser
+        elif not self.moving and self.opened and self.in_position and self.current_state != 3:
+            self.current_state = 3
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+        # Open
+        elif self.moving and self.opened and self.in_position and self.current_state != 2:
+            self.current_state = 2
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+        # Opening
+        elif not self.moving and not self.opened and self.in_position and self.current_state != 1:
+            self.current_state = 1
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+        # Closed
+        elif self.moving and self.current_state != 0:
+            self.current_state = 0
+            self.frame = 0
+            self.frame_timer = pygame.time.get_ticks()
+
+    def update_frame(self):
+        frame_cd = self.frame_cd
+        state = self.state
+        current_state = self.current_state
+
+        if pygame.time.get_ticks() - self.frame_timer >= frame_cd:
+            self.frame += 1
+            self.frame_timer = pygame.time.get_ticks()
+        if self.frame >= state[current_state].get_width()/state[current_state].get_height():
+            self.frame = 0
+
+        self.img.fill(ALMOST_BLACK)
+        self.img.set_colorkey(ALMOST_BLACK)
+        self.img.blit(state[current_state], (0,0), (state[current_state].get_height() * self.frame, 0, state[current_state].get_height(), state[current_state].get_height()))
+
 
 class game_over_class:
     GAME_OVER_BG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "game-over-screen.jpg")))
@@ -1304,9 +1530,6 @@ class game_over_class:
                 if event.type == pygame.QUIT:
                     run = False
                     general_use.close_the_game()
-                if event.type == MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         music.play_sound(music.BUTTON)
@@ -1316,6 +1539,8 @@ class game_over_class:
                     if event.key == K_SPACE:
                         miaou = True
             self.draw_window()
+            
+        music.play_music(music.MAIN_THEME)
 
 class game_ui_class:
     ACHIEVEMENT_IMG = pygame.image.load(os.path.join("assets", os.path.join("game-ui", "achievement-unlock.png")))
@@ -1389,7 +1614,12 @@ class game_ui_class:
         # Middle Pannel
         screen.blit(self.LOWER_MIDDLE_PANNEL_IMG, (self.LOWER_MIDDLE_PANNEL_RECT.x, self.LOWER_MIDDLE_PANNEL_RECT.y))
         if game_variable.started:
-            if game_variable.max_timer - (time.time() - game_variable.timer) < 0:
+            if owner.rage_timer:
+                if game_variable.win:
+                    time_text = font.render(f"???", 1, BLACK)
+                else:
+                    time_text = font.render(f"{(game_variable.win_timer - (time.time() - owner.rage_timer)):.2f} s", 1, BLACK)
+            elif game_variable.max_timer - (time.time() - game_variable.timer) < 0:
                 time_text = font.render(f"RUN !", 1, BLACK)
             else:
                 time_text = font.render(f"{game_variable.max_timer - (time.time() - game_variable.timer):.2f} s", 1, BLACK)
@@ -1588,30 +1818,49 @@ class main_game_class:
                 sprite_position = (item["rect"].x, item["rect"].y)
 
                 sprite_dict = {
+                    "bed": (item["rect"].x - 10, item["rect"].y - SQUARE),
+                    "curtains": (item["rect"].x - 30, item["rect"].y - SQUARE + 5),
+                    "toilet_paper": (item["rect"].x - 10, item["rect"].y + 15),
                     "plant": (item["rect"].x, item["rect"].y - SQUARE*2),
                     "plug": (item["rect"].x, item["rect"].y - SQUARE*2),
-                    "library": (item["rect"].x, item["rect"].y - SQUARE*2),
+                    "library": (item["rect"].x - SQUARE*2, item["rect"].y - SQUARE*2),
                     "big_library": (item["rect"].x, item["rect"].y - SQUARE*2),
-                    "chair": (item["rect"].x, item["rect"].y)
+                    "chair": (item["rect"].x + SQUARE, item["rect"].y),
+                    "shoe_case": (item["rect"].x + SQUARE, item["rect"].y),
+                    "tv": (item["rect"].x + 30, item["rect"].y - 25)
                     # Ajoutez d'autres types avec leurs positions respectives ici
                 }
                 sprite_dict_broken = {
+                    "bed": (item["rect"].x - 9, item["rect"].y - 14),
+                    "toilet_paper": (item["rect"].x + 3, item["rect"].y + 32),
+                    "towel": (item["rect"].x + 11, item["rect"].y + 33),
                     "plant": (item["rect"].x- SQUARE*2, item["rect"].y),
                     "plug": (item["rect"].x-20, item["rect"].y - SQUARE*2),
-                    "library": (item["rect"].x, item["rect"].y - SQUARE*2),
+                    "library": (item["rect"].x - SQUARE*2, item["rect"].y - SQUARE*2),
                     "big_library": (item["rect"].x, item["rect"].y - SQUARE*2),
-                    "chair": (item["rect"].x - SQUARE, item["rect"].y)
+                    "chair": (item["rect"].x + 17, item["rect"].y - 24),
+                    "shoe_case": (item["rect"].x + SQUARE, item["rect"].y),
+                    "tv": (item["rect"].x + 50, item["rect"].y - 40)
 
                 }
 
                 if item["type"]["is_enabled"]:
-                    map.blit(item["type"]["sprite"], sprite_dict.get(item_type, sprite_position))
+                    if item["type"]["sprite_glowing"]:
+                        map.blit(item["type"]["img"], sprite_dict.get(item_type, sprite_position))
+                    else:
+                        map.blit(item["type"]["sprite"], sprite_dict.get(item_type, sprite_position))
                 else:
                     map.blit(item["type"]["sprite_broken"], sprite_dict_broken.get(item_type, sprite_position))
-            # else:
-            #     pygame.draw.rect(map, YELLOW, item["rect"])
 
+        for row in grid.grid:
+            for case in row:
+                if not case["obstacle"]:
+                    pygame.draw.rect(map, RED, case["rect"], 1)
+                else:
+                    pygame.draw.rect(map, WHITE, case["rect"], 1)
 
+        for item in interactible.list:
+            pygame.draw.rect(map, GREEN, item["rect"], 3)
 
         # Player (Cat)
         # pygame.draw.rect(map, BLACK, player.body)
@@ -1658,6 +1907,9 @@ class main_game_class:
             else:
                 screen.blit(settings.E_KEY_IMG, (screen.get_width()//2 - settings.E_KEY_IMG.get_width()//2, screen.get_height()//3 * 2))
 
+        if game_variable.win:
+            screen.blit(end_game.img, (end_game.alien_body.x, end_game.alien_body.y))
+
         game_ui.draw_ui()
 
         pygame.display.update()
@@ -1677,9 +1929,9 @@ class main_game_class:
         
         while run:
             clock.tick(60)
-            owner.remove_rage(1)
+            # owner.remove_rage(1)
 
-            if game_variable.started:
+            if game_variable.started and not game_variable.win:
 
                 if time.time() - game_variable.timer > game_variable.max_timer:
                     game_variable.enraged = True
@@ -1689,8 +1941,8 @@ class main_game_class:
                     if game_variable.enraged:
                         game_over.main_loop()
                         run = False
+                        break
 
-                    player.i_frame = True
 
                     # Start button smash to try to escape
                     result = button_smash.main_loop()
@@ -1707,6 +1959,7 @@ class main_game_class:
                     player.i_frame_timer = time.time()
                     if result:
                         player.hp -= 1
+                        player.i_frame = True
                     else:
                         player.hp = 0
 
@@ -1799,16 +2052,15 @@ class main_game_class:
 
                 grid.update()
 
-                if click:
-                    owner.rage += 10
             
-            elif left or right or up or down:
+            elif (left or right or up or down) and not game_variable.win:
                 game_variable.started = True
                 game_variable.timer = time.time()
                 music.stop_sound(music.PURRING)
             else:
                 player.update()
                 owner.update()
+                interactible.update()
                 
 
             miaou = False
@@ -1818,12 +2070,9 @@ class main_game_class:
                 if event.type == pygame.QUIT:
                     run = False
                     general_use.close_the_game()
-                if event.type == MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
-                        music.play_sound(music.BUTTON)
+                        game_over.main_loop()
                         run = False
                     if event.key == K_e:
                         interact = True
@@ -1850,6 +2099,148 @@ class main_game_class:
                         up = False
                     if event.key == K_s:
                         down = False
+            self.draw_window()
+
+# MENU
+            
+class settings_before_play_class:
+    # Title
+    title_text = big_font.render("Controls", 1, BLACK)
+
+    # Button
+    Z_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 200, 240, 50)
+    Q_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 120, 240, 50)
+    S_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 40, 240, 50)
+    D_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 40, 240, 50)
+    E_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 120, 200, 50)
+    SPACE_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 + 200, 200, 50)
+    PLAY_HOVER_BUTTON = pygame.Rect(WIDTH - 253, HEIGHT - 103, 206, 56)
+    PLAY_BUTTON = pygame.Rect(WIDTH - 250, HEIGHT - 100, 200, 50)
+
+    # Descriptions
+    Z_DESC = font.render("UP", 1, BLACK)
+    Q_DESC = font.render("LEFT", 1, BLACK)
+    S_DESC = font.render("DOWN", 1, BLACK)
+    D_DESC = font.render("RIGHT", 1, BLACK)
+    E_DESC = font.render("ACTION", 1, BLACK)
+    SPACE_DESC = font.render("SELECT", 1, BLACK)
+    PLAY_DESC = font.render("PLAY", 1, BLACK)
+
+    # Buttons list
+    button_list = [BACK_BUTTON, PLAY_BUTTON]
+
+    # List of buttons objects
+    Z_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-not-pressed.png")))
+    Z_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-z-pressed.png")))
+    Q_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-not-pressed.png")))
+    Q_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-q-pressed.png")))
+    S_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s-not-pressed.png")))
+    S_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-s-pressed.png")))
+    D_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d-not-pressed.png")))
+    D_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-d-pressed.png")))
+    E_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e-not-pressed.png")))
+    E_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "letter-e-pressed.png")))
+    SPACE_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "space-bar.png")))
+    SPACE_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "space-pressed.png")))
+
+    index = 1
+
+    def draw_window(self):
+        screen.blit(BG_GAME_UI, (0,0))
+        
+        screen.blit(self.title_text, (WIDTH//2 - self.title_text.get_width()//2, HEIGHT//2 - 320 - self.title_text.get_height()//2))
+        screen.blit(self.Z_DESC, (WIDTH//2 - self.Z_BUTTON.x//2, self.Z_BUTTON.y))
+        screen.blit(self.Q_DESC, (WIDTH//2 - self.Q_BUTTON.x//2, self.Q_BUTTON.y))
+        screen.blit(self.S_DESC, (WIDTH//2 - self.S_BUTTON.x//2, self.S_BUTTON.y))
+        screen.blit(self.D_DESC, (WIDTH//2 - self.D_BUTTON.x//2, self.D_BUTTON.y))
+        screen.blit(self.E_DESC, (WIDTH//2 - self.E_BUTTON.x//2, self.E_BUTTON.y))
+
+        if self.index == 0:
+            screen.blit(BACK_BUTTON_HOVER_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
+        else:
+            screen.blit(BACK_BUTTON_IMG, (BACK_BUTTON.x, BACK_BUTTON.y))
+
+        screen.blit(self.Z_KEY_IMG, (self.Z_BUTTON.x, self.Z_BUTTON.y))
+
+        screen.blit(self.Q_KEY_IMG, (self.Q_BUTTON.x, self.Q_BUTTON.y))
+        
+        screen.blit(self.S_KEY_IMG, (self.S_BUTTON.x, self.S_BUTTON.y))
+        
+        screen.blit(self.D_KEY_IMG, (self.D_BUTTON.x, self.D_BUTTON.y))
+        
+        screen.blit(self.E_KEY_IMG, (self.E_BUTTON.x, self.E_BUTTON.y))
+
+        if self.index == 1:
+            pygame.draw.rect(screen, RED, self.PLAY_HOVER_BUTTON)
+        else:
+            pygame.draw.rect(screen, BLACK, self.PLAY_HOVER_BUTTON)
+
+        pygame.draw.rect(screen, GRAY, self.PLAY_BUTTON)
+        screen.blit(self.PLAY_DESC, (self.PLAY_BUTTON.centerx - self.PLAY_DESC.get_width()//2, self.PLAY_BUTTON.centerx - self.PLAY_DESC.get_height()//2))
+
+
+        pygame.display.update()
+
+    def main_loop(self):
+        run = True
+        
+        left = False
+        right = False
+        up = False
+        down = False
+        interact = False
+        click = False
+
+        while run:
+            clock.tick(60)
+
+            if not pygame.mixer.music.get_busy():
+                music.play_music()
+
+            if (up or left) and self.index > 0:
+                music.play_sound(music.BUTTON_SWITCH, 0.15)
+                self.index -= 1
+            if (down or right) and self.index < len(self.button_list) - 1:
+                music.play_sound(music.BUTTON_SWITCH, 0.15)
+                self.index += 1
+
+            if click or interact:
+                music.play_sound(music.BUTTON)
+                if self.index == 0:
+                    self.index = 1
+                    run = False
+                elif self.index == 1:
+                    main.main_loop()
+                    run = False
+
+            # Events handler
+            left = False
+            right = False
+            up = False
+            down = False
+            interact = False
+            click = False
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    general_use.close_the_game()
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        music.play_sound(music.BUTTON_CANCEL, 0.2)
+                        run = False
+                    if event.key == K_SPACE:
+                        interact = True
+                    if event.key == K_e:
+                        interact = True
+                    if event.key == K_q:
+                        left = True
+                    if event.key == K_d:
+                        right = True
+                    if event.key == K_z:
+                        up = True
+                    if event.key == K_s:
+                        down = True
             self.draw_window()
 
 class owner_selection_class:
@@ -1896,9 +2287,14 @@ class owner_selection_class:
         while run:
             clock.tick(60)
 
+            if not pygame.mixer.music.get_busy():
+                music.play_music()
+
             if (up or left) and self.index > 0:
+                music.play_sound(music.BUTTON_SWITCH, 0.15)
                 self.index -= 1
             if (down or right) and self.index < len(self.button_list) - 1:
+                music.play_sound(music.BUTTON_SWITCH, 0.15)
                 self.index += 1
 
             if click or interact:
@@ -1922,12 +2318,9 @@ class owner_selection_class:
                 if event.type == pygame.QUIT:
                     run = False
                     general_use.close_the_game()
-                if event.type == MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
-                        music.play_sound(music.BUTTON)
+                        music.play_sound(music.BUTTON_CANCEL, 0.2)
                         run = False
                     if event.key == K_SPACE:
                         click = True
@@ -2019,32 +2412,38 @@ class cat_selection_class:
         while run:
             clock.tick(60)
 
+            if not pygame.mixer.music.get_busy():
+                music.play_music()
+
             player.in_selection = True
 
             if (up or left) and self.index > 0:
+                music.play_sound(music.BUTTON_SWITCH, 0.15)
                 self.index -= 1
             if (down or right) and self.index < len(self.button_list) - 1:
+                music.play_sound(music.BUTTON_SWITCH, 0.15)
                 self.index += 1
 
             if click or interact:
                 music.play_sound(music.BUTTON)
                 if self.index == 0:
+                    self.index = 1
                     run = False
-                if self.index == 1:
+                elif self.index == 1:
                     game_variable.selected_cat = game_variable.all_cats[0]
                     player.change_cat_skin()
                     player.in_selection = False
-                    main.main_loop()
-                if self.index == 2:
+                    before_game.main_loop()
+                elif self.index == 2:
                     game_variable.selected_cat = game_variable.all_cats[1]
                     player.change_cat_skin()
                     player.in_selection = False
-                    main.main_loop()
-                if self.index == 3:
+                    before_game.main_loop()
+                elif self.index == 3:
                     game_variable.selected_cat = game_variable.all_cats[2]
                     player.change_cat_skin()
                     player.in_selection = False
-                    main.main_loop()
+                    before_game.main_loop()
 
             player.update_frame()
 
@@ -2058,12 +2457,10 @@ class cat_selection_class:
                 if event.type == pygame.QUIT:
                     run = False
                     general_use.close_the_game()
-                if event.type == MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
-                        music.play_sound(music.BUTTON)
+                        music.play_sound(music.BUTTON_CANCEL, 0.2)
+                        self.index == 1
                         run = False
                     if event.key == K_SPACE:
                         click = True
@@ -2155,6 +2552,9 @@ class menu_class:
         while run:
             clock.tick(60)
 
+            if not pygame.mixer.music.get_busy():
+                music.play_music()
+
             if self.in_animation:
                 if time.time() - self.animation_timer > self.animation_duration:
                     self.in_animation = False
@@ -2165,8 +2565,10 @@ class menu_class:
                     self.animation_timer = time.time()
 
             if (up or left) and self.index > 0:
+                music.play_sound(music.BUTTON_SWITCH, 0.15)
                 self.index -= 1
             if (down or right) and self.index < len(self.button_list) - 1:
+                music.play_sound(music.BUTTON_SWITCH, 0.15)
                 self.index += 1
 
             if click or interact:
@@ -2196,9 +2598,6 @@ class menu_class:
                 if event.type == pygame.QUIT:
                     run = False
                     general_use.close_the_game()
-                if event.type == MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         run = False
@@ -2220,7 +2619,7 @@ class menu_class:
 # Class representing settings menu
 class settings_class:
     # Title
-    title_text = big_font.render("Liste des contôles", 1, BLACK)
+    title_text = big_font.render("Controls", 1, BLACK)
 
     # Button
     Z_BUTTON = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 - 200, 240, 50)
@@ -2255,9 +2654,7 @@ class settings_class:
     SPACE_KEY_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "space-bar.png")))
     SPACE_KEY_PRESSED_IMG = pygame.image.load(os.path.join("assets", os.path.join("keys", "space-pressed.png")))
 
-    def __init__(self):
-        # Index
-        self.index = 0
+    index = 0
 
     def draw_window(self):
         screen.blit(BG_GAME_UI, (0,0))
@@ -2320,9 +2717,14 @@ class settings_class:
         while run:
             clock.tick(60)
 
+            if not pygame.mixer.music.get_busy():
+                music.play_music()
+
             if (up or left) and self.index > 0:
+                music.play_sound(music.BUTTON_SWITCH, 0.15)
                 self.index -= 1
             if (down or right) and self.index < len(self.button_list) - 1:
+                music.play_sound(music.BUTTON_SWITCH, 0.15)
                 self.index += 1
 
             if click or interact:
@@ -2357,12 +2759,9 @@ class settings_class:
                 if event.type == pygame.QUIT:
                     run = False
                     general_use.close_the_game()
-                if event.type == MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
-                        music.play_sound(music.BUTTON)
+                        music.play_sound(music.BUTTON_CANCEL, 0.2)
                         run = False
                     if event.key == K_SPACE:
                         interact = True
@@ -2410,8 +2809,12 @@ class credits_class:
         click = False
         while run:
             clock.tick(60)
+
+            if not pygame.mixer.music.get_busy():
+                music.play_music()
+
             if click or interact:
-                music.play_sound(music.BUTTON)
+                music.play_sound(music.BUTTON_CANCEL, 0.2)
                 run = False
                 print('RETURN')
                 # Reset navigation index
@@ -2424,12 +2827,9 @@ class credits_class:
                 if event.type == pygame.QUIT:
                     run = False
                     general_use.close_the_game()
-                if event.type == MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        click = True
                 if event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
-                        music.play_sound(music.BUTTON)
+                        music.play_sound(music.BUTTON_CANCEL, 0.2)
                         run = False
                     if event.key == K_SPACE:
                         click = True
@@ -2453,6 +2853,7 @@ behind = behind_wall_class()
 grid = grid_class()
 interactible = interactible_class()
 animation = animation_class()
+end_game = end_game_class()
 game_over = game_over_class()
 button_smash = button_smash_class()
 main = main_game_class()
@@ -2461,6 +2862,7 @@ owner_selection = owner_selection_class()
 menu = menu_class(exitedGameProperty)
 credits = credits_class()
 settings = settings_class()
+before_game = settings_before_play_class()
 grid.maze = redefineMaze(grid.maze)
 pathfinder = Pathfinder(grid.maze)
 game_ui = game_ui_class()
