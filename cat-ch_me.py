@@ -437,7 +437,7 @@ class game_variable_class:
     max_timer = 100
     enraged = False
 
-    win_timer = 10
+    win_timer = 1
 
     started = False
 
@@ -457,6 +457,7 @@ class game_variable_class:
         self.timer = 0
         self.enraged = False
         self.win = False
+        self.end_win_cinematic = False
 
         player.reset()
         owner.reset()
@@ -585,10 +586,6 @@ class player_class:
 
 
     def apply_bonuses(self):
-        if self.chaiyan:
-            if game_variable.multiplier < self.chaiyan_transform_cap:
-                self.chaiyan = False
-
         self.bonus_speed = 0
         if self.i_frame:
             self.bonus_speed += 5
@@ -813,7 +810,7 @@ class owner_class:
     
     range = 20
     rage = 0
-    max_rage = 200
+    max_rage = 2
     rage_timer = 0
     body = pygame.Rect(1200, 600, 170 * 1.5, 170 * 1.5)
     body_hitbox = pygame.Rect(body.x, body.y, SQUARE, SQUARE)
@@ -1644,6 +1641,8 @@ class end_game_class:
         self.laser_on = False
         self.current_state = 0
         self.frame = 0
+        self.alien_hitbox.x = map.get_width() + self.img.get_width() + 50
+        self.alien_hitbox.y = 0
 
     SPACESHIP_CLOSED = img_load.image_loader.load(["assets", "alien", "space-ship-closed.png"], 1)
     SPACESHIP_OPENING = img_load.image_loader.load(["assets", "alien", "space-ship-opening.png"], 1)
