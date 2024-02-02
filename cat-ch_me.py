@@ -810,7 +810,7 @@ class owner_class:
     
     range = 20
     rage = 0
-    max_rage = 2
+    max_rage = 200
     rage_timer = 0
     body = pygame.Rect(1200, 600, 170 * 1.5, 170 * 1.5)
     body_hitbox = pygame.Rect(body.x, body.y, SQUARE, SQUARE)
