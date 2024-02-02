@@ -934,17 +934,29 @@ class owner_class:
                 self.speed = self.max_speed + self.bonus_speed
 
                 # Chase Target
+                # move in x
                 if self.target[0] > self.body_hitbox.centerx:
                         self.body_hitbox.x += self.speed
                         self.right = True
+                        if self.target[0] < self.body_hitbox.centerx:
+                            self.body_hitbox.centerx = self.target[0]
+                            
                 if self.target[0] < self.body_hitbox.centerx:
                         self.body_hitbox.x -= self.speed
                         self.right = False
+                        if self.target[0] > self.body_hitbox.centerx:
+                            self.body_hitbox.centerx = self.target[0]
                         
+                # move in y
                 if self.target[1] > self.body_hitbox.centery:
-                        self.body_hitbox.y += self.speed
+                    self.body_hitbox.y += self.speed
+                    if self.target[1] < self.body_hitbox.centery:
+                        self.body_hitbox.centery = self.target[1]
+
                 if self.target[1] < self.body_hitbox.centery:
-                        self.body_hitbox.y -= self.speed
+                    self.body_hitbox.y -= self.speed
+                    if self.target[1] > self.body_hitbox.centery:
+                        self.body_hitbox.centery = self.target[1]
             else:
                 self.path.pop(0)
                 if len(self.path) > 0:
@@ -1536,7 +1548,7 @@ class grid_class:
         self.get_cat_position()
         self.get_owner_position()
 
-        if time.time() - self.solver_timer > self.solver_cd:
+        if time.time() - self.solver_timer > self.solver_cd or len(owner.path) == 0:
             pathfinder.create_path()
             self.solver_timer = time.time()
 
