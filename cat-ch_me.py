@@ -1678,6 +1678,8 @@ class end_game_class:
         if game_variable.win:
             self.move()
 
+        # self.change_state()
+
         self.update_frame()
 
     def align_body(self):
