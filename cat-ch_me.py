@@ -437,7 +437,7 @@ class game_variable_class:
     max_timer = 100
     enraged = False
 
-    win_timer = 1
+    win_timer = 15
 
     started = False
 
@@ -817,7 +817,7 @@ class owner_class:
     
     max_speed = 7
     speed = 7
-    max_bonus_speed = 5
+    max_bonus_speed = 3
     bonus_speed = 0
 
     moving = False
@@ -990,7 +990,7 @@ class owner_class:
     def update_move_speed(self):
         self.bonus_speed = self.max_bonus_speed * (self.rage / self.max_rage)
         if game_variable.enraged:
-            self.bonus_speed = 15
+            self.bonus_speed = 10
 
     def change_skin(self):
         if game_variable.selected_owner == "male":
@@ -2155,19 +2155,19 @@ class main_game_class:
 
         animation.play_animations()
 
-        # for row in grid.grid:
-        #     for case in row:
-        #         if not case["obstacle"]:
-        #             pygame.draw.rect(map, RED, case["rect"], 1)
-        #         else:
-        #             pygame.draw.rect(map, WHITE, case["rect"], 1)
+        for row in grid.grid:
+            for case in row:
+                if not case["obstacle"]:
+                    pygame.draw.rect(map, RED, case["rect"], 1)
+                else:
+                    pygame.draw.rect(map, WHITE, case["rect"], 1)
 
-        # for item in interactible.list:
-        #     pygame.draw.rect(map, GREEN, item["rect"], 3)
+        for item in interactible.list:
+            pygame.draw.rect(map, GREEN, item["rect"], 3)
 
         # Player (Cat)
         # pygame.draw.rect(map, BLACK, player.body)
-        # pygame.draw.rect(map, GREEN, player.hitbox)
+        pygame.draw.rect(map, GREEN, player.hitbox)
         # if player.i_frame:
         #     pygame.draw.rect(map, GREEN, player.hitbox)
         map.blit(player.img, (player.body.x, player.body.y))
@@ -2184,7 +2184,7 @@ class main_game_class:
         # pygame.draw.rect(map, YELLOW, owner.body)
 
         # # Owner Body Hitbox
-        # pygame.draw.rect(map, BLACK, owner.body_hitbox)
+        pygame.draw.rect(map, BLACK, owner.body_hitbox)
         
         map.blit(owner.img, (owner.body.x, owner.body.y))
         
